@@ -19,21 +19,7 @@ classdef CQueue < handle
 %   
 % See also CList, CStack
 %
-% 定义了一个队列
-% q = CQueue; 定义一个空的队列对象
-% q = CQueue(c); 定义队列对象，并用c初始化q，当c为cell时，c的元素为栈的数据，
-%    否则c本身为栈的第一个数据
-%
-% 支持操作：
-%     sz = q.size() 返回队列内元素个数，也可用来判断队列是否非空。
-%     q.isempty() 用来判断队列为空
-%     q.empty() 清空队列
-%     q.push(el) 将新元素el压入队列内
-%     s.pop()  弹出队首元素，用户需自己确保队列非空
-%     el = q.front() 返回队首元素，用户需自己确保队列非空
-%     el = q.back() 返回队尾元素，用户需自己确保队列非空
-%     q.remove() 清空队列
-%     q.content() 按顺序返回q的数据，为一个cell数组
+
 %     
 % See also CStack, CList
 %
@@ -48,11 +34,11 @@ classdef CQueue < handle
     end
     
     properties (Access = public)
-        capacity    % 栈的容量，当容量不够时，容量扩充为2倍。
+        capacity 
     end
     
     methods
-        function obj = CQueue(c) % 初始化
+        function obj = CQueue(c) 
             if nargin >= 1 && iscell(c)
                 obj.buffer = [c(:); cell(numel(c), 1)];
                 obj.beg = 1;
@@ -72,7 +58,7 @@ classdef CQueue < handle
             end
         end
         
-        function s = size(obj) % 队列长度
+        function s = size(obj) 
             if obj.rear >= obj.beg
                 s = obj.rear - obj.beg;
             else
@@ -90,7 +76,7 @@ classdef CQueue < handle
             obj.rear = 1;
         end
         
-        function push(obj, el) % 压入新元素到队尾
+        function push(obj, el) 
             if obj.size >= obj.capacity - 1
                 sz = obj.size();
                 if obj.rear >= obj.beg
@@ -107,7 +93,7 @@ classdef CQueue < handle
             obj.rear = mod(obj.rear, obj.capacity) + 1;
         end
         
-        function el = front(obj) % 返回队首元素
+        function el = front(obj) 
             if obj.rear ~= obj.beg
                 el = obj.buffer{obj.beg};
             else
@@ -141,12 +127,12 @@ classdef CQueue < handle
             end             
         end
         
-        function remove(obj) % 清空队列
+        function remove(obj) 
             obj.beg = 1;
             obj.rear = 1;
         end
         
-        function display(obj) % 显示队列
+        function display(obj)
             if obj.size()
                 if obj.beg <= obj.rear 
                     for i = obj.beg : obj.rear-1
@@ -168,7 +154,7 @@ classdef CQueue < handle
             end
         end
         
-        function c = content(obj) % 取出队列元素
+        function c = content(obj) 
             if obj.rear >= obj.beg
                 c = obj.buffer(obj.beg:obj.rear-1);                    
             else

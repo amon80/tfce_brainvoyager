@@ -29,7 +29,7 @@ for k=1:1:z
 							for i1=beginx:1:endx
 								if clustered_map(i1,j1,k1) == 1
 									q.push([i1,j1,k1]);
-									clustered_map(i,j,k) = current_label;
+									clustered_map(i1,j1,k1) = current_label;
 								end
 							end
 						end

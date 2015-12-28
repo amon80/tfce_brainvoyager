@@ -22,8 +22,8 @@ for k=1:1:z
 				clustered_map(i,j,k) = current_label;
 				num_cluster = num_cluster + 1;
 				while ~q.isempty()
-					[x1,y1,z1] = q.pop();
-					[beginx, beginy, beginz, endx, endy, endz] = find_borders(x,y,z,x1,y1,z1);
+					p = q.pop();
+					[beginx, beginy, beginz, endx, endy, endz] = find_borders(x,y,z,p(1),p(2),p(3));
 					for k1=beginx:1:endz
 						for j1=beginy:1:endy
 							for i1=beginz:1:endx

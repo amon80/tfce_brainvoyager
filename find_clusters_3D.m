@@ -9,7 +9,7 @@ function [clustered_map, num_cluster] = find_clusters_3D(data)
 
 [x,y,z] = size(data);
 
-clustered_map = data;
+clustered_map = single(data);
 current_label = 3;
 num_cluster = 0;
 q = CQueue();

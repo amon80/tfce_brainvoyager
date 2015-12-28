@@ -70,7 +70,6 @@ if min(data(:)) > 0
 	% then tfce score for that height
 	index = 1; 
 	tfce = NaN(x,y,z,length(min(data(:)):increment:max(data(:))));
-	nsteps = length(min(data(:)):increment:max(data(:)));
 	for h=min(data(:)):increment:max(data(:))
 		try
 			[clustered_map,num] = bwlabel((data > h));
@@ -91,14 +90,14 @@ else
 	pos_data = (data > 0).*data;
 	neg_data = abs((data < 0).*data);
 
-	nsteps = length(min(data(:)):increment:max(data(:)));
 	clear data;
 
 	% select a height, obtain cluster map, obtain extent map
 	% then tfce score for that height
 	l = length(min(pos_data(:)):increment:max(pos_data(:)));
 	pos_increment = (max(pos_data(:)) - min(pos_data(:))) / l;
-	pos_tfce = NaN(x,y,z,l); index = 1; 
+	pos_tfce = NaN(x,y,z,l); 
+    index = 1; 
 	for h=min(pos_data(:)):pos_increment:max(pos_data(:))
 		try
 			[clustered_map,num] = bwlabel((pos_data > h));

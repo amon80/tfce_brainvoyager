@@ -32,7 +32,7 @@ for k=1:1:z
 								%fprintf(f, 'checking %d %d %d, value: %d\n',i1,j1,k1, clustered_map(i1,j1,k1));
 								if clustered_map(i1,j1,k1) == 1
                                     clustered_map(i1,j1,k1) = current_label;
-                                    fprintf(f, 'checking %d %d %d, now value should be: %d\n',i1,j1,k1, clustered_map(i1,j1,k1));
+                                    %fprintf(f, 'checking %d %d %d, now value should be: %d\n',i1,j1,k1, clustered_map(i1,j1,k1));
 									q.push([i1,j1,k1]);
                                     %fprintf(f, 'Adding %d %d %d\n',i1,j1,k1);
 								end

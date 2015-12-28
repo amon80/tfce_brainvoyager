@@ -84,7 +84,7 @@ else
 			idx = clustered_map(:) == i;
 			extent_map(idx) = extent_map(idx) + sum(idx); 
 		end
-		pos_tfce(:,:,z,index) = (extent_map.^E).*h^H.*dh;
+		pos_tfce(:,:,:,index) = (extent_map.^E).*h^H.*dh;
 		index = index +1;
 	end
 
@@ -98,7 +98,7 @@ else
 			idx = clustered_map(:) == i;
 			extent_map(idx) = extent_map(idx) + sum(idx); 
 		end
-		neg_tfce(:,:,z,index) = (extent_map.^E).*h^H.*dh;
+		neg_tfce(:,:,:,index) = (extent_map.^E).*h^H.*dh;
 		index = index +1;
 	end
 

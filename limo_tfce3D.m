@@ -6,7 +6,7 @@ function tfce_score = limo_tfce3D(varargin)
 % INPUT tfce_score = limo_tfce(data)
 %       tfce_score = limo_tfce(data,E,H,dh)
 %
-%       data can be either 3D: a map of values
+%       data must be either 3D: a map of values
 %       tfce = sum(extent(h)^E*height^H*dh)      
 %
 % OUPUT tfce_score is a map of scores
@@ -15,8 +15,7 @@ function tfce_score = limo_tfce3D(varargin)
 % Pernet, C., Nichols, T.E., Latinus, M. & Rousselet, G.A.
 % Cluster-based computational methods for mass univariate analysis of 
 % event-related brain potentials/fields. - in prep
-%
-% Cyril Pernet 18-10-2011
+
 % -----------------------------
 %% check input
 

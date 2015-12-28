@@ -4,7 +4,7 @@ function [clustered_map, num_cluster] = find_clusters_3D(data)
 % INPUT A binary 3D image 
 %
 % OUPUT clustered_map is a the clustered image.
-%		num_cluster is the number og cluster found.
+%		num_cluster is the number of cluster found.
 %
 
 [x,y,z] = size(data);
@@ -41,9 +41,9 @@ for k=1:1:z
 	end
 end
 
-for i=0:1:x
-	for j=0:1:y
-		for k=0:1:z
+for k=1:1:z
+	for j=1:1:y
+		for i=1:1:x
 			if clustered_map(i,j,k) ~= 0
 				clustered_map(i,j,k) = clustered_map(i,j,k) - 1;
 			end

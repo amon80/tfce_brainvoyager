@@ -74,6 +74,7 @@ if min(data(:)) > 0
 		try
 			[clustered_map,num] = bwlabel((data > h));
 		catch
+			%here is the real problem: how do i find clusters in 3D data?
 			[clustered_map, num] = limo_ft_findcluster((data > h), channeighbstructmat,2);
 		end
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead

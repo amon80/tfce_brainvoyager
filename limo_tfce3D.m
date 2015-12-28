@@ -89,7 +89,6 @@ else
 		index = index +1;
 	end
 
-	hindex = index-1;
 	l = length(min(neg_data(:)):increment:max(neg_data(:)))-1;
 	neg_increment = (max(neg_data(:)) - min(neg_data(:))) / l;
 	neg_tfce = NaN(x,y,z,l); index = 1; 

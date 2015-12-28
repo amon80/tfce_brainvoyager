@@ -24,9 +24,9 @@ for k=1:1:z
 				while ~q.isempty()
 					p = q.pop();
 					[beginx, beginy, beginz, endx, endy, endz] = find_borders(x,y,z,p(1),p(2),p(3));
-					for k1=beginx:1:endz
+					for k1=beginz:1:endz
 						for j1=beginy:1:endy
-							for i1=beginz:1:endx
+							for i1=beginx:1:endx
 								if clustered_map(i1,j1,k1) == 1
 									q.push([i1,j1,k1]);
 									clustered_map(i,j,k) = current_label;

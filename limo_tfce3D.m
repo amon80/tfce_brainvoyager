@@ -4,13 +4,9 @@ function tfce_score = limo_tfce3D(varargin)
 % developped for fMRI by Smith & Nichols, NeuroImage 44(2009), 83-98
 %
 % INPUT tfce_score = limo_tfce(data)
-%       tfce_score = limo_tfce(data,channeighbstructmat)
-%       tfce_score = limo_tfce(data,channeighbstructmat,E,H,dh)
+%       tfce_score = limo_tfce(data,E,H,dh)
 %
-%       data can be either 3D: a map of values 
-%       or data can be 4D: a set of value maps computed under H0 
-%       type specify if case is observed or H0 data
-%       E, H and dh are the parameters of the tfce algorithm defaults are 0.5, 2, 0.1
+%       data can be either 3D: a map of values
 %       tfce = sum(extent(h)^E*height^H*dh)      
 %
 % OUPUT tfce_score is a map of scores
@@ -22,33 +18,21 @@ function tfce_score = limo_tfce3D(varargin)
 %
 % Cyril Pernet 18-10-2011
 % -----------------------------
-% Copyright (C) LIMO Team 2010
-
-
-% precision max = 200; % define how many thresholds between min t/F map and
-% max t/F map --> needed as sometime under H0 some values can be
-% arbritrarily high due to low variance during resampling
-
 %% check input
 
-if nargin == 1 || nargin == 2
+if nargin == 1
 	E = 0.5;  
 	H = 2;
 	dh = 0.1;
-elseif nargin == 5
-	E = varargin{3};
-	H = varargin{4};
-	dh = varargin{5};
+elseif nargin == 4
+	E = varargin{2};
+	H = varargin{3};
+	dh = varargin{4};
 elseif nargin > 7
 	error('too many arguments')
 end
 
 data = varargin{1};
-try
-	channeighbstructmat = varargin{2};
-catch
-	channeighbstructmat = [];
-end
 
 [x,y,z]=size(data);
 

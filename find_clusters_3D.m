@@ -10,7 +10,8 @@ function [clustered_map, num_cluster] = find_clusters_3D(data)
 [x,y,z] = size(data);
 
 clustered_map = data;
-current_label == 2;
+current_label = 2;
+num_cluster = 0;
 q = CQueue();
 
 for i=0:1:x
@@ -19,6 +20,7 @@ for i=0:1:x
 			if clustered_map(i,j,k) == 1
 				q.push([i,j,k]);
 				clustered_map(i,j,k) = current_label;
+				num_cluster = num_cluster + 1;
 				while ~q.isempty()
 					[x1,y1,z1] = q.pop();
 					[beginx, beginy, beginz, endx, endy, endz] = find_borders(x,y,z,x1,y1,z1);
@@ -34,6 +36,16 @@ for i=0:1:x
 1					end
 				end
 				current_label = current_label + 1;
+			end
+		end
+	end
+end
+
+for i=0:1:x
+	for j=0:1:y
+		for k=0:1:z
+			if clustered_map(i,j,k) != 0
+				clustered_map(i,j,k) = clustered_map(i,j,k) - 1;
 			end
 		end
 	end

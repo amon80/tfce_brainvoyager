@@ -1,6 +1,5 @@
 function [beginx, beginy, beginz, endx, endy, endz] = find_borders(x,y,z, x1, y1, z1)
 
-
 if x1 - 1 <= 0
 	beginx = x1;
 else

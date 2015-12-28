@@ -55,12 +55,7 @@ if min(data(:)) > 0
 	index = 1; 
 	tfce = NaN(x,y,z,length(min(data(:)):increment:max(data(:))));
 	for h=min(data(:)):increment:max(data(:))
-		try
-			[clustered_map,num] = bwlabel((data > h));
-		catch
-			%here is the real problem: how do i find clusters in 3D data?
-			[clustered_map, num] = limo_ft_findcluster((data > h), channeighbstructmat,2);
-		end
+		[clustered_map, num] = find_clusters_3D((data > h));
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
 		for i=1:num
 			idx = clustered_map(:) == i;
@@ -84,11 +79,7 @@ else
 	pos_tfce = NaN(x,y,z,l); 
     index = 1; 
 	for h=min(pos_data(:)):pos_increment:max(pos_data(:))
-		try
-			[clustered_map,num] = bwlabel((pos_data > h));
-		catch
-			[clustered_map, num] = limo_ft_findcluster((pos_data > h), channeighbstructmat,2);
-		end
+		[clustered_map, num] = find_clusters_3D((pos_data > h));
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
 		for i=1:num
 			idx = clustered_map(:) == i;
@@ -103,11 +94,7 @@ else
 	neg_increment = (max(neg_data(:)) - min(neg_data(:))) / l;
 	neg_tfce = NaN(x,y,z,l); index = 1; 
 	for h=min(neg_data(:)):neg_increment:max(neg_data(:))
-		try
-			[clustered_map,num] = bwlabel((neg_data > h));
-		catch
-			[clustered_map, num] = limo_ft_findcluster((neg_data > h), channeighbstructmat,2);
-		end
+		[clustered_map, num] = find_clusters_3D((neg_data > h));
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
 		for i=1:num
 			idx = clustered_map(:) == i;

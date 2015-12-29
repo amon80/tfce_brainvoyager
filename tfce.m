@@ -1,21 +1,15 @@
-function tfce_score = limo_tfce3D(varargin)
+function tfce_score = tfce(varargin)
 
 % implementation of the Threshold-free cluster enhancement method
 % developped for fMRI by Smith & Nichols, NeuroImage 44(2009), 83-98
 %
-% INPUT tfce_score = limo_tfce(data)
-%       tfce_score = limo_tfce(data,E,H,dh)
+% INPUT tfce_score = tfce(data)
+%       tfce_score = tfce(data,E,H,dh)
 %
-%       data must be either 3D: a map of values
+%       data must be 3D: a map of values
 %       tfce = sum(extent(h)^E*height^H*dh)      
 %
 % OUPUT tfce_score is a map of scores
-%
-% Ref 
-% Pernet, C., Nichols, T.E., Latinus, M. & Rousselet, G.A.
-% Cluster-based computational methods for mass univariate analysis of 
-% event-related brain potentials/fields. - in prep
-
 % -----------------------------
 %% check input
 
@@ -27,7 +21,7 @@ elseif nargin == 4
 	E = varargin{2};
 	H = varargin{3};
 	dh = varargin{4};
-elseif nargin > 7
+elseif nargin > 4
 	error('too many arguments')
 end
 
@@ -90,7 +84,8 @@ else
 
 	l = length(min(neg_data(:)):increment:max(neg_data(:)))-1;
 	neg_increment = (max(neg_data(:)) - min(neg_data(:))) / l;
-	neg_tfce = NaN(x,y,z,l); index = 1; 
+	neg_tfce = NaN(x,y,z,l);
+    index = 1; 
 	for h=min(neg_data(:)):neg_increment:max(neg_data(:))
 		[clustered_map, num] = find_clusters_3D((neg_data > h));
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead

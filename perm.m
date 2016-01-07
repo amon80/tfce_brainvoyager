@@ -1,5 +1,5 @@
-function  perm_matrix = perm(matrix)
-% implementation of 3D matrix permutation
+function matrix = perm(matrix)
+% implementation of 3D matrix permutation. WARNING: input matrix is lost.
 %
 % INPUT matrix = a 3D matrix
 %
@@ -7,7 +7,6 @@ function  perm_matrix = perm(matrix)
 % -----------------------------
 
 [x,y,z] = size(matrix);
-perm_matrix = matrix;
 
 %for tests
 %rng(1);
@@ -22,9 +21,9 @@ for i=1:x
             ry = randi(y);
             rz = randi(z);
             
-            tmp = perm_matrix(rx,ry,rz);
-            perm_matrix(rx,ry,rz) = perm_matrix(i,j,k);
-            perm_matrix(i,j,k) = tmp;
+            tmp = matrix(rx,ry,rz);
+            matrix(rx,ry,rz) = matrix(i,j,k);
+            matrix(i,j,k) = tmp;
         end
     end
 end

@@ -46,5 +46,7 @@ for i=1:nruns
     tfce_score_max_perms(i) = max(score_perm_i(:));
 end
 
+histogram(tfce_score_max_perms);
+
 end
 

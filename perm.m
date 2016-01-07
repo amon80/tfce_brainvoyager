@@ -18,9 +18,9 @@ rng('shuffle');
 for i=1:x
     for j=1:y
         for k=1:z
-            rx = 1 + (x-1)*rand(); 
-            ry = 1 + (y-1)*rand();
-            rz = 1 + (z-1)*rand();
+            rx = randi(x); 
+            ry = randi(y);
+            rz = randi(z);
             
             tmp = perm_matrix(rx,ry,rz);
             perm_matrix(rx,ry,rz) = perm_matrix(i,j,k);

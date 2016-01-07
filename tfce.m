@@ -9,7 +9,7 @@ function tfce_score = tfce(varargin)
 %       data must be 3D: a map of values
 %       tfce = sum(extent(h)^E*height^H*dh)      
 %
-% OUPUT tfce_score is a map of scores
+% OUPUT tfce_score is a map of scores(unthresholded)
 % -----------------------------
 %% check input
 

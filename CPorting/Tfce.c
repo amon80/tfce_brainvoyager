@@ -28,13 +28,13 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 					for (k = -1; k <= 1; ++k) {
 						for (h = -1; h <= 1; ++h) {
 							if (x+j < 0 || x+j >= dim_x) {
-								break;	
+								continue;	
 							}
 							if (y+k < 0 || y+k >= dim_y) {
-								break;	
+								continue;	
 							}
 							if (z+h < 0 || z+h >= dim_z) {
-								break;	
+								continue;	
 							}
 							toCheck = linearIndexFromCoordinate(x+j, y+k, z+h, dim_y, dim_z);	
 							if (toReturn[toCheck] == 1) {

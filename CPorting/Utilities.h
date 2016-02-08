@@ -1,13 +1,6 @@
-//
-// Created by Luigi Giugliano on 08/02/16.
-//
-
 #ifndef CPORTING_UTILITIES_H
 #define CPORTING_UTILITIES_H
-
-//difference between min and max is the range
-int findMinMax(float * map, float * min, float * max);
-int * getBinaryVector(float * map, const char operation, float value);
-int getNeighbours(int i);
-
+float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh);
+int linearIndexFromCoordinate(int x, int y, int z, int max_x, int max_y);
+void coordinatesFromLinearIndex(int index, int max_x, int max_y, int * x, int * y, int * z);
 #endif //CPORTING_UTILITIES_H

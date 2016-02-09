@@ -5,3 +5,4 @@ all:
 clean:
 	rm *.o
 	rm output.out
+	rm -r output.out.dSYM

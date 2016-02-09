@@ -12,7 +12,7 @@ void findMinMax(float *map, int n, float *min, float *max, float * range) {
 		if (map[i] > (*max))
 			(*max) = map[i];
 	}
-	(*range) = abs(max - min);
+	(*range) = labs(max - min);
 }
 
 //performs confrontation between and b given a single char operation
@@ -24,6 +24,9 @@ int confront(float a, float b, char operation){
 			return a>b;
 		case '=':
 			return a==b;
+
+		default:
+			return -10;
 	}
 }
 

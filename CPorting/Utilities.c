@@ -16,27 +16,25 @@ void findMinMax(float *map, int n, float *min, float *max, float * range) {
 }
 
 //performs confrontation between and b given a single char operation
-int confront(float a, float b, char operation){
-	switch (operation) {
-		case '<':
-			return a<b;
-		case '>':
-			return a>b;
-		case '=':
-			return a==b;
+int lessThan(float a, float b){
+        return a < b;
+}
 
-		default:
-			return -10;
-	}
+int equalTo(float a, float b){
+        return a == b;
+}
+
+int moreThan(float a, float b){
+        return a > b;
 }
 
 //Gets a binary vector in matlab style, given a certain operation
-int * getBinaryVector(float * map, int n, const char operation, float value, int * numOfElementsMatching){
+int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int * numOfElementsMatching){
 	int * binaryVector = (int *) calloc(sizeof(int), n);
 	int i;
 
 	for (i = 0; i < n; ++i) {
-		if(confront(map[i],value, operation)){
+		if(confront(map[i],value)){
 			binaryVector[i] = 1;
 			(*numOfElementsMatching)++;
 		}
@@ -71,20 +69,19 @@ float * fill0(int n){
 	return toReturn;
 }
 
+float multiply(float a, float b){
+	return a * b;
+}
+
+float elevate(float a, float b){
+	return pow(a,b);
+}
+
 //Applies a single char operation on every element of the vector
-void apply_function(float * vector, int n, const char op, float argument){
+void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument){
 	int i;
-	switch (op) {
-		case '^': 
-			for (i = 0; i < n; ++i) {
-				vector[i] = pow(vector[i], argument);
-			}	
-			break;
-		case '*':
-			for (i = 0; i < n; ++i) {
-				vector[i] *= argument;
-			}
-			break;
+	for (i = 0; i < n; ++i) {
+	    vector[i] = operation(vector[i], argument);
 	}
 }
 

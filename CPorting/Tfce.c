@@ -76,15 +76,15 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 	} else{
 		increment = rangeData/precision;	
 	}
-	if(minData > 0){
+	if(minData >= 0){
 		for (h = minData; i < maxData; i += increment) {
-			indexMatchingData = getBinaryVector(map, n, '>', h, &numOfElementsMatching);
+			indexMatchingData = getBinaryVector(map, n, lessThan, h, &numOfElementsMatching);
 			num_clusters = 0;
 			clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
 			free(indexMatchingData);
 			for (i = 1; i <= num_clusters; ++i) {
 				numOfElementsMatching = 0;	
-				indexMatchingData = getBinaryVector(clustered_map, n, '=', i, &numOfElementsMatching);
+				indexMatchingData = getBinaryVector(clustered_map, n, equalTo, i, &numOfElementsMatching);
 				for (j = 0; j < n; ++j) {
 					if(clustered_map[j] == i){
 						clustered_map[j] = numOfElementsMatching;
@@ -92,9 +92,9 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 				}
 				free(indexMatchingData);
 			}
-			apply_function(clustered_map, n, '^', E);
-			apply_function(clustered_map, n, '*', pow(h, H));
-			apply_function(clustered_map, n, '*', dh);
+			apply_function(clustered_map, n, elevate, E);
+			apply_function(clustered_map, n, multiply, pow(h, H));
+			apply_function(clustered_map, n, multiply, dh);
 			for (i = 0; i < n; ++i) {
 				toReturn[i] += clustered_map[i];
 			}
@@ -102,8 +102,8 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		}
 	}
 	else{
-		indexPosData = getBinaryVector(map, n, '<', 0, &numOfElementsMatching);
-		indexNegData = getBinaryVector(map, n, '>', 0, &numOfElementsMatching);
+		indexPosData = getBinaryVector(map, n, lessThan, 0, &numOfElementsMatching);
+		indexNegData = getBinaryVector(map, n, moreThan, 0, &numOfElementsMatching);
 		// posData = fromBinaryToRealVector(map, n, indexPosData);
 		// negData = fromBinaryToRealVector(map, n, indexNegData);
 		//------------------------TODO

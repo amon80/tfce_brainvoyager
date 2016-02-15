@@ -1,6 +1,10 @@
 #include "Utilities.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAXLINE 200000
 
 //Finds minimum, maximum and range of a float vector  
 void findMinMax(float *map, int n, float *min, float *max, float * range) {
@@ -107,4 +111,52 @@ float * copyAndConvertIntVector(int * vector, int n){
 		toReturn[i] = vector[i];
 	}
 	return toReturn;
+}
+
+float * readMatFromFile(char* filename, int * size){
+
+	FILE * fp;
+	char * line = NULL;
+	char * oldline = NULL;
+	size_t len = 0;
+	ssize_t read;
+
+	fp = fopen(filename, "r");
+	if (fp == NULL)
+		exit(EXIT_FAILURE);
+
+	if ((read = getline(&line, &len, fp)) != -1) {
+
+		printf("%zd - %zu \n ", len , read);
+
+		char * token;
+		printf ("Size of line %lu\n", sizeof(line));
+		oldline = (char *) calloc (read+1, sizeof(char));
+		strcpy(oldline,line);
+		int num_of_val = 0;
+		for (token = strtok(line, " ");token!=NULL; token=strtok(NULL, " ")){
+			num_of_val++;
+		}
+		printf("Num of val %d\n",num_of_val);
+		float *mat = (float *) calloc (num_of_val,  sizeof(float));
+
+		num_of_val = 0;
+		for (token = strtok(oldline, " ");token!=NULL; token=strtok(NULL, " ")){
+			mat[num_of_val] = atof(token);
+			//printf("%f\n",mat[num_of_val]);
+			num_of_val++;
+		}
+
+		*size =  num_of_val;
+		printf("Read Complete\n");
+		fclose(fp);
+		return mat;
+	}
+
+	fclose(fp);
+	return NULL;
+
+
+
+
 }

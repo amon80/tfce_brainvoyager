@@ -38,3 +38,5 @@ int moreThan(float a, float b);
 float multiply(float a, float b);
 
 float elevate(float a, float b);
+
+float * readMatFromFile(char* filename, int * size);

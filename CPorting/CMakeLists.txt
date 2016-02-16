@@ -1,0 +1,6 @@
+cmake_minimum_required (VERSION 2.6)
+project (CPorting)
+if(UNIX)
+    link_libraries(m)
+endif(UNIX)
+add_executable(CPorting Main Queue.c Utilities.c Tfce.c)

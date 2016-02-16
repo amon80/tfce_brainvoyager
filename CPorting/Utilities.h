@@ -1,6 +1,7 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 #include <float.h>
+#include <stdio.h>
 
 //Finds minimum, maximum and range of a float vector  
 void findMinMax(float *map, int n, float *min, float *max, float * range);
@@ -39,4 +40,4 @@ float multiply(float a, float b);
 
 float elevate(float a, float b);
 
-float * readMatFromFile(char* filename, int * size);
+float * readMatFromFile(FILE * fp, int * size, int * x, int * y, int * z);

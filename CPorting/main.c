@@ -22,10 +22,22 @@ int main(int argc, char *argv[])
 
 	float *matrix;
 	int dim;
-	matrix = readMatFromFile("../Test.txt", &dim);
+	int  xx  =0 , yy = 0, zz = 0;
+
+	FILE *fp;
+	fp = fopen("/Users/Luigi/Documents/MATLAB/ProgettoEsi/Test.txt", "r");
+	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
 	printf("Dimensione matrice %d\n",dim);
 
-	printf("%f\n",matrix[22]);
+	printf("x:%d y:%d z:%d\n",xx,yy,zz);
+
+	matrix = tfce_score(matrix,xx,yy,zz,2,1,0.1);
+
+	for (int i=0;i<dim;i++){
+		if (matrix[i]>0){
+			printf("%f\n",matrix[i]);
+		}
+	}
 
 	return 0;
 }

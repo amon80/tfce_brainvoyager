@@ -12,5 +12,8 @@ for i =1:1:x
         end
     end
 end
+fprintf(fileID,'\n%d\n',x);
+fprintf(fileID,'%d\n',y);
+fprintf(fileID,'%d\n',z);
 fclose(fileID);
 end

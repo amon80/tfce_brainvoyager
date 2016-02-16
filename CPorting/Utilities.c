@@ -113,45 +113,62 @@ float * copyAndConvertIntVector(int * vector, int n){
 	return toReturn;
 }
 
-float * readMatFromFile(char* filename, int * size){
+float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 
-	FILE * fp;
 	char * line = NULL;
 	char * oldline = NULL;
+	float *mat;
 	size_t len = 0;
 	ssize_t read;
 
-	fp = fopen(filename, "r");
 	if (fp == NULL)
 		exit(EXIT_FAILURE);
 
-	if ((read = getline(&line, &len, fp)) != -1) {
+	int numline =0;
 
-		printf("%zd - %zu \n ", len , read);
+	while ((read = getline(&line, &len, fp)) != -1) {
 
-		char * token;
-		printf ("Size of line %lu\n", sizeof(line));
-		oldline = (char *) calloc (read+1, sizeof(char));
-		strcpy(oldline,line);
-		int num_of_val = 0;
-		for (token = strtok(line, " ");token!=NULL; token=strtok(NULL, " ")){
-			num_of_val++;
+		if (numline==0) {
+			printf("%zd - %zu \n ", len, read);
+
+			char *token;
+			oldline = (char *) calloc(read + 1, sizeof(char));
+			strcpy(oldline, line);
+			int num_of_val = 0;
+			for (token = strtok(line, " "); token != NULL; token = strtok(NULL, " ")) {
+				num_of_val++;
+			}
+			//printf("Num of val %d\n", num_of_val);
+			mat  = (float *) calloc(num_of_val, sizeof(float));
+
+			num_of_val = 0;
+			for (token = strtok(oldline, " "); token != NULL; token = strtok(NULL, " ")) {
+				mat[num_of_val] = atof(token);
+				//printf("%f\n",mat[num_of_val]);
+				num_of_val++;
+			}
+
+			line = NULL;
+			*size = num_of_val;
 		}
-		printf("Num of val %d\n",num_of_val);
-		float *mat = (float *) calloc (num_of_val,  sizeof(float));
 
-		num_of_val = 0;
-		for (token = strtok(oldline, " ");token!=NULL; token=strtok(NULL, " ")){
-			mat[num_of_val] = atof(token);
-			//printf("%f\n",mat[num_of_val]);
-			num_of_val++;
+		if(numline==1) {
+			line[strcspn(line, "\n")] = 0;
+			 *x = atoi(line);
 		}
-
-		*size =  num_of_val;
-		printf("Read Complete\n");
-		fclose(fp);
-		return mat;
+		if(numline==2){
+			line[strcspn(line, "\n")] = 0;
+			*y=atoi(line);
+		}
+		if(numline==3) {
+			line[strcspn(line, "\n")] = 0;
+			*z = atoi(line);
+		}
+		numline++;
 	}
+	printf("Read Complete\n");
+	fclose(fp);
+	return  mat;
 
 	fclose(fp);
 	return NULL;

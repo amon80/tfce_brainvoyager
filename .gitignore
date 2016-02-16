@@ -5,3 +5,5 @@
 *.swp
 EDSB.*
 *.vmp
+.idea
+output.out.dSYM

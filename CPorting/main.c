@@ -15,10 +15,13 @@ int main(int argc, char *argv[])
 		//printf("%f\n",map[i]);
 	}
 
+
+	/*
 	float *tfce = tfce_score(map,3,3,3,2,1,0.1);
 	for (int i =0; i<27; i++){
-		//printf("%f\n",tfce[i]);
-	}
+		printf("%f\n",tfce[i]);
+	}*/
+
 
 	float *matrix;
 	int dim;
@@ -31,7 +34,7 @@ int main(int argc, char *argv[])
 
 	printf("x:%d y:%d z:%d\n",xx,yy,zz);
 
-	matrix = tfce_score(matrix,xx,yy,zz,2,1,0.1);
+	matrix = tfce_score(matrix,xx,yy,zz,2,1,1);
 
 	for (int i=0;i<dim;i++){
 		if (matrix[i]>0){

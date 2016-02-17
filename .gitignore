@@ -7,3 +7,7 @@ EDSB.*
 *.vmp
 .idea
 output.out.dSYM
+CPorting/CMakeCache.txt
+CPorting/CMakeFiles/
+CPorting/CPorting
+CPorting/cmake_install.cmake

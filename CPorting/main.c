@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	int  xx  =0 , yy = 0, zz = 0;
 
 	FILE *fp;
-	fp = fopen("/Users/Luigi/Documents/MATLAB/ProgettoEsi/Test.txt", "r");
+	fp = fopen("Test.txt", "r");
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
 	printf("Dimensione matrice %d\n",dim);
 

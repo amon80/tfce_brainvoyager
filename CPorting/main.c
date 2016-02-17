@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
 	fclose(fp);
 
-	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1);
+	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1, 1);
 
 	/*
 	for (int i=0;i<dim;i++){

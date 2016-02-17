@@ -17,11 +17,11 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 	for (i = 0; i < n; ++i) {
 		if (toReturn[i] == 1) {
 			Enqueue(q, i);
+			toReturn[i] = label;
 			(*num_clusters)++;
 			while(!isEmpty(q)){
 				actual_index = Front(q);
 				Dequeue(q);
-				toReturn[actual_index] = label;
 				x = 0; y = 0; z = 0;
 				coordinatesFromLinearIndex(actual_index, dim_x, dim_y, &x, &y, &z);			
 				for (j = -1; j <= 1; ++j) {
@@ -36,9 +36,10 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 							if (z+h < 0 || z+h >= dim_z) {
 								continue;	
 							}
-							toCheck = linearIndexFromCoordinate(x+j, y+k, z+h, dim_y, dim_z);	
+							toCheck = linearIndexFromCoordinate(x+j, y+k, z+h, dim_x, dim_y);	
 							if (toReturn[toCheck] == 1) {
 								Enqueue(q, toCheck);
+								toReturn[toCheck] = label;
 							}
 						}	
 					}	
@@ -51,6 +52,7 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 		if (toReturn[i] != 0) 
 			toReturn[i]--;
 	}
+	free(q);
 	return toReturn;
 }
 

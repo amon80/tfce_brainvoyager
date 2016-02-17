@@ -11,3 +11,7 @@ CPorting/CMakeCache.txt
 CPorting/CMakeFiles/
 CPorting/CPorting
 CPorting/cmake_install.cmake
+CPorting/.kdev4/
+CPorting/CPorting.kdev4
+CPorting/Makefile
+CPorting/build/

@@ -134,7 +134,7 @@ float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 	while ((read = getline(&line, &len, fp)) != -1) {
 
 		if (numline==0) {
-			printf("%zd - %zu \n ", len, read);
+			//printf("%zd - %zu \n ", len, read);
 
 			char *token;
 			oldline = (char *) calloc(read + 1, sizeof(char));
@@ -171,14 +171,6 @@ float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 		}
 		numline++;
 	}
-	printf("Read Complete\n");
-	fclose(fp);
+	//printf("Read Complete\n");
 	return  mat;
-
-	fclose(fp);
-	return NULL;
-
-
-
-
 }

@@ -8,39 +8,39 @@ int main(int argc, char *argv[])
 	int i, j, k;
 	int x, y ,z;
 	int index;
-	float map[27];
-
-	for (int i =0; i<27; i++){
-		map[i] = 1+rand()%10;
-		//printf("%f\n",map[i]);
-	}
-
-
-	/*
-	float *tfce = tfce_score(map,3,3,3,2,1,0.1);
-	for (int i =0; i<27; i++){
-		printf("%f\n",tfce[i]);
-	}*/
-
-
+	float min, max, range;
 	float *matrix;
+	float *tfce_score_matrix;
 	int dim;
 	int  xx  =0 , yy = 0, zz = 0;
 
 	FILE *fp;
-	fp = fopen("Test.txt", "r");
+	fp = fopen("../Test.txt", "r");
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
-	printf("Dimensione matrice %d\n",dim);
+	fclose(fp);
 
-	printf("x:%d y:%d z:%d\n",xx,yy,zz);
+	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1);
 
-	matrix = tfce_score(matrix,xx,yy,zz,2,1,1);
-
+	/*
 	for (int i=0;i<dim;i++){
 		if (matrix[i]>0){
 			printf("%f\n",matrix[i]);
 		}
 	}
+	*/
+	
+	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
+
+	printf("\n\n %f \n %f \n %f \n", min, max, range);
+	
+	fp = fopen("TfceTestC.txt", "w");
+	
+	for(i = 0; i < dim; i++){
+	  fprintf(fp, "%f ", tfce_score_matrix[i]);
+	}
+	
+	fprintf(fp, "\n%d\n%d\n%d\n", xx, yy, zz);
+	fclose(fp);
 
 	return 0;
 }

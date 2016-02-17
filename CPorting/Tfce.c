@@ -147,7 +147,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 
 		indexNegData = getBinaryVector(map, n, lessThan, 0, &numOfElementsMatching);
 		negData = fromBinaryToRealVector(map, n, indexNegData);
-		labs_vector(negData,n);
+		abs_vector(negData,n);
 		findMinMax(negData, n, &minNeg, &maxNeg, &rangeData);
 		steps = (int)((maxNeg - minNeg)/increment);
 		actual_step = 0;

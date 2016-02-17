@@ -40,6 +40,6 @@ float multiply(float a, float b);
 
 float elevate(float a, float b);
 
-void labs_vector(float * vector, int n);
+void abs_vector(float * vector, int n);
 
 float * readMatFromFile(FILE * fp, int * size, int * x, int * y, int * z);

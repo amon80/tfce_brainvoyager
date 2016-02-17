@@ -89,10 +89,10 @@ void apply_function(float * vector, int n, float (* operation) (float a, float b
 	}
 }
 
-void labs_vector(float * vector, int n){
+void abs_vector(float * vector, int n){
 	int i;
 	for (i = 0; i < n; ++i) {
-		vector[i] = labs(vector[i]);
+		vector[i] = fabsf(vector[i]);
 	}
 }
 

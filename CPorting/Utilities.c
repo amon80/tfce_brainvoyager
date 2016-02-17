@@ -16,7 +16,7 @@ void findMinMax(float *map, int n, float *min, float *max, float * range) {
 		if (map[i] > (*max))
 			(*max) = map[i];
 	}
-	(*range) = labs(max - min);
+	(*range) = (*max - *min);
 }
 
 //performs confrontation between and b given a single char operation
@@ -86,6 +86,13 @@ void apply_function(float * vector, int n, float (* operation) (float a, float b
 	int i;
 	for (i = 0; i < n; ++i) {
 	    vector[i] = operation(vector[i], argument);
+	}
+}
+
+void labs_vector(float * vector, int n){
+	int i;
+	for (i = 0; i < n; ++i) {
+		vector[i] = labs(vector[i]);
 	}
 }
 

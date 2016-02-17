@@ -10,6 +10,7 @@ struct Node {
 typedef struct queue{
     struct Node* front;
     struct Node* rear;
+    int size;
 } Queue, *QueuePtr;
 
 //methods

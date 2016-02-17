@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAXLINE 200000
-
 //Finds minimum, maximum and range of a float vector  
 void findMinMax(float *map, int n, float *min, float *max, float * range) {
 	(*min) = FLT_MAX;

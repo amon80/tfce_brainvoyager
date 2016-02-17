@@ -6,6 +6,7 @@ QueuePtr newQueue(){
     QueuePtr toReturn = (QueuePtr) malloc(sizeof(Queue));
     toReturn->front = NULL;
     toReturn->rear = NULL;
+    toReturn->size = 0;
     return toReturn;
 }
 
@@ -14,6 +15,7 @@ void Enqueue(QueuePtr q, int x) {
 	struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
 	temp->data =x; 
 	temp->next = NULL;
+	q->size = q->size + 1;
 	if(q->front == NULL && q->rear == NULL){
 		q->front = q->rear = temp;
 		return;
@@ -36,6 +38,7 @@ void Dequeue(QueuePtr q) {
 		q->front = q->front->next;
 	}
 	free(temp);
+	q->size = q->size - 1;
 }
 
 //We are programmers, we are not so stupid to search for front when queue is empty
@@ -44,5 +47,5 @@ int Front(QueuePtr q) {
 }
 
 int isEmpty(QueuePtr q){
-	return q->front == q->rear;
+	return q->size == 0;
 }

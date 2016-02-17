@@ -119,7 +119,6 @@ float * copyAndConvertIntVector(int * vector, int n){
 }
 
 float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
-
 	char * line = NULL;
 	char * oldline = NULL;
 	float *mat;

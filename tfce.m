@@ -72,7 +72,11 @@ else
 	pos_tfce = NaN(x,y,z,l); 
     index = 1; 
 	for h=min(pos_data(:)):pos_increment:max(pos_data(:))
+        clu= bwconncomp((pos_data > h),26);
 		[clustered_map, num] = find_clusters_3D((pos_data > h));
+        if clu.NumObjects ~= num 
+            disp('DIOOO');
+        end
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
 		for i=1:num
 			idx = clustered_map(:) == i;
@@ -87,7 +91,11 @@ else
 	neg_tfce = NaN(x,y,z,l);
     index = 1; 
 	for h=min(neg_data(:)):neg_increment:max(neg_data(:))
+        clu= bwconncomp((neg_data > h),26);
 		[clustered_map, num] = find_clusters_3D((neg_data > h));
+        if clu.NumObjects ~= num 
+            disp('DIOOO');
+        end
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
 		for i=1:num
 			idx = clustered_map(:) == i;

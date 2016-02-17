@@ -58,11 +58,11 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 
 //computes the tfce score of a 3D statistic map(dim_x*dim_y*dim_z)
 float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh){
-	printf("H: 0");
 	int n = dim_x * dim_y * dim_z;
 	float minData = 0; float maxData = 0; float rangeData = 0;
 	float * posData; float * negData;
 	float precision, increment;
+	float pos_increment, neg_increment;
 	float h;
 	int i,j;
 	int * indexPosData; int * indexNegData; int * indexMatchingData;
@@ -72,8 +72,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 	float * toReturn = fill0(n);
 	float minPos = 0, maxPos = 0;
 	float minNeg = 0, maxNeg = 0;
-	int steps = 0;
-	int actual_step = 0;
+	float steps = 0;
 
 	findMinMax(map, n, &minData, &maxData, &rangeData);
 	precision = rangeData/dh;
@@ -84,11 +83,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		increment = rangeData/precision;	
 	}
 	if(minData >= 0){
-		steps = (int)((maxData - minData)/increment);
-		actual_step = 0;
-		for (h = minData; h < maxData; h += increment, actual_step++) {
-			printf("\r\r\r\r %d/%d",actual_step,steps);
-			fflush(stdout);
+		for (h = minData; h < maxData; h += increment) {
 			indexMatchingData = getBinaryVector(map, n, lessThan, h, &numOfElementsMatching);
 			num_clusters = 0;
 			clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
@@ -116,11 +111,9 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		indexPosData = getBinaryVector(map, n, moreThan, 0, &numOfElementsMatching);
 		posData = fromBinaryToRealVector(map, n, indexPosData);
 		findMinMax(posData, n, &minPos, &maxPos, &rangeData);
-		steps = (int)((maxPos - minPos)/increment);
-		actual_step = 0;
-		for (h = minPos; h < maxPos; h += increment, actual_step++) {
-			printf("\r\r\r\r %d/%d",actual_step, steps);
-			fflush(stdout);
+		steps = roundf((maxPos - minPos)/(increment));
+		pos_increment = (maxPos - minPos)/(steps);
+		for (h = minPos; h < maxPos; h += pos_increment) {
 			indexMatchingData = getBinaryVector(posData, n, lessThan, h, &numOfElementsMatching);
 			num_clusters = 0;
 			clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
@@ -151,11 +144,9 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		negData = fromBinaryToRealVector(map, n, indexNegData);
 		abs_vector(negData,n);
 		findMinMax(negData, n, &minNeg, &maxNeg, &rangeData);
-		steps = (int)((maxNeg - minNeg)/increment);
-		actual_step = 0;
-		for (h = minNeg; h < maxNeg; h += increment, actual_step++) {
-			printf("\r\r\r\r %d/%d",actual_step, steps);
-			fflush(stdout);
+		steps = roundf((maxNeg - minNeg)/increment);
+		neg_increment = (maxNeg - minNeg)/(steps);
+		for (h = minNeg; h < maxNeg; h += neg_increment) {
 			indexMatchingData = getBinaryVector(negData, n, lessThan, h, &numOfElementsMatching);
 			num_clusters = 0;
 			clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);

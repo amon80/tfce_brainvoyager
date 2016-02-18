@@ -119,9 +119,9 @@ float * copyAndConvertIntVector(int * vector, int n){
 }
 
 float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
-
 	char * line = NULL;
 	char * oldline = NULL;
+	char *token;
 	float *mat;
 	size_t len = 0;
 	ssize_t read;
@@ -136,7 +136,8 @@ float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 		if (numline==0) {
 			//printf("%zd - %zu \n ", len, read);
 
-			char *token;
+			//removing newline
+			line[strcspn(line, "\n")] = 0;
 			oldline = (char *) calloc(read + 1, sizeof(char));
 			strcpy(oldline, line);
 			int num_of_val = 0;
@@ -147,6 +148,7 @@ float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 			mat  = (float *) calloc(num_of_val, sizeof(float));
 
 			num_of_val = 0;
+			
 			for (token = strtok(oldline, " "); token != NULL; token = strtok(NULL, " ")) {
 				mat[num_of_val] = atof(token);
 				//printf("%f\n",mat[num_of_val]);

@@ -12,10 +12,11 @@ int main(int argc, char *argv[])
 	float *matrix;
 	float *tfce_score_matrix;
 	int dim;
+	int logging = 1;
 	int  xx  =0 , yy = 0, zz = 0;
 
 	FILE *fp;
-	fp = fopen("../Test.txt", "r");
+	fp = fopen("../../2ndvs1st.txt", "r");
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
 	fclose(fp);
 
@@ -35,12 +36,13 @@ int main(int argc, char *argv[])
 	
 	fp = fopen("TfceTestC.txt", "w");
 	
-	for(i = 0; i < dim; i++){
-	  fprintf(fp, "%f ", tfce_score_matrix[i]);
+	if (logging) {
+		for (i = 0; i < dim; i++) {
+			fprintf(fp, "%f \n", tfce_score_matrix[i]);
+		}	
+		fprintf(fp, "%d\n%d\n%d", xx, yy, zz);
+		fclose(fp);
 	}
-	
-	fprintf(fp, "\n%d\n%d\n%d\n", xx, yy, zz);
-	fclose(fp);
 
 	return 0;
 }

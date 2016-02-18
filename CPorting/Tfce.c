@@ -12,6 +12,7 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 	int i, j, k, h;
 	int actual_index;
 	QueuePtr q = newQueue();
+	(*num_clusters) = 0;
 	float * toReturn = copyAndConvertIntVector(binaryVector, n);
 	//free(binaryVector); not necessary, we'll do it outside
 	for (i = 0; i < n; ++i) {
@@ -25,17 +26,20 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 				x = 0; y = 0; z = 0;
 				coordinatesFromLinearIndex(actual_index, dim_x, dim_y, &x, &y, &z);			
 				for (j = -1; j <= 1; ++j) {
+					if (x+j < 0)
+						continue;	
+					if (x+j >= dim_x)
+						continue;
 					for (k = -1; k <= 1; ++k) {
+						if (y+k < 0)
+							continue;	
+						if (y+k >= dim_y)
+							continue;
 						for (h = -1; h <= 1; ++h) {
-							if (x+j < 0 || x+j >= dim_x) {
+							if (z+h < 0) 
 								continue;	
-							}
-							if (y+k < 0 || y+k >= dim_y) {
-								continue;	
-							}
-							if (z+h < 0 || z+h >= dim_z) {
-								continue;	
-							}
+							if (z+h >= dim_z)
+								continue;
 							toCheck = linearIndexFromCoordinate(x+j, y+k, z+h, dim_x, dim_y);	
 							if (toReturn[toCheck] == 1) {
 								Enqueue(q, toCheck);
@@ -74,10 +78,6 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 	float minNeg = 0, maxNeg = 0;
 	float steps = 0;
 	FILE* log;
-	
-	if(logging){
-		log = fopen("clustered.txt", "w");
-	}
 
 	findMinMax(map, n, &minData, &maxData, &rangeData);
 	precision = rangeData/dh;
@@ -87,21 +87,16 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 	} else{
 		increment = rangeData/precision;	
 	}
+
 	if(minData >= 0){
 		for (h = minData; h < maxData; h += increment) {
 			indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
-			if(logging){
-				for(i = 0; i < n; i++){
-					fprintf(log, "%d ", indexMatchingData[i]);
-				}
-				fprintf(log, "\n58\n40\n46\n");
-				fclose(log);
-			}
 			num_clusters = 0;
 			clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
 			free(indexMatchingData);
 			for (i = 1; i <= num_clusters; ++i) {
 				numOfElementsMatching = 0;	
+				//getBinaryVector is called just for obtain numOfElementsMatching
 				indexMatchingData = getBinaryVector(clustered_map, n, equalTo, i, &numOfElementsMatching);
 				for (j = 0; j < n; ++j) {
 					if(clustered_map[j] == i){
@@ -129,16 +124,10 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 			indexMatchingData = getBinaryVector(posData, n, moreThan, h, &numOfElementsMatching);
 			num_clusters = 0;
 			clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
-			if(logging){
-				for(i = 0; i < n; i++){
-					fprintf(log, "%d\n", (int)clustered_map[i]);
-				}
-				fprintf(log, "58\n40\n46\n");
-				fclose(log);
-			}
 			free(indexMatchingData);
 			for (i = 1; i <= num_clusters; ++i) {
 				numOfElementsMatching = 0;
+				//getBinaryVector is called just for obtain numOfElementsMatching
 				indexMatchingData = getBinaryVector(clustered_map, n, equalTo, i, &numOfElementsMatching);
 				for (j = 0; j < n; ++j) {
 					if(clustered_map[j] == i){
@@ -172,6 +161,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 			free(indexMatchingData);
 			for (i = 1; i <= num_clusters; ++i) {
 				numOfElementsMatching = 0;
+				//getBinaryVector is called just for obtain numOfElementsMatching
 				indexMatchingData = getBinaryVector(clustered_map, n, equalTo, i, &numOfElementsMatching);
 				for (j = 0; j < n; ++j) {
 					if (clustered_map[j] == i) {

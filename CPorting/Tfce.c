@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 
-float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters){
+double * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters){
 	int label = 2;
 	int x, y, z;
 	int toCheck;
@@ -13,7 +13,7 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 	int actual_index;
 	QueuePtr q = newQueue();
 	(*num_clusters) = 0;
-	float * toReturn = copyAndConvertIntVector(binaryVector, n);
+	double * toReturn = copyAndConvertIntVector(binaryVector, n);
 	//free(binaryVector); not necessary, we'll do it outside
 	for (i = 0; i < n; ++i) {
 		if (toReturn[i] == 1) {
@@ -60,7 +60,7 @@ float * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, in
 	return toReturn;
 }
 
-void printToFile(FILE* log, float * clustered_map, int n, int logging){
+void printToFile(FILE* log, double * clustered_map, int n, int logging){
 	int i;
 	if(logging){
 		for(i=0; i < n; i++){
@@ -71,11 +71,11 @@ void printToFile(FILE* log, float * clustered_map, int n, int logging){
 }
 
 
-void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int dim_z, float E, float H, float dh, float * toReturn){
+void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, int dim_z, double E, double H, double dh, double * toReturn){
 	int i, numOfElementsMatching, j;
 	int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
 	int num_clusters = 0;
-	float * clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
+	double * clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
 	free(indexMatchingData);
 	for (i = 1; i <= num_clusters; ++i) {
 		numOfElementsMatching = 0;	
@@ -99,22 +99,22 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 
 
 //computes the tfce score of a 3D statistic map(dim_x*dim_y*dim_z)
-float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh, int logging){
+double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, double H, double dh, int logging){
 	int n = dim_x * dim_y * dim_z;
-	float minData = 0; float maxData = 0; float rangeData = 0;
-	float * posData; float * negData;
-	float precision, increment;
-	float pos_increment, neg_increment;
-	float h;
+	double minData = 0; double maxData = 0; double rangeData = 0;
+	double * posData; double * negData;
+	double precision, increment;
+	double pos_increment, neg_increment;
+	double h;
 	int i,j;
 	int * indexPosData; int * indexNegData; int * indexMatchingData;
-	float * clustered_map;
+	double * clustered_map;
 	int num_clusters;
 	int numOfElementsMatching;
-	float * toReturn = fill0(n);
-	float minPos = 0, maxPos = 0;
-	float minNeg = 0, maxNeg = 0;
-	float steps = 0;
+	double * toReturn = fill0(n);
+	double minPos = 0; double maxPos = 0;
+	double minNeg = 0; double maxNeg = 0;
+	double steps = 0;
 	FILE* log;
 	
 	if(logging)
@@ -139,7 +139,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		indexPosData = getBinaryVector(map, n, moreThan, 0, &numOfElementsMatching);
 		posData = fromBinaryToRealVector(map, n, indexPosData);
 		findMinMax(posData, n, &minPos, &maxPos, &rangeData);
-		steps = roundf((maxPos - minPos)/(increment));
+		steps = round((maxPos - minPos)/(increment));
 		pos_increment = (maxPos - minPos)/(steps);
 		for (h = minPos; h < maxPos; h += pos_increment) {
 			computeTfceIteration(h, posData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);
@@ -152,7 +152,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		negData = fromBinaryToRealVector(map, n, indexNegData);
 		abs_vector(negData,n);
 		findMinMax(negData, n, &minNeg, &maxNeg, &rangeData);
-		steps = roundf((maxNeg - minNeg)/increment);
+		steps = round((maxNeg - minNeg)/increment);
 		neg_increment = (maxNeg - minNeg)/(steps);
 		for (h = minNeg; h < maxNeg; h += neg_increment) {
 			computeTfceIteration(h, negData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);

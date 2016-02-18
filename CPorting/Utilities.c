@@ -5,7 +5,7 @@
 #include <string.h>
 
 //Finds minimum, maximum and range of a float vector  
-void findMinMax(float *map, int n, float *min, float *max, float * range) {
+void findMinMax(double *map, int n, double *min, double *max, double * range) {
 	(*min) = FLT_MAX;
 	(*max) = FLT_MIN;
 	for (int i = 0; i < n; ++i) {
@@ -18,20 +18,20 @@ void findMinMax(float *map, int n, float *min, float *max, float * range) {
 }
 
 //performs confrontation between and b given a single char operation
-int lessThan(float a, float b){
+int lessThan(double a, double b){
         return a < b;
 }
 
-int equalTo(float a, float b){
+int equalTo(double a, double b){
         return a == b;
 }
 
-int moreThan(float a, float b){
+int moreThan(double a, double b){
         return a > b;
 }
 
 //Gets a binary vector in matlab style, given a certain operation
-int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int * numOfElementsMatching){
+int * getBinaryVector(double * map, int n, int (*confront)(double, double), double value, int * numOfElementsMatching){
 	int * binaryVector = (int *) calloc(sizeof(int), n);
 	int i;
 
@@ -47,8 +47,8 @@ int * getBinaryVector(float * map, int n, int (*confront)(float, float), float v
 }
 
 //Given a binary vector and a real vector, fills a new vector in the indices where binary == 1
-float * fromBinaryToRealVector(float * map, int n, int * binaryVector){
-	float * toReturn = (float *) calloc(sizeof(float), n);
+double * fromBinaryToRealVector(double * map, int n, int * binaryVector){
+	double * toReturn = (double *) calloc(sizeof(double), n);
 	int i;
 
 	for (i = 0; i < n; ++i) {
@@ -62,7 +62,7 @@ float * fromBinaryToRealVector(float * map, int n, int * binaryVector){
 }
 
 //creates a n-element vector of float filled with 0
-float * fill0(int n){
+double * fill0(int n){
 	float * toReturn = (float *) calloc(sizeof(float), n);
 	int i;
 	for (i = 0; i < n; ++i) {
@@ -71,26 +71,26 @@ float * fill0(int n){
 	return toReturn;
 }
 
-float multiply(float a, float b){
+double multiply(double a, double b){
 	return a * b;
 }
 
-float elevate(float a, float b){
+double elevate(double a, double b){
 	return pow(a,b);
 }
 
 //Applies a single char operation on every element of the vector
-void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument){
+void apply_function(double * vector, int n, double (* operation) (double a, double b), double argument){
 	int i;
 	for (i = 0; i < n; ++i) {
 	    vector[i] = operation(vector[i], argument);
 	}
 }
 
-void abs_vector(float * vector, int n){
+void abs_vector(double * vector, int n){
 	int i;
 	for (i = 0; i < n; ++i) {
-		vector[i] = fabsf(vector[i]);
+		vector[i] = -vector[i];
 	}
 }
 
@@ -109,8 +109,8 @@ void coordinatesFromLinearIndex(int index, int max_x, int max_y, int * x, int * 
 }
 
 //copies an int vector into a float vectorS
-float * copyAndConvertIntVector(int * vector, int n){
-	float * toReturn = (float *) calloc(sizeof(float), n);
+double * copyAndConvertIntVector(int * vector, int n){
+	double * toReturn = (double *) calloc(sizeof(double), n);
 	int i;
 	for (i = 0; i < n; ++i) {
 		toReturn[i] = vector[i];
@@ -118,11 +118,11 @@ float * copyAndConvertIntVector(int * vector, int n){
 	return toReturn;
 }
 
-float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
+double * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 	char * line = NULL;
 	char * oldline = NULL;
 	char *token;
-	float *mat;
+	double *mat;
 	size_t len = 0;
 	ssize_t read;
 
@@ -145,12 +145,12 @@ float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 				num_of_val++;
 			}
 			//printf("Num of val %d\n", num_of_val);
-			mat  = (float *) calloc(num_of_val, sizeof(float));
+			mat  = (double *) calloc(num_of_val, sizeof(double));
 
 			num_of_val = 0;
 			
 			for (token = strtok(oldline, " "); token != NULL; token = strtok(NULL, " ")) {
-				mat[num_of_val] = atof(token);
+				mat[num_of_val] = (double)atof(token);
 				//printf("%f\n",mat[num_of_val]);
 				num_of_val++;
 			}

@@ -8,9 +8,9 @@ int main(int argc, char *argv[])
 	int i, j, k;
 	int x, y ,z;
 	int index;
-	float min, max, range;
-	float *matrix;
-	float *tfce_score_matrix;
+	double min, max, range;
+	double *matrix;
+	double *tfce_score_matrix;
 	int dim;
 	int logging = 1;
 	int  xx  =0 , yy = 0, zz = 0;
@@ -32,13 +32,13 @@ int main(int argc, char *argv[])
 	
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 
-	printf("\n\n %f \n %f \n %f \n", min, max, range);
+	printf("\n\n %lf \n %lf \n %lf \n", min, max, range);
 	
-	fp = fopen("TfceTestC.txt", "w");
+	fp = fopen("TfceTestCDouble.txt", "w");
 	
 	if (logging) {
 		for (i = 0; i < dim; i++) {
-			fprintf(fp, "%f \n", tfce_score_matrix[i]);
+			fprintf(fp, "%lf \n", tfce_score_matrix[i]);
 		}	
 		fprintf(fp, "%d\n%d\n%d", xx, yy, zz);
 		fclose(fp);

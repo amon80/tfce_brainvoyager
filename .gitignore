@@ -15,3 +15,4 @@ CPorting/.kdev4/
 CPorting/CPorting.kdev4
 CPorting/Makefile
 CPorting/build/
+*.txt

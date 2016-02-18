@@ -90,7 +90,8 @@ void apply_function(double * vector, int n, double (* operation) (double a, doub
 void abs_vector(double * vector, int n){
 	int i;
 	for (i = 0; i < n; ++i) {
-		vector[i] = -vector[i];
+		if(vector[i] < 0)
+			vector[i] = -vector[i];
 	}
 }
 

@@ -1,19 +1,23 @@
-function saveinline(vmp,name)
+function saveinline(vmp,name,addNewLines)
 
 [x,y,z]=size(vmp);
 filename = strcat(name,'.txt');
 fileID = fopen(filename,'w');
-for i =1:1:x
-    for j=1:1:y
-        for k=1:1:z
-            
-            fprintf(fileID,'%d\n',vmp(i,j,k));
-            
-        end
+
+linear_vmp = vmp(:);
+linear_vmp_size = length(linear_vmp);
+linear_vmp_size = x*y*z;
+for i =1:linear_vmp_size;            
+    fprintf(fileID,'%f ',linear_vmp(i));
+    if addNewLines
+        fprintf(fileID, '\n');
     end
 end
-fprintf(fileID,'\n%d\n',x);
+if ~addNewLines
+    fprintf(fileID, '\n');
+end
+fprintf(fileID,'%d\n',x);
 fprintf(fileID,'%d\n',y);
-fprintf(fileID,'%d\n',z);
+fprintf(fileID,'%d',z);
 fclose(fileID);
 end

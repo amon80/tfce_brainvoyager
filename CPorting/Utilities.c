@@ -136,6 +136,7 @@ float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 		if (numline==0) {
 			//printf("%zd - %zu \n ", len, read);
 
+			//removing newline
 			line[strcspn(line, "\n")] = 0;
 			oldline = (char *) calloc(read + 1, sizeof(char));
 			strcpy(oldline, line);

@@ -87,6 +87,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 	} else{
 		increment = rangeData/precision;	
 	}
+
 	if(minData >= 0){
 		for (h = minData; h < maxData; h += increment) {
 			indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
@@ -95,13 +96,14 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 			free(indexMatchingData);
 			for (i = 1; i <= num_clusters; ++i) {
 				numOfElementsMatching = 0;	
+				//getBinaryVector is called just for obtain numOfElementsMatching
 				indexMatchingData = getBinaryVector(clustered_map, n, equalTo, i, &numOfElementsMatching);
-				free(indexMatchingData);
 				for (j = 0; j < n; ++j) {
 					if(clustered_map[j] == i){
 						clustered_map[j] = numOfElementsMatching;
 					}	
 				}
+				free(indexMatchingData);
 			}
 			apply_function(clustered_map, n, elevate, E);
 			apply_function(clustered_map, n, multiply, pow(h, H));
@@ -125,13 +127,14 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 			free(indexMatchingData);
 			for (i = 1; i <= num_clusters; ++i) {
 				numOfElementsMatching = 0;
+				//getBinaryVector is called just for obtain numOfElementsMatching
 				indexMatchingData = getBinaryVector(clustered_map, n, equalTo, i, &numOfElementsMatching);
-				free(indexMatchingData);
 				for (j = 0; j < n; ++j) {
 					if(clustered_map[j] == i){
 						clustered_map[j] = numOfElementsMatching;
 					}
 				}
+				free(indexMatchingData);
 			}
 			apply_function(clustered_map, n, elevate, E);
 			apply_function(clustered_map, n, multiply, pow(h, H));
@@ -158,13 +161,14 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 			free(indexMatchingData);
 			for (i = 1; i <= num_clusters; ++i) {
 				numOfElementsMatching = 0;
+				//getBinaryVector is called just for obtain numOfElementsMatching
 				indexMatchingData = getBinaryVector(clustered_map, n, equalTo, i, &numOfElementsMatching);
-				free(indexMatchingData);
 				for (j = 0; j < n; ++j) {
 					if (clustered_map[j] == i) {
 						clustered_map[j] = numOfElementsMatching;
 					}
 				}
+				free(indexMatchingData);
 			}
 			apply_function(clustered_map, n, elevate, E);
 			apply_function(clustered_map, n, multiply, pow(h, H));

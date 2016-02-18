@@ -45,7 +45,7 @@ if min(data(:)) > 0
 	% select a height, obtain cluster map, obtain extent map (=cluster
 	% map but with extent of cluster rather than number of the cluster)
 	% then tfce score for that height
-	index = 1; 
+	index = 1;
 	tfce = NaN(x,y,z,length(min(data(:)):increment:max(data(:))));
 	for h=min(data(:)):increment:max(data(:))
 		[clustered_map, num] = find_clusters_3D((data > h));
@@ -74,7 +74,7 @@ else
 	for h=min(pos_data(:)):pos_increment:max(pos_data(:))
         clu= bwconncomp((pos_data > h),26);
 		[clustered_map, num] = find_clusters_3D((pos_data > h));
-        if clu.NumObjects ~= num 
+        if clu.NumObjects ~= num
             disp('DIOOO');
         end
 		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead

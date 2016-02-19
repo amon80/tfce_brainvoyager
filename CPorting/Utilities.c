@@ -176,3 +176,24 @@ double * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 	//printf("Read Complete\n");
 	return  mat;
 }
+
+static int rand_int(int n) {
+	int limit = RAND_MAX - RAND_MAX % n;
+	int rnd;
+
+	do {
+		rnd = rand();
+	} while (rnd >= limit);
+	return rnd % n;
+}
+
+void shuffle(double *array, int n) {
+	int i, j, tmp;
+
+	for (i = n - 1; i > 0; i--) {
+		j = rand_int(i + 1);
+		tmp = array[j];
+		array[j] = array[i];
+		array[i] = tmp;
+	}
+}

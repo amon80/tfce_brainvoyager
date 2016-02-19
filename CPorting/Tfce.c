@@ -90,18 +90,22 @@ void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, i
 	int num_clusters = 0;
 	char string_h[10]; 
 	char default_path [50];
+	double * clustered_map_double;
+	char * concatenated_string;
+	int * clustered_map;
+	int * extent_map;
 	if(isPositive)
 		sprintf(default_path, "pos/cluster_pos_");
 	else
 		sprintf(default_path, "neg/cluster_neg_");
 	sprintf(string_h, "%lf", h);
-	char * concatenated_string = strcat(default_path, string_h);
-	int * clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
-	int * extent_map = (int *) calloc(sizeof(int), n);
+	concatenated_string = strcat(default_path, string_h);
+	clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
+	extent_map = (int *) calloc(sizeof(int), n);
 	for (j = 0; j < n; ++j){
 		extent_map[j] = 0;
 	}
-	double * clustered_map_double;
+	
 	free(indexMatchingData);
 	for (i = 1; i <= num_clusters; ++i) {
 		numOfElementsMatching = 0;	
@@ -132,7 +136,7 @@ void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, i
 
 
 //computes the tfce score of a 3D statistic map(dim_x*dim_y*dim_z)
-double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, double H, double dh, int logging){
+double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, double H, double dh){
 	int n = dim_x * dim_y * dim_z;
 	double minData = 0; double maxData = 0; double rangeData = 0;
 	double * posData; double * negData;
@@ -169,9 +173,10 @@ double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, dou
 		posData = fromBinaryToRealVector(map, n, indexPosData);
 		//printToFile("pos_data.txt", posData, n, 0);
 		findMinMax(posData, n, &minPos, &maxPos, &rangeData);
-		steps = round((maxPos - minPos)/(increment));
+		steps = ceil((maxPos - minPos)/(increment));
 		pos_increment = (maxPos - minPos)/(steps);
 		for (h = minPos; h <= maxPos; h += pos_increment) {
+			//printf("%lf\n", h);
 			computeTfceIteration(h, posData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1);
 		}
 		free(posData);
@@ -183,7 +188,7 @@ double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, dou
 		abs_vector(negData,n);
 		//printToFile("neg_data.txt", negData, n, 0);
 		findMinMax(negData, n, &minNeg, &maxNeg, &rangeData);
-		steps = round((maxNeg - minNeg)/increment);
+		steps = ceil((maxNeg - minNeg)/increment);
 		neg_increment = (maxNeg - minNeg)/(steps);
 		for (h = minNeg; h <= maxNeg; h += neg_increment) {
 			computeTfceIteration(h, negData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 0);

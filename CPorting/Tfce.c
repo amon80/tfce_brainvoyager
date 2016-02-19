@@ -60,24 +60,23 @@ double * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, i
 	return toReturn;
 }
 
-void printToFile(FILE* log, void * map, int n, int logging, int isInteger){
+void printToFile(const char * filename, void * map, int n, int isInteger){
 	int i;
 	double * clustered_map;
 	int * other_map =  (int *) map;
 	clustered_map = (double *) map;
-	if(logging){
-		if(!isInteger){
-			for(i=0; i < n; i++){
-				fprintf(log, "%lf \n", clustered_map[i]);
-			}
-			fclose(log);
+	FILE * log = fopen(filename, "w");
+	if(!isInteger){
+		for(i=0; i < n; i++){
+			fprintf(log, "%lf \n", clustered_map[i]);
 		}
-		else{
-			for(i=0; i < n; i++){
-				fprintf(log, "%d \n", other_map[i]);
-			}
-			fclose(log);
+		fclose(log);
+	}
+	else{
+		for(i=0; i < n; i++){
+			fprintf(log, "%d \n", other_map[i]);
 		}
+		fclose(log);
 	}
 }
 
@@ -125,12 +124,7 @@ double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, dou
 	double * toReturn = fill0(n);
 	double minPos = 0; double maxPos = 0;
 	double minNeg = 0; double maxNeg = 0;
-	double steps = 0;
-	FILE* log;
-	
-	if(logging)
-		log = fopen("negDataC.txt", "w");
-	
+	double steps = 0;	
 
 	findMinMax(map, n, &minData, &maxData, &rangeData);
 	precision = rangeData/dh;
@@ -158,11 +152,11 @@ double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, dou
 
 		free(posData);
 		free(indexPosData);
-
+		printToFile("tfce_score_positives.txt", toReturn, n, 0);
 		indexNegData = getBinaryVector(map, n, lessThan, 0, &numOfElementsMatching);
 		negData = fromBinaryToRealVector(map, n, indexNegData);
 		abs_vector(negData,n);
-		printToFile(log, negData, n, logging, 0);
+		//printToFile("negDataC.txt", negData, n, 0);
 		findMinMax(negData, n, &minNeg, &maxNeg, &rangeData);
 		steps = round((maxNeg - minNeg)/increment);
 		neg_increment = (maxNeg - minNeg)/(steps);

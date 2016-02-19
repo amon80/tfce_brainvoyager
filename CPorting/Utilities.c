@@ -113,7 +113,7 @@ double * copyAndConvertIntVector(int * vector, int n){
 	double * toReturn = (double *) calloc(sizeof(double), n);
 	int i;
 	for (i = 0; i < n; ++i) {
-		toReturn[i] = vector[i];
+		toReturn[i] = (double)vector[i];
 	}
 	return toReturn;
 }

@@ -61,9 +61,9 @@ double * fromBinaryToRealVector(double * map, int n, int * binaryVector){
 	return toReturn;
 }
 
-//creates a n-element vector of float filled with 0
+//creates a n-element vector of doubles filled with 0
 double * fill0(int n){
-	float * toReturn = (float *) calloc(sizeof(float), n);
+	double * toReturn = (double *) calloc(sizeof(double), n);
 	int i;
 	for (i = 0; i < n; ++i) {
 		toReturn[i] = 0;
@@ -79,7 +79,6 @@ double elevate(double a, double b){
 	return pow(a,b);
 }
 
-//Applies a single char operation on every element of the vector
 void apply_function(double * vector, int n, double (* operation) (double a, double b), double argument){
 	int i;
 	for (i = 0; i < n; ++i) {

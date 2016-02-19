@@ -70,7 +70,7 @@ else
 	l = length(min(pos_data(:)):increment:max(pos_data(:)));
 	pos_increment = (max(pos_data(:)) - min(pos_data(:))) / l;
 	pos_tfce = NaN(x,y,z,l); 
-    index = 1; 
+    index = 1;
 	for h=min(pos_data(:)):pos_increment:max(pos_data(:))
         clu= bwconncomp((pos_data > h),26);
 		[clustered_map, num] = find_clusters_3D((pos_data > h));
@@ -86,7 +86,7 @@ else
 		index = index +1;
 	end
 
-	l = length(min(neg_data(:)):increment:max(neg_data(:)))-1;
+	l = length(min(neg_data(:)):increment:max(neg_data(:)));
 	neg_increment = (max(neg_data(:)) - min(neg_data(:))) / l;
 	neg_tfce = NaN(x,y,z,l);
     index = 1; 

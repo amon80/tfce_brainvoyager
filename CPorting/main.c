@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
 	fclose(fp);
 
-	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1, 1);
+	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1);
 
 	/*
 	for (int i=0;i<dim;i++){
@@ -32,17 +32,14 @@ int main(int argc, char *argv[])
 	
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 
-	printf("\n\n %lf \n %lf \n %lf \n", min, max, range);
+	//printf("\n\n %lf \n %lf \n %lf \n", min, max, range);
 	
-	fp = fopen("TfceTestCDouble.txt", "w");
+	fp = fopen("tfce_score_c.txt", "w");
 	
-	if (logging) {
-		for (i = 0; i < dim; i++) {
-			fprintf(fp, "%lf \n", tfce_score_matrix[i]);
-		}	
-		fprintf(fp, "%d\n%d\n%d", xx, yy, zz);
-		fclose(fp);
-	}
+	for (i = 0; i < dim; i++) {
+		fprintf(fp, "%lf \n", tfce_score_matrix[i]);
+	}	
+	fclose(fp);
 
 	return 0;
 }

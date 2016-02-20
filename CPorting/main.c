@@ -7,7 +7,7 @@
 
 #define NUMTHREAD 100
 
-struct param{
+typedef struct{
 	double * mat;
 	int x;
 	int  y;
@@ -17,15 +17,13 @@ struct param{
 	double dh;
 	double *vet;
 	int  i;
-};
+} Param, *ParamPtr;
 
-void * run(void * param){
-	struct param* para = param;
+void * run(void * parameters){
+	ParamPtr para = parameters;
 	double min=0,max=0,range=0,E,H,dh;
 	int dim = 0;
 	int x,y,z,i;
-
-
 
 	x = para->x;
 	y = para->y;
@@ -40,7 +38,6 @@ void * run(void * param){
 	memcpy(matrix,para->mat,dim);
 	vetMax = para->vet;
 
-
 	E = para->E;
 	H = para->H;
 	dh = para->dh;
@@ -49,14 +46,16 @@ void * run(void * param){
 	printf("THREAD:::Indirizzo matrice: %p\n",matrix);
 	printf("THREAD:::Indrizzo vetmax: %p indice: %d\n",vetMax,i);
 	findMinMax(matrix, dim, &min, &max, &range);
-	double * shuffled = shuffle(matrix,dim);
-	findMinMax(shuffled, dim, &min, &max, &range);
+	shuffle(matrix,dim);
+	findMinMax(matrix, dim, &min, &max, &range);
 	printf("Thread %d: max: %f - min: %f \n", i,max,min);
-	double * tfce_score_matrix = tfce_score(shuffled,x,y,z,E,H,dh);
+	double * tfce_score_matrix = tfce_score(matrix,x,y,z,E,H,dh);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 	vetMax[i] = max;
-	free (para);
+	//Para non credo vada liberata adesso, ma nela main, altrimenti facciamo danni
+	//free(para);
 	free(matrix);
+	free(tfce_score_matrix);
 	return 0;
 }
 
@@ -99,7 +98,7 @@ int main(int argc, char *argv[])
 	printf("Indirizzo matirce: %p\n",matrix);
 	printf("Indirizzo vet max: %p\n",vetmax);
 
-	struct param* para = malloc(sizeof *para);;
+	ParamPtr para = (ParamPtr) malloc(sizeof(Param));
 	for (int i=0;i<NUMTHREAD;i ++){
 		//printf("Main: %d\n",vetThread[i]);
 		para->mat = matrix;
@@ -115,12 +114,12 @@ int main(int argc, char *argv[])
 		if (o != 0){
 			printf("Error creating thread %d \n", i);
 		}else {
-			printf("Create %p Thread \n", &vetThread[i]);
+			printf("Created %p Thread \n", &vetThread[i]);
 		}
 		//fflush(stdout);
 	}
 
-	printf("Create all Thread\n");
+	printf("Created all Thread\n");
 
 
 	for (int i=0;i<NUMTHREAD; i++) {

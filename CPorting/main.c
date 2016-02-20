@@ -35,11 +35,11 @@ void * run(void * param){
 	dim=x*y*z;
 
 	double *matrix = (double *) calloc(sizeof(double),dim);
-	double *vetMax = (double *) calloc(sizeof(double),NUMTHREAD);
+	double *vetMax;
 
 	memcpy(matrix,para->mat,dim);
 	vetMax = para->vet;
-	//memcpy(vetMax,para->vet,NUMTHREAD);
+
 
 	E = para->E;
 	H = para->H;

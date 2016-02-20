@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (CPorting)
+find_package (Threads)
 if(UNIX)
     link_libraries(m)
 endif(UNIX)
 add_executable(CPorting main.c Queue.c Utilities.c Tfce.c)
+target_link_libraries (CPorting ${CMAKE_THREAD_LIBS_INIT})

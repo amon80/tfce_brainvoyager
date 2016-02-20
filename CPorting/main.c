@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define NUMTHREAD 100
+
 struct param{
 	double * mat;
 	int x;
@@ -18,38 +20,54 @@ struct param{
 };
 
 void * run(void * param){
+	struct param* para = param;
+	double min=0,max=0,range=0,E,H,dh;
+	int dim = 0;
+	int x,y,z,i;
 
-	struct param* para= (struct param*) param;
-	double min,max,range;
-	double dim = para->x*para->y*para->z;
-	findMinMax(para->mat, dim, &min, &max, &range);
-	double * shuffled = shuffle(para->mat,dim);
+
+
+	x = para->x;
+	y = para->y;
+	z = para->z;
+	i = para->i;
+
+	dim=x*y*z;
+
+	double *matrix = (double *) calloc(sizeof(double),dim);
+	double *vetMax = (double *) calloc(sizeof(double),NUMTHREAD);
+
+	memcpy(matrix,para->mat,dim);
+	vetMax = para->vet;
+	//memcpy(vetMax,para->vet,NUMTHREAD);
+
+	E = para->E;
+	H = para->H;
+	dh = para->dh;
+
+	printf("THREAD:::dim matrice iniziale: %d\n",dim);
+	printf("THREAD:::Indirizzo matrice: %p\n",matrix);
+	printf("THREAD:::Indrizzo vetmax: %p indice: %d\n",vetMax,i);
+	findMinMax(matrix, dim, &min, &max, &range);
+	double * shuffled = shuffle(matrix,dim);
 	findMinMax(shuffled, dim, &min, &max, &range);
-	double * tfce_score_matrix = tfce_score(shuffled,para->x,para->y,para->z,para->E,para->H,para->dh);
+	printf("Thread %d: max: %f - min: %f \n", i,max,min);
+	double * tfce_score_matrix = tfce_score(shuffled,x,y,z,E,H,dh);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
-	//printf("Thread %d: max: %f - min: %f \n", para->i,max,min);
-	//para->vet[para->i] = max;
-	return NULL;
+	vetMax[i] = max;
+	free (para);
+	free(matrix);
+	return 0;
 }
 
 
+/*
 int createThread(pthread_t thd, double * mat, int x, int  y, int z, double E, double H, double dh, double * vet, int i){
 
 	//printf("Function: %d\n",thd);
-	struct param para;
-		para.mat = mat;
-		para.x = x;
-		para.y = y;
-		para.z = z;
-		para.E = E;
-		para.H = H;
-		para.dh = dh;
-		para.vet = vet;
-		para.i = i;
-	void * topass = &para;
-	int ret = pthread_create(&thd,NULL,run,topass);
-	return ret;
+
 }
+ */
 
 
 
@@ -75,19 +93,29 @@ int main(int argc, char *argv[])
 	printf("DONE\n");
 
 
-	int numThread = 100;
-	double * vetmax = (double *) calloc(sizeof(double),numThread);
-	vetmax = fill0(numThread);
-	pthread_t vetThread[numThread];
+	double vetmax[NUMTHREAD];
+	pthread_t vetThread [NUMTHREAD];
 
-	for (int i=0;i<numThread;i ++){
+	printf("Indirizzo matirce: %p\n",matrix);
+	printf("Indirizzo vet max: %p\n",vetmax);
+
+	struct param* para = malloc(sizeof *para);;
+	for (int i=0;i<NUMTHREAD;i ++){
 		//printf("Main: %d\n",vetThread[i]);
-		int o = createThread(vetThread[i],matrix,xx,yy,zz,0.5,2,0.1,vetmax,i);
-		printf("\nThread %d val %d\n",i ,o);
+		para->mat = matrix;
+		para->x = xx;
+		para->y = yy;
+		para->z = zz;
+		para->E = 0.5;
+		para->H = 2;
+		para->dh = 0.1;
+		para->vet = vetmax;
+		para->i = i;
+		int o=pthread_create(&vetThread[i],NULL,run,para);
 		if (o != 0){
-			printf("error creating thread\n");
+			printf("Error creating thread %d \n", i);
 		}else {
-			printf("Create %d Thread \n", vetThread[i]);
+			printf("Create %p Thread \n", &vetThread[i]);
 		}
 		//fflush(stdout);
 	}
@@ -95,15 +123,15 @@ int main(int argc, char *argv[])
 	printf("Create all Thread\n");
 
 
-	for (int i=0;i<numThread; i++) {
-		int err =pthread_join(vetThread[i],NULL);
+	for (int i=0;i<NUMTHREAD; i++) {
+		int err =pthread_join(&vetThread[i],NULL);
 		printf("error joining thread: %s\n", strerror(err));  //1st optiop
 
 	}
 	printf("All thread are finished\n");
 
 	
-	findMinMax(vetmax, numThread, &min, &max, &range);
+	findMinMax(vetmax, NUMTHREAD, &min, &max, &range);
 	printf("Max: %f Min: %f\n",max,min);
 
 	/*

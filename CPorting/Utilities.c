@@ -187,13 +187,17 @@ static int rand_int(int n) {
 	return rnd % n;
 }
 
-void shuffle(double *array, int n) {
-	int i, j, tmp;
+double * shuffle(double *array, int n) {
+	int i, j;
+	double  tmp;
+	double * toreturn = (double *) calloc(sizeof(double),n);
+	memcpy(toreturn,array,n);
 
 	for (i = n - 1; i > 0; i--) {
 		j = rand_int(i + 1);
-		tmp = array[j];
-		array[j] = array[i];
-		array[i] = tmp;
+		tmp = toreturn[j];
+		toreturn[j] = toreturn[i];
+		toreturn[i] = tmp;
 	}
+	return toreturn;
 }

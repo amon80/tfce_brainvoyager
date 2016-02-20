@@ -121,7 +121,7 @@ void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, i
 			}	
 		}
 	}
-        printToFile(concatenated_string, clustered_map, n, 1);
+        //printToFile(concatenated_string, clustered_map, n, 1);
 	clustered_map_double = copyAndConvertIntVector(extent_map, n);
 	apply_function(clustered_map_double, n, elevate, E);
 	apply_function(clustered_map_double, n, multiply, pow(h, H));

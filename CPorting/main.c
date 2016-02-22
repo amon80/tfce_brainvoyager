@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NUMTHREAD 100
+#define NUMTHREAD 3
 
 typedef struct{
 	double * mat;
@@ -42,13 +42,13 @@ void * run(void * parameters){
 	H = para->H;
 	dh = para->dh;
 
-	printf("THREAD:::dim matrice iniziale: %d\n",dim);
-	printf("THREAD:::Indirizzo matrice: %p\n",matrix);
-	printf("THREAD:::Indrizzo vetmax: %p indice: %d\n",vetMax,i);
+	//printf("THREAD:::dim matrice iniziale: %d\n",dim);
+	//printf("THREAD:::Indirizzo matrice: %p\n",matrix);
+	//printf("THREAD:::Indrizzo vetmax: %p indice: %d\n",vetMax,i);
 	findMinMax(matrix, dim, &min, &max, &range);
 	shuffle(matrix,dim);
 	findMinMax(matrix, dim, &min, &max, &range);
-	printf("Thread %d: max: %f - min: %f \n", i,max,min);
+	//printf("Thread %d: max: %f - min: %f \n", i,max,min);
 	double * tfce_score_matrix = tfce_score(matrix,x,y,z,E,H,dh);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 	vetMax[i] = max;
@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
 	int index;
 	double min, max, range;
 	double *matrix;
+	double *shuffled;
 	double *tfce_score_matrix;
 	int dim;
 	int logging = 1;
@@ -87,16 +88,21 @@ int main(int argc, char *argv[])
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
 	fclose(fp);
 
+
 	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 	printf("DONE\n");
+
+	char name[100];
+	shuffled = calloc(sizeof(double),dim);
+
 
 
 	double vetmax[NUMTHREAD];
 	pthread_t vetThread [NUMTHREAD];
 
-	printf("Indirizzo matirce: %p\n",matrix);
-	printf("Indirizzo vet max: %p\n",vetmax);
+	//printf("Indirizzo matirce: %p\n",matrix);
+	//printf("Indirizzo vet max: %p\n",vetmax);
 
 	ParamPtr para = (ParamPtr) malloc(sizeof(Param));
 	for (int i=0;i<NUMTHREAD;i ++){
@@ -114,26 +120,32 @@ int main(int argc, char *argv[])
 		if (o != 0){
 			printf("Error creating thread %d \n", i);
 		}else {
-			printf("Created %p Thread \n", &vetThread[i]);
+			//printf("Created %p Thread \n", &vetThread[i]);
 		}
 		//fflush(stdout);
 	}
 
-	printf("Created all Thread\n");
+	printf("Created all Threads\n");
+
+	printf("Waiting for Threads\n");
 
 
 	for (int i=0;i<NUMTHREAD; i++) {
-		int err =pthread_join(&vetThread[i],NULL);
-		printf("error joining thread: %s\n", strerror(err));  //1st optiop
+		int err =pthread_join(vetThread[i],NULL);
+		if (err == 0){
+			//printf("Joined %d Thread\n",i);
+		}else {
+			printf("error joining thread: %s\n", strerror(err));
+		}
 
 	}
+	free(para);
 	printf("All thread are finished\n");
 
 	
 	findMinMax(vetmax, NUMTHREAD, &min, &max, &range);
 	printf("Max: %f Min: %f\n",max,min);
 
-	/*
 	//printf("\n\n %lf \n %lf \n %lf \n", min, max, range);
 	
 	fp = fopen("tfce_score_c.txt", "w");
@@ -142,7 +154,13 @@ int main(int argc, char *argv[])
 		fprintf(fp, "%lf \n", tfce_score_matrix[i]);
 	}	
 	fclose(fp);
-	*/
+
+	fp = fopen("Permutation_Vect.txt", "w");
+	for (i = 0; i < NUMTHREAD; i++) {
+		fprintf(fp, "%lf \n", vetmax[i]);
+	}
+
+	fclose(fp);
 
 	return 0;
 }

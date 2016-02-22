@@ -44,4 +44,6 @@ void abs_vector(double * vector, int n);
 
 double * readMatFromFile(FILE * fp, int * size, int * x, int * y, int * z);
 
+void printToFile(const char * filename, void * map, int n, int isInteger);
+
 void * shuffle(double *array, int n);

@@ -197,4 +197,25 @@ void * shuffle(double *array, int n) {
 		array[j] = array[i];
 		array[i] = tmp;
 	}
+	return 0;
+}
+
+void printToFile(const char * filename, void * map, int n, int isInteger){
+	int i;
+	double * clustered_map;
+	int * other_map =  (int *) map;
+	clustered_map = (double *) map;
+	FILE * log = fopen(filename, "w");
+	if(!isInteger){
+		for(i=0; i < n; i++){
+			fprintf(log, "%lf \n", clustered_map[i]);
+		}
+		fclose(log);
+	}
+	else{
+		for(i=0; i < n; i++){
+			fprintf(log, "%d \n", other_map[i]);
+		}
+		fclose(log);
+	}
 }

@@ -63,25 +63,7 @@ int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int 
 	return toReturn;
 }
 
-void printToFile(const char * filename, void * map, int n, int isInteger){
-	int i;
-	double * clustered_map;
-	int * other_map =  (int *) map;
-	clustered_map = (double *) map;
-	FILE * log = fopen(filename, "w");
-	if(!isInteger){
-		for(i=0; i < n; i++){
-			fprintf(log, "%lf \n", clustered_map[i]);
-		}
-		fclose(log);
-	}
-	else{
-		for(i=0; i < n; i++){
-			fprintf(log, "%d \n", other_map[i]);
-		}
-		fclose(log);
-	}
-}
+
 
 
 void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, int dim_z, double E, double H, double dh, double * toReturn, int isPositive){

@@ -32,7 +32,7 @@ int moreThan(double a, double b){
 
 //Gets a binary vector in matlab style, given a certain operation
 int * getBinaryVector(double * map, int n, int (*confront)(double, double), double value, int * numOfElementsMatching){
-	int * binaryVector = (int *) calloc(sizeof(int), n);
+	int * binaryVector = new int [n];//(int *) calloc(sizeof(int), n);
 	int i;
 
 	for (i = 0; i < n; ++i) {
@@ -48,7 +48,7 @@ int * getBinaryVector(double * map, int n, int (*confront)(double, double), doub
 
 //Given a binary vector and a real vector, fills a new vector in the indices where binary == 1
 double * fromBinaryToRealVector(double * map, int n, int * binaryVector){
-	double * toReturn = (double *) calloc(sizeof(double), n);
+	double * toReturn = new double[n];//(double *) calloc(sizeof(double), n);
 	int i;
 
 	for (i = 0; i < n; ++i) {
@@ -63,7 +63,7 @@ double * fromBinaryToRealVector(double * map, int n, int * binaryVector){
 
 //creates a n-element vector of doubles filled with 0
 double * fill0(int n){
-	double * toReturn = (double *) calloc(sizeof(double), n);
+	double * toReturn = new double[n];//(double *) calloc(sizeof(double), n);
 	int i;
 	for (i = 0; i < n; ++i) {
 		toReturn[i] = 0;
@@ -108,9 +108,9 @@ void coordinatesFromLinearIndex(int index, int max_x, int max_y, int * x, int * 
 	(*z) = index;
 }
 
-//copies an int vector into a float vectorS
+//copies an int vector into a vector of doubles
 double * copyAndConvertIntVector(int * vector, int n){
-	double * toReturn = (double *) calloc(sizeof(double), n);
+	double * toReturn = new double[n];//(double *) calloc(sizeof(double), n);
 	int i;
 	for (i = 0; i < n; ++i) {
 		toReturn[i] = (double)vector[i];

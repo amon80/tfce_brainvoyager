@@ -8,20 +8,20 @@
 #define NUMTHREAD 3
 
 typedef struct{
-	double * mat;
+	float * mat;
 	int x;
 	int  y;
 	int z;
-	double E;
-	double H;
-	double dh;
-	double *vet;
+	float E;
+	float H;
+	float dh;
+	float *vet;
 	int  i;
 } Param, *ParamPtr;
 
 void * run(void * parameters){
-	ParamPtr para = parameters;
-	double min=0,max=0,range=0,E,H,dh;
+	ParamPtr para = (ParamPtr) parameters;
+	float min=0,max=0,range=0,E,H,dh;
 	int dim = 0;
 	int x,y,z,i;
 
@@ -32,8 +32,8 @@ void * run(void * parameters){
 
 	dim=x*y*z;
 
-	double *matrix = (double *) calloc(sizeof(double),dim);
-	double *vetMax;
+	float *matrix = (float *) calloc(sizeof(float),dim);
+	float *vetMax;
 
 	memcpy(matrix,para->mat,dim);
 	vetMax = para->vet;
@@ -49,7 +49,7 @@ void * run(void * parameters){
 	shuffle(matrix,dim);
 	findMinMax(matrix, dim, &min, &max, &range);
 	//printf("Thread %d: max: %f - min: %f \n", i,max,min);
-	double * tfce_score_matrix = tfce_score(matrix,x,y,z,E,H,dh);
+	float * tfce_score_matrix = tfce_score(matrix,x,y,z,E,H,dh);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 	vetMax[i] = max;
 	//Para non credo vada liberata adesso, ma nela main, altrimenti facciamo danni
@@ -61,7 +61,7 @@ void * run(void * parameters){
 
 
 /*
-int createThread(pthread_t thd, double * mat, int x, int  y, int z, double E, double H, double dh, double * vet, int i){
+int createThread(pthread_t thd, float * mat, int x, int  y, int z, float E, float H, float dh, float * vet, int i){
 
 	//printf("Function: %d\n",thd);
 
@@ -75,30 +75,33 @@ int main(int argc, char *argv[])
 	int i, j, k;
 	int x, y ,z;
 	int index;
-	double min, max, range;
-	double *matrix;
-	double *shuffled;
-	double *tfce_score_matrix;
+	float min, max, range;
+	float *matrix;
+	float *shuffled;
+	float *tfce_score_matrix;
 	int dim;
 	int logging = 1;
 	int  xx  =0 , yy = 0, zz = 0;
 
 	FILE *fp;
-	fp = fopen("/Users/Luigi/Documents/MATLAB/2ndvs1st.txt", "r");
+	fp = fopen("../../farlocco.txt", "r");
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
 	fclose(fp);
 
 
 	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
+	delete[] tfce_score_matrix;
+	delete[] matrix;
 	printf("DONE\n");
 
+	/*
 	char name[100];
-	shuffled = calloc(sizeof(double),dim);
+	shuffled = (float *) calloc(sizeof(float),dim);
 
 
 
-	double vetmax[NUMTHREAD];
+	float vetmax[NUMTHREAD];
 	pthread_t vetThread [NUMTHREAD];
 
 	//printf("Indirizzo matirce: %p\n",matrix);
@@ -163,4 +166,5 @@ int main(int argc, char *argv[])
 	fclose(fp);
 
 	return 0;
+	*/
 }

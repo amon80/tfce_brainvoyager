@@ -65,13 +65,13 @@ int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int 
 
 
 
-void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, int dim_z, double E, double H, double dh, double * toReturn, int isPositive, int logging){
+void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int dim_z, float E, float H, float dh, float * toReturn, int isPositive, int logging){
 	int i, numOfElementsMatching, j;
 	int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
 	int num_clusters = 0;
 	char string_h[10]; 
 	char default_path [50];
-	double * clustered_map_double;
+	float * clustered_map_float;
 	char * concatenated_string;
 	int * clustered_map;
 	int * extent_map;
@@ -106,18 +106,18 @@ void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, i
 		}
 	}
         //printToFile(concatenated_string, clustered_map, n, 1);
-	clustered_map_double = copyAndConvertIntVector(extent_map, n);
-	apply_function(clustered_map_double, n, elevate, E);
-	apply_function(clustered_map_double, n, multiply, pow(h, H));
-	apply_function(clustered_map_double, n, multiply, dh);
+	clustered_map_float = copyAndConvertIntVector(extent_map, n);
+	apply_function(clustered_map_float, n, elevate, E);
+	apply_function(clustered_map_float, n, multiply, pow(h, H));
+	apply_function(clustered_map_float, n, multiply, dh);
 	for (i = 0; i < n; ++i) {
-		toReturn[i] += clustered_map_double[i];
+		toReturn[i] += clustered_map_float[i];
 	}
 	//every free must become a del[]
-	// free(clustered_map_double);
+	// free(clustered_map_float);
 	// free(clustered_map);
 	// free(extent_map);
-	delete[] clustered_map_double;
+	delete[] clustered_map_float;
 	delete[] clustered_map;
 	delete[] extent_map;
 
@@ -126,22 +126,22 @@ void computeTfceIteration(double h, double * map, int n, int dim_x, int dim_y, i
 
 
 //computes the tfce score of a 3D statistic map(dim_x*dim_y*dim_z)
-double * tfce_score(double * map, int dim_x, int dim_y, int dim_z, double E, double H, double dh){
+float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh){
 	int n = dim_x * dim_y * dim_z;
-	double minData = 0; double maxData = 0; double rangeData = 0;
-	double * posData; double * negData;
-	double precision, increment;
-	double pos_increment, neg_increment;
-	double h;
+	float minData = 0; float maxData = 0; float rangeData = 0;
+	float * posData; float * negData;
+	float precision, increment;
+	float pos_increment, neg_increment;
+	float h;
 	int i,j;
 	int * indexPosData; int * indexNegData; int * indexMatchingData;
-	double * clustered_map;
+	float * clustered_map;
 	int num_clusters;
 	int numOfElementsMatching;
-	double * toReturn = fill0(n);
-	double minPos = 0; double maxPos = 0;
-	double minNeg = 0; double maxNeg = 0;
-	double steps = 0;	
+	float * toReturn = fill0(n);
+	float minPos = 0; float maxPos = 0;
+	float minNeg = 0; float maxNeg = 0;
+	float steps = 0;	
 
 	findMinMax(map, n, &minData, &maxData, &rangeData);
 	precision = rangeData/dh;

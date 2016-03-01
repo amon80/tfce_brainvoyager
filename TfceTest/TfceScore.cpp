@@ -89,15 +89,32 @@ bool TfceScore::initPlugin(){
 bool TfceScore::execute(){
 	
 	char task_name[101];
-	qxGetStringParameter("Command", task_name); // in this variable, we code the task we should perform
-	
+	char string_e[101];
+	char string_h[101];
+	char string_dh[101];
+	char string_z[101];
+
+	qxGetStringParameter("Command", task_name); 
+	qxGetStringParameter("H", string_h);
+	qxGetStringParameter("E", string_e);
+	qxGetStringParameter("Z", string_z);
+	qxGetStringParameter("dh", string_dh);
+
+	float H, E, Z, dh;
+
+	H = atof(string_h);
+	E = atof(string_e);
+	Z = atof(string_z);
+	dh = atof(string_dh);
+
 	char InfoString[501];
-	sprintf(InfoString, "Plugin>  Command received: %s", task_name);
+	sprintf(InfoString, "Plugin>  Command received: %s Parameters: H: %s E: %s dh: %s Z:%s", task_name, string_h, string_e, string_dh, string_z);
 	qxLogText(InfoString);
 
 	if( !strcmp(task_name, "Calculate") ){		
 		bool b_voxels;
-		b_voxels = CalculateTFCE();
+		//getting the parameters.
+		b_voxels = CalculateTFCE(Z, E, H, dh);
 		return b_voxels;
 	}
 
@@ -107,7 +124,7 @@ bool TfceScore::execute(){
 	return true;
 }
 
-int TfceScore::CalculateTFCE()
+int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 {
 	char buffer[100];
 	float **vmp, *vv;
@@ -130,7 +147,7 @@ int TfceScore::CalculateTFCE()
 
 		try{
 			qxLogText("Plugin> Starting to calculate TFCE...");
-			float * scores = tfce_score(vv, dimX, dimY, dimZ, 0, 0.5, 2, 0.1);
+			float * scores = tfce_score(vv, dimX, dimY, dimZ, z_threshold, E, H, dh);
 			findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
 		}
 		catch (std::exception& e){
@@ -169,7 +186,7 @@ PLUGIN_ACCESS const char *getPluginName()
 //   (the potentially lengthy string needs then not be created repeatedly in successive calls)
 //   Note that you may use simple HTML tags to format the string, such as <b></b>, <i></i> and <br>
 //
-static const char *PluginDescription = "This very simple plugin retrieve various information about the voxel selected on the current VMR document.<br>";
+static const char *PluginDescription = "This plugin is the porting of the famous tfce tecnique in fsl.<br>";
 
 PLUGIN_ACCESS const char *getPluginDescription() 
 {

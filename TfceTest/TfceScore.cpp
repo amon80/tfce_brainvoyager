@@ -85,7 +85,7 @@ bool TfceScore::initPlugin(){
 }
 
 // This function contains the core computational code - it can be called repeatedly in case of GUI plugin
-//
+// Task name comes from controller (javascript)
 bool TfceScore::execute(){
 	
 	char task_name[101];
@@ -109,9 +109,8 @@ bool TfceScore::execute(){
 
 int TfceScore::CalculateTFCE()
 {
-	int xx, yy, zz,xx1,yy1,zz1, xres, yres, zres, NrOfCond, NoI, j=0, ncc[20];
-	char json[1000],buffer[100], find[500], *tmp, *CondName, *protName, *VTCname, *ExpName;
-	float **vmp, *vv, act=0, *glmm;
+	char buffer[100];
+	float **vmp, *vv;
 	bool log = 1;
 	float min, max, range;
 	struct VMR_Header vmr_header;
@@ -124,31 +123,14 @@ int TfceScore::CalculateTFCE()
 	}
 
 	if ((vmp = qxGetNRVMPsOfCurrentVMR(&vmps_header)) != NULL) {
-		int rx, ry, rz;
 		int dimX = (vmps_header.XEnd - vmps_header.XStart) / vmps_header.Resolution;
 		int dimY = (vmps_header.YEnd - vmps_header.YStart) / vmps_header.Resolution;
 		int dimZ = (vmps_header.ZEnd - vmps_header.ZStart) / vmps_header.Resolution;
 		vv = qxGetNRVMPOfCurrentVMR(0, &vmp_header);
 
-		FILE *fp;
-		fp =fopen("C:/Users/Marco/Desktop/VMP.txt", "w");
-
-		/*
-		for (int i = 0; i < dimX*dimY*dimZ; i++){
-			fprintf(fp, "%f\n", vv[i]);
-		}
-		fprintf(fp, "%d\n", dimX);
-		fprintf(fp, "%d\n", dimY);
-		fprintf(fp, "%d\n", dimZ);
-		fclose(fp);
-
-		sprintf(buffer, "X: %d Y:%d Z:%d", dimX, dimY, dimZ);
-		qxLogText(buffer);
-		*/
 		try{
-			//float * tfce = new float[dimX*dimY*dimZ];
-			qxLogText("Plugin> Starting calculate TFCE...");
-			float * scores = tfce_score(vv, dimX, dimY, dimZ, 0, 2, 0.5, 0.1);
+			qxLogText("Plugin> Starting to calculate TFCE...");
+			float * scores = tfce_score(vv, dimX, dimY, dimZ, 0, 0.5, 2, 0.1);
 			findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
 		}
 		catch (std::exception& e){
@@ -156,12 +138,12 @@ int TfceScore::CalculateTFCE()
 		}
 		sprintf(buffer, "min: %lf max: %lf\n", min, max);
 		qxLogText(buffer);
-		sprintf(buffer, "Finish calculation");
+		sprintf(buffer, "Finished calculation");
 		qxLogText(buffer);
 		return true;
 	}
 	else{
-		qxLogText("Plugin>  VMP not finded");
+		qxLogText("Plugin>  VMP not found");
 	}
 	return false;
 }

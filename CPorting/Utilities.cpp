@@ -26,6 +26,13 @@ int equalTo(float a, float b){
         return a == b;
 }
 
+float subtract(float a, float b) {
+	if (a > 0)
+		return a - b;
+	else
+		return a + b;
+}
+
 int moreThan(float a, float b){
         return a > b;
 }
@@ -82,7 +89,8 @@ float elevate(float a, float b){
 void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument){
 	int i;
 	for (i = 0; i < n; ++i) {
-	    vector[i] = operation(vector[i], argument);
+		if(vector[i] != 0)
+	    	vector[i] = operation(vector[i], argument);
 	}
 }
 

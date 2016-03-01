@@ -111,7 +111,10 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 	apply_function(clustered_map_float, n, multiply, pow(h, H));
 	apply_function(clustered_map_float, n, multiply, dh);
 	for (i = 0; i < n; ++i) {
-		toReturn[i] += clustered_map_float[i];
+		if (!isPositive)
+			toReturn[i] += (-clustered_map_float[i]);
+		else
+			toReturn[i] += clustered_map_float[i];
 	}
 	//every free must become a del[]
 	// free(clustered_map_float);
@@ -126,7 +129,7 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 
 
 //computes the tfce score of a 3D statistic map(dim_x*dim_y*dim_z)
-float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh){
+float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_threshold, float E, float H, float dh){
 	int n = dim_x * dim_y * dim_z;
 	float minData = 0; float maxData = 0; float rangeData = 0;
 	float * posData; float * negData;
@@ -141,7 +144,9 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 	float * toReturn = fill0(n);
 	float minPos = 0; float maxPos = 0;
 	float minNeg = 0; float maxNeg = 0;
-	float steps = 0;	
+	float steps = 0;
+
+	apply_function(map,n,subtract,Z_threshold);
 
 	findMinMax(map, n, &minData, &maxData, &rangeData);
 	precision = rangeData/dh;
@@ -184,7 +189,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		steps = ceil((maxNeg - minNeg)/increment);
 		neg_increment = (maxNeg - minNeg)/(steps);
 		for (h = minNeg; h <= maxNeg; h += neg_increment) {
-			computeTfceIteration(h, negData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1,0);
+			computeTfceIteration(h, negData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 0,0);
 		}
 		// free(negData);
 		// free(indexNegData);

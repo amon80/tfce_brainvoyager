@@ -12,6 +12,7 @@ typedef struct{
 	int x;
 	int  y;
 	int z;
+	float Z_T;
 	float E;
 	float H;
 	float dh;
@@ -21,7 +22,7 @@ typedef struct{
 
 void * run(void * parameters){
 	ParamPtr para = (ParamPtr) parameters;
-	float min=0,max=0,range=0,E,H,dh;
+	float min=0,max=0,range=0,E,H,dh,Z_T;
 	int dim = 0;
 	int x,y,z,i;
 
@@ -38,6 +39,7 @@ void * run(void * parameters){
 	memcpy(matrix,para->mat,dim);
 	vetMax = para->vet;
 
+	Z_T =  para->Z_T;
 	E = para->E;
 	H = para->H;
 	dh = para->dh;
@@ -49,7 +51,7 @@ void * run(void * parameters){
 	shuffle(matrix,dim);
 	findMinMax(matrix, dim, &min, &max, &range);
 	//printf("Thread %d: max: %f - min: %f \n", i,max,min);
-	float * tfce_score_matrix = tfce_score(matrix,x,y,z,E,H,dh);
+	float * tfce_score_matrix = tfce_score(matrix,x,y,z,Z_T,E,H,dh);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 	vetMax[i] = max;
 	//Para non credo vada liberata adesso, ma nela main, altrimenti facciamo danni
@@ -84,12 +86,16 @@ int main(int argc, char *argv[])
 	int  xx  =0 , yy = 0, zz = 0;
 
 	FILE *fp;
-	fp = fopen("../../farlocco.txt", "r");
+	fp = fopen("/Users/Luigi/Documents/MATLAB/ProgettoEsi/2ndvs1st.txt", "r");
 	matrix = readMatFromFile(fp, &dim,&xx,&yy,&zz);
+
+	findMinMax(matrix, dim, &min, &max, &range);
+	printf("Max: %f Min: %f\n",max,min);
+
 	fclose(fp);
 
 
-	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,0.5,2,0.1);
+	tfce_score_matrix = tfce_score(matrix,xx,yy,zz,2.3,0.5,2,0.1);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 	delete[] tfce_score_matrix;
 	delete[] matrix;
@@ -114,6 +120,7 @@ int main(int argc, char *argv[])
 		para->x = xx;
 		para->y = yy;
 		para->z = zz;
+	 	para->Z_T = 2.3;
 		para->E = 0.5;
 		para->H = 2;
 		para->dh = 0.1;
@@ -147,8 +154,10 @@ int main(int argc, char *argv[])
 
 	
 	findMinMax(vetmax, NUMTHREAD, &min, &max, &range);
+	*/
 	printf("Max: %f Min: %f\n",max,min);
 
+	/*
 	//printf("\n\n %lf \n %lf \n %lf \n", min, max, range);
 	
 	fp = fopen("tfce_score_c.txt", "w");

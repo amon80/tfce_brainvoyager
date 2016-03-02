@@ -15,9 +15,9 @@ scriptObj.initDlg = function()
 	// connec UI elements to script funcctions - you need to know the names of your elements (check your definition)
 	dlg.tfce_calculate_button.clicked.connect(this, this.onFindVoxels);
 	dlg.dh_textbox.plainText = "0.1";
-	dlg.h_textbox.plainText = "0.5";
+	dlg.h_textbox.plainText = "2.0";
 	dlg.z_textbox.plainText = "0";
-	dlg.e_textbox.plainText = "2.0";
+	dlg.e_textbox.plainText = "0.5";
 }
 
 scriptObj.onFindVoxels = function()

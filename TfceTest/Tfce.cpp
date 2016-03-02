@@ -66,7 +66,7 @@ int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int 
 
 
 void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int dim_z, float E, float H, float dh, float * toReturn, int isPositive, int logging){
-	int i, numOfElementsMatching, j;
+	int i = 0, numOfElementsMatching = 0, j = 0;
 	int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
 	int num_clusters = 0;
 	char string_h[10]; 
@@ -93,7 +93,6 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 	delete [] indexMatchingData;
 	for (i = 1; i <= num_clusters; ++i) {
 		numOfElementsMatching = 0;	
-		//getBinaryVector is called just for obtain numOfElementsMatching
 		for (j = 0; j < n; ++j){
 			if(clustered_map[j] == i){
 				numOfElementsMatching++;
@@ -196,5 +195,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 		delete[] negData;
 		delete[] indexNegData;
 	}
+	float min, max, range;
+	findMinMax(toReturn, n, &min, &max, &range);
 	return toReturn;
 }

@@ -127,7 +127,8 @@ bool TfceScore::execute(){
 int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 {
 	char buffer[100];
-	float **vmp, *vv;
+	float **vmp;
+	float * vv = NULL;
 	bool log = 1;
 	float min, max, range;
 	struct VMR_Header vmr_header;
@@ -143,8 +144,17 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 		int dimX = (vmps_header.XEnd - vmps_header.XStart) / vmps_header.Resolution;
 		int dimY = (vmps_header.YEnd - vmps_header.YStart) / vmps_header.Resolution;
 		int dimZ = (vmps_header.ZEnd - vmps_header.ZStart) / vmps_header.Resolution;
-		vv = qxGetNRVMPOfCurrentVMR(0, &vmp_header);
 
+		//this for loop should select currently overlayed vmp sub map
+		int num_of_maps = vmps_header.NrOfMaps;
+		
+		for (int i = 0; i < num_of_maps; i++){
+			vv = qxGetNRVMPOfCurrentVMR(i, &vmp_header);
+			if (vmp_header.OverlayMap)
+				break;
+		}
+		
+		//vv = qxGetNRVMPOfCurrentVMR(0, &vmp_header);
 		try{
 			qxLogText("Plugin> Starting to calculate TFCE...");
 			float * scores = tfce_score(vv, dimX, dimY, dimZ, z_threshold, E, H, dh);
@@ -186,7 +196,7 @@ PLUGIN_ACCESS const char *getPluginName()
 //   (the potentially lengthy string needs then not be created repeatedly in successive calls)
 //   Note that you may use simple HTML tags to format the string, such as <b></b>, <i></i> and <br>
 //
-static const char *PluginDescription = "This plugin is the porting of the famous tfce tecnique in fsl.<br>";
+static const char *PluginDescription = "This plugin is the porting of the famous tfce tecnique implemented in fsl.<br>";
 
 PLUGIN_ACCESS const char *getPluginDescription() 
 {
@@ -194,7 +204,7 @@ PLUGIN_ACCESS const char *getPluginDescription()
 }
 
 // get credit for your work!
-// fuck you goebel
+
 PLUGIN_ACCESS const char *getAuthor()
 {
 	return "<i>Marco Mecchia e Luigi Giugliano</i>";

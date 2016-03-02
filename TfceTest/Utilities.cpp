@@ -40,6 +40,7 @@ int moreThan(float a, float b){
 //Gets a binary vector in matlab style, given a certain operation
 int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int * numOfElementsMatching){
 	int * binaryVector = new int [n];//(int *) calloc(sizeof(int), n);
+	(*numOfElementsMatching) = 0;
 	int i;
 
 	for (i = 0; i < n; ++i) {

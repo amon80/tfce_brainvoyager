@@ -106,5 +106,5 @@ else
 	end
 
 	% compute final score
-	tfce_score = nansum(pos_tfce,4)+nansum(neg_tfce,4);    
+	tfce_score = nansum(pos_tfce,4)-nansum(neg_tfce,4);    
 end

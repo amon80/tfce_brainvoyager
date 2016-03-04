@@ -37,6 +37,7 @@ TfceScore::~TfceScore()
 	//
 	qxLogText("Plugin> Tfce Score finished!");
 	qxLogText(" ");
+	qxUpdateActiveWindow();
 }
 
 bool TfceScore::initPlugin(){
@@ -130,6 +131,7 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 	float **vmp;
 	float * vv = NULL;
 	bool log = 1;
+	int i = 0;
 	float min, max, range;
 	struct VMR_Header vmr_header;
 	struct NR_VMPs_Header vmps_header;
@@ -148,7 +150,7 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 		//this for loop should select currently overlayed vmp sub map
 		int num_of_maps = vmps_header.NrOfMaps;
 		
-		for (int i = 0; i < num_of_maps; i++){
+		for (i = 0; i < num_of_maps; i++){
 			vv = qxGetNRVMPOfCurrentVMR(i, &vmp_header);
 			if (vmp_header.OverlayMap)
 				break;
@@ -159,6 +161,10 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 			qxLogText("Plugin> Starting to calculate TFCE...");
 			float * scores = tfce_score(vv, dimX, dimY, dimZ, z_threshold, E, H, dh);
 			findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
+			memcpy(vv, scores, sizeof(float)* dimX*dimY*dimZ);
+			delete[] scores;
+			//trying to refresh
+			qxUpdateActiveWindow();
 		}
 		catch (std::exception& e){
 			qxLogText(e.what());

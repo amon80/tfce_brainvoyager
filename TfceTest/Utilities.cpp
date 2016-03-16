@@ -188,12 +188,11 @@ float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
 */
 
 static int rand_int(int n) {
-	int limit = RAND_MAX - RAND_MAX % n;
 	int rnd;
-
-	do {
-		rnd = rand();
-	} while (rnd >= limit);
+	int a, b;
+	a = rand();
+	b = rand();
+	rnd = a * (RAND_MAX + 1) + b;
 	return rnd % n;
 }
 

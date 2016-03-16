@@ -110,10 +110,14 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 	apply_function(clustered_map_float, n, multiply, pow(h, H));
 	apply_function(clustered_map_float, n, multiply, dh);
 	for (i = 0; i < n; ++i) {
-		if (!isPositive)
+		if (!isPositive){
+#pragma omp atomic
 			toReturn[i] += (-clustered_map_float[i]);
-		else
+		}
+		else{
+#pragma omp atomic
 			toReturn[i] += clustered_map_float[i];
+		}
 	}
 	//every free must become a del[]
 	// free(clustered_map_float);
@@ -143,7 +147,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 	float * toReturn = fill0(n);
 	float minPos = 0; float maxPos = 0;
 	float minNeg = 0; float maxNeg = 0;
-	float steps = 0;
+	int steps = 0;
 
 	apply_function(map,n,subtract,Z_threshold);
 
@@ -157,8 +161,10 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 	}
 
 	if(minData >= 0){
-		for (h = minData; h <= maxData; h += increment) {
-			computeTfceIteration(h, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1, 0);
+		steps = ceil((maxData - minData) / (increment));
+#pragma omp parallel for
+		for (i = 0; i < steps; i++) {
+			computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1, 0);
 		}
 	}
 	else{
@@ -169,9 +175,10 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 		findMinMax(posData, n, &minPos, &maxPos, &rangeData);
 		steps = ceil((maxPos - minPos)/(increment));
 		pos_increment = (maxPos - minPos)/(steps);
-		for (h = minPos; h <= maxPos; h += pos_increment) {
+#pragma omp parallel for
+		for (i = 0; i < steps; i++) {
 			//printf("%lf\n", h);
-			computeTfceIteration(h, posData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1, 0);
+			computeTfceIteration(minPos + i*pos_increment, posData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1, 0);
 		}
 		//every free must become a del[]
 		// free(posData);
@@ -187,8 +194,9 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 		findMinMax(negData, n, &minNeg, &maxNeg, &rangeData);
 		steps = ceil((maxNeg - minNeg)/increment);
 		neg_increment = (maxNeg - minNeg)/(steps);
-		for (h = minNeg; h <= maxNeg; h += neg_increment) {
-			computeTfceIteration(h, negData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 0,0);
+#pragma omp parallel for
+		for (i = 0; i < steps; i++) {
+			computeTfceIteration(minNeg+i*neg_increment, negData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 0, 0);
 		}
 		// free(negData);
 		// free(indexNegData);

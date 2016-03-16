@@ -20,6 +20,76 @@
 #include <exception>
 #include "Tfce.h"
 #include "Utilities.h"
+#include "Fwhm.h"
+#include <omp.h>
+
+#define NUM_REP 10
+
+
+typedef struct{
+	float * mat;
+	int x;
+	int  y;
+	int z;
+	float Z_T;
+	float E;
+	float H;
+	float dh;
+	float *vetMax;
+	float *vetMin;
+	int  i;
+} Param, *ParamPtr;
+
+void copyMatrix(float * dest, float * src, int dim){
+	int i;
+
+	for (i = 0; i < dim; i++){
+		dest[i] = src[i];
+	}
+}
+
+void * run(ParamPtr para){
+	float min = 0, max = 0, range = 0, E, H, dh, Z_T;
+	int dim = 0;
+	int x, y, z, i;
+
+	x = para->x;
+	y = para->y;
+	z = para->z;
+	i = para->i;
+
+	dim = x*y*z;
+
+	float *matrix = (float *)calloc(sizeof(float), dim);
+	float *vetMax, *vetMin;
+
+	copyMatrix(matrix, para->mat, dim);
+	vetMax = para->vetMax;
+	vetMin = para->vetMin;
+
+	Z_T = para->Z_T;
+	E = para->E;
+	H = para->H;
+	dh = para->dh;
+
+	//printf("THREAD:::dim matrice iniziale: %d\n",dim);
+	//printf("THREAD:::Indirizzo matrice: %p\n",matrix);
+	//printf("THREAD:::Indrizzo vetmax: %p indice: %d\n",vetMax,i);
+	//findMinMax(matrix, dim, &min, &max, &range);
+	shuffle(matrix, dim);
+
+	//findMinMax(matrix, dim, &min, &max, &range);
+	//printf("Thread %d: max: %f - min: %f \n", i,max,min);
+	float * tfce_score_matrix = tfce_score(matrix, x, y, z, Z_T, E, H, dh);
+	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
+	vetMax[i] = max;
+	vetMin[i] = min;
+	//Para non credo vada liberata adesso, ma nela main, altrimenti facciamo danni
+	//free(para);
+	free(matrix);
+	free(tfce_score_matrix);
+	return 0;
+}
 
 
 // constructor of your GUI plugin class
@@ -157,18 +227,47 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 		}
 		
 		//vv = qxGetNRVMPOfCurrentVMR(0, &vmp_header);
-		try{
-			qxLogText("Plugin> Starting to calculate TFCE...");
-			float * scores = tfce_score(vv, dimX, dimY, dimZ, z_threshold, E, H, dh);
-			findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
-			memcpy(vv, scores, sizeof(float)* dimX*dimY*dimZ);
-			delete[] scores;
-			//trying to refresh
-			qxUpdateActiveWindow();
+		qxLogText("Plugin> Starting to calculate TFCE...");
+		float f = Fwhm(vv, dimX, dimY, dimZ);
+		omp_set_num_threads(omp_get_num_procs());
+		float * scores = tfce_score(vv, dimX, dimY, dimZ, z_threshold, E, H, dh);
+		qxLogText("Plugin> Finished TFCE, starting permutation test...");
+		float vetmax[NUM_REP];
+		float vetmin[NUM_REP];
+		Param parameters[NUM_REP];
+		
+		for (int i = 0; i < NUM_REP; i++){
+			//printf("Main: %d\n",vetThread[i]);
+			parameters[i].mat = vv;
+			parameters[i].x = dimX;
+			parameters[i].y = dimY;
+			parameters[i].z = dimZ;
+			parameters[i].Z_T = z_threshold;
+			parameters[i].E = E;
+			parameters[i].H = H;
+			parameters[i].dh = dh;
+			parameters[i].vetMax = vetmax;
+			parameters[i].vetMin = vetmin;
+			parameters[i].i = i;
+			run(parameters);
+			//fflush(stdout);
+			sprintf(buffer, "Plugin> Finished permutation %d", i);
+			qxLogText(buffer);
 		}
-		catch (std::exception& e){
-			qxLogText(e.what());
-		}
+		float maxmax;
+		findMinMax(vetmax, NUM_REP, &min, &maxmax, &range);
+		float minmin;
+		findMinMax(vetmin, NUM_REP, &minmin, &max, &range);
+
+		sprintf(buffer, "minVetMax: %lf maxVetMax: %lf\n", minmin,  maxmax);
+		qxLogText(buffer);
+		
+		findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
+		memcpy(vv, scores, sizeof(float)* dimX*dimY*dimZ);
+		delete[] scores;
+		//trying to refresh
+		qxUpdateActiveWindow();
+		
 		sprintf(buffer, "min: %lf max: %lf\n", min, max);
 		qxLogText(buffer);
 		sprintf(buffer, "Finished calculation");
@@ -213,7 +312,7 @@ PLUGIN_ACCESS const char *getPluginDescription()
 
 PLUGIN_ACCESS const char *getAuthor()
 {
-	return "<i>Marco Mecchia e Luigi Giugliano</i>";
+	return "<i>Luigi Giugliano & Marco Mecchia</i>";
 }
 
 // you may provide the name for a HTML file containing online help

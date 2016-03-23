@@ -24,7 +24,7 @@
 #include "GaussianKernel.h"
 #include <omp.h>
 
-#define NUM_REP 1
+#define NUM_REP 5
 
 
 typedef struct{
@@ -76,19 +76,28 @@ void * run(ParamPtr para){
 	shuffle(matrix, dim);
 	sprintf(buffer, "Plugin> Applying gaussian filter!!");
 	qxLogText(buffer);
-	apply3DGaussianFilter(ker, matrix, x, y, z);
+	float * smoothed_map = apply3DGaussianFilter(ker, matrix, x, y, z);
 	sprintf(buffer, "Plugin> Done!!");
 	qxLogText(buffer);
 	//findMinMax(matrix, dim, &min, &max, &range);
 	//printf("Thread %d: max: %f - min: %f \n", i,max,min);
-	float * tfce_score_matrix = tfce_score(matrix, x, y, z, Z_T, E, H, dh);
+	float * tfce_score_matrix = tfce_score(smoothed_map, x, y, z, Z_T, E, H, dh);
 	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
 	vetMax[i] = max;
 	vetMin[i] = min;
+
+	sprintf(buffer, "VetMax[i]: %lf\n", max);
+	qxLogText(buffer);
+
+
+	sprintf(buffer, "VetMin[i]: %lf\n", min);
+	qxLogText(buffer);
+
 	//Para non credo vada liberata adesso, ma nela main, altrimenti facciamo danni
 	//free(para);
 	free(matrix);
 	free(tfce_score_matrix);
+	//free(smoothed_map);
 	return 0;
 }
 
@@ -218,6 +227,9 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 		int dimY = (vmps_header.YEnd - vmps_header.YStart) / vmps_header.Resolution;
 		int dimZ = (vmps_header.ZEnd - vmps_header.ZStart) / vmps_header.Resolution;
 
+		sprintf(buffer, "Plugin> Linear dimension %d", dimX*dimY*dimZ);
+		qxLogText(buffer);
+
 		//this for loop should select currently overlayed vmp sub map
 		int num_of_maps = vmps_header.NrOfMaps;
 		
@@ -267,13 +279,17 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 			sprintf(buffer, "Plugin> Finished permutation %d", i);
 			qxLogText(buffer);
 		}
+
+
+		
+
 		float maxmax;
 		findMinMax(vetmax, NUM_REP, &min, &maxmax, &range);
+
 		float minmin;
 		findMinMax(vetmin, NUM_REP, &minmin, &max, &range);
 
-		sprintf(buffer, "minVetMax: %lf maxVetMax: %lf\n", minmin, maxmax);
-		qxLogText(buffer);
+		
 		
 
 		findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);

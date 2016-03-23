@@ -42,28 +42,30 @@ float *** produce3dGaussianKernel(int kernelRadius, double sigma) {
 	return kernel3d;
 }
 
-void apply3DGaussianFilter(float *** ker, float * map, int dimX, int dimY, int dimZ){
+float * apply3DGaussianFilter(float *** ker, float * map, int dimX, int dimY, int dimZ){
+	return map;
 	int n = dimX * dimY * dimZ;
 	int i, j, k;
 	int linearCoordinate, linearCoordinate2;
 	int l, w, q;
 	float * new_map = (float *) calloc(sizeof(float), n);
 	float kernel_val;
+	float * tmp;
 	float sum;
 
 	for (i = 0; i < dimX; i++){
-		for (j = 0; i < dimY; j++){
+		for (j = 0; j < dimY; j++){
 			for (k = 0; k < dimZ; k++){
 				linearCoordinate = linearIndexFromCoordinate(i, j, k, dimX, dimY);
 				sum = 0;
 				for (l = -1; l <= 1; l++){
+					if (i + l < 0 || i + l >= dimX)
+						continue;
 					for (w = -1; w <= 1; w++){
+						if (j + w < 0 || j + w >= dimY)
+							continue;
 						for (q = -1; q <= 1; q++){
-							if (i + l < 0 || i + l > dimX)
-								continue;
-							if (j + w < 0 || j + w > dimY)
-								continue;
-							if (k + q < 0 || k + q > dimZ)
+							if (k + q < 0 || k + q >= dimZ)
 								continue;
 							linearCoordinate2 = linearIndexFromCoordinate(i + l, j + w, k + q, dimX, dimY);
 							kernel_val = ker[l + 1][w + 1][q + 1];
@@ -75,6 +77,5 @@ void apply3DGaussianFilter(float *** ker, float * map, int dimX, int dimY, int d
 			}
 		}
 	}
-	free(map);
-	map = new_map;
+	return new_map;
 }

@@ -6,7 +6,6 @@ double gaussian(double x, double mu, double sigma) {
 }
 
 float *** produce3dGaussianKernel(int kernelRadius, double sigma) {
-	//kernel * kernel3d = new kernel(2 * kernelRadius + 1, kernel_type(2 * kernelRadius + 1, kernel_row(2 * kernelRadius + 1)));	
 	double sum = 0;
 	double x;
 	int row, col, height;
@@ -43,7 +42,6 @@ float *** produce3dGaussianKernel(int kernelRadius, double sigma) {
 }
 
 float * apply3DGaussianFilter(float *** ker, float * map, int dimX, int dimY, int dimZ){
-	return map;
 	int n = dimX * dimY * dimZ;
 	int i, j, k;
 	int linearCoordinate, linearCoordinate2;

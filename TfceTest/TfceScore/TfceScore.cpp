@@ -24,83 +24,40 @@
 #include "GaussianKernel.h"
 #include <omp.h>
 
-#define NUM_REP 5
+#define NUM_REP 10
 
+void threshold_matrix(float * vector, int dim, float posValue, float negValue){
+	int i;
 
-typedef struct{
-	float * mat;
-	int x;
-	int  y;
-	int z;
-	float Z_T;
-	float E;
-	float H;
-	float dh;
-	float *vetMax;
-	float *vetMin;
-	int  i;
-	float *** kernel3d;
-} Param, *ParamPtr;
-
-void * run(ParamPtr para){
-	float min = 0, max = 0, range = 0, E, H, dh, Z_T;
-	int dim = 0;
-	char buffer[100];
-	int x, y, z, i;
-
-	x = para->x;
-	y = para->y;
-	z = para->z;
-	i = para->i;
-
-	float *** ker = para->kernel3d;
-
-	dim = x*y*z;
-
-	float *matrix = (float *)calloc(sizeof(float), dim);
-	float *vetMax, *vetMin;
-
-	copyMatrix(matrix, para->mat, dim);
-	vetMax = para->vetMax;
-	vetMin = para->vetMin;
-
-	Z_T = para->Z_T;
-	E = para->E;
-	H = para->H;
-	dh = para->dh;
-
-	//printf("THREAD:::dim matrice iniziale: %d\n",dim);
-	//printf("THREAD:::Indirizzo matrice: %p\n",matrix);
-	//printf("THREAD:::Indrizzo vetmax: %p indice: %d\n",vetMax,i);
-	//findMinMax(matrix, dim, &min, &max, &range);
-	shuffle(matrix, dim);
-	sprintf(buffer, "Plugin> Applying gaussian filter!!");
-	qxLogText(buffer);
-	float * smoothed_map = apply3DGaussianFilter(ker, matrix, x, y, z);
-	sprintf(buffer, "Plugin> Done!!");
-	qxLogText(buffer);
-	//findMinMax(matrix, dim, &min, &max, &range);
-	//printf("Thread %d: max: %f - min: %f \n", i,max,min);
-	float * tfce_score_matrix = tfce_score(smoothed_map, x, y, z, Z_T, E, H, dh);
-	findMinMax(tfce_score_matrix, dim, &min, &max, &range);
-	vetMax[i] = max;
-	vetMin[i] = min;
-
-	sprintf(buffer, "VetMax[i]: %lf\n", max);
-	qxLogText(buffer);
-
-
-	sprintf(buffer, "VetMin[i]: %lf\n", min);
-	qxLogText(buffer);
-
-	//Para non credo vada liberata adesso, ma nela main, altrimenti facciamo danni
-	//free(para);
-	free(matrix);
-	free(tfce_score_matrix);
-	//free(smoothed_map);
-	return 0;
+	for (i = 0; i < dim; i++){
+		if (vector[i] > 0){
+			if (vector[i] > posValue)
+				vector[i] -= posValue;
+			else
+				vector[i] = 0;
+		}
+		if (vector[i] < 0){
+			if (vector[i] < negValue)
+				vector[i] += negValue;
+			else
+				vector[i] = 0;
+		}
+	}
 }
 
+int mycompare(const void * v1, const void * v2){
+	float real_value1, real_value2;
+
+	real_value1 = *((float *)v1);
+	real_value2 = *((float *)v2);
+
+	if (real_value1 < real_value2)
+		return -1;
+	else if (real_value1 == real_value2)
+		return 0;
+	else
+		return 1;
+}
 
 // constructor of your GUI plugin class
 //
@@ -216,6 +173,8 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 	struct VMR_Header vmr_header;
 	struct NR_VMPs_Header vmps_header;
 	struct NR_VMP_Header vmp_header;
+	float * matrix;
+	int dim;
 
 	if (!qxGetMainHeaderOfCurrentVMR(&vmr_header)){
 		qxLogText("Plugin>  Problem Get resolution voxel");
@@ -226,8 +185,10 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 		int dimX = (vmps_header.XEnd - vmps_header.XStart) / vmps_header.Resolution;
 		int dimY = (vmps_header.YEnd - vmps_header.YStart) / vmps_header.Resolution;
 		int dimZ = (vmps_header.ZEnd - vmps_header.ZStart) / vmps_header.Resolution;
+		dim = dimX * dimY * dimZ;
+		matrix = (float *)calloc(sizeof(float), dim);
 
-		sprintf(buffer, "Plugin> Linear dimension %d", dimX*dimY*dimZ);
+		sprintf(buffer, "Plugin> Linear dimension %d", dim);
 		qxLogText(buffer);
 
 		//this for loop should select currently overlayed vmp sub map
@@ -245,13 +206,12 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 		float * scores = tfce_score(vv, dimX, dimY, dimZ, z_threshold, E, H, dh);
 		qxLogText("Plugin> Finished TFCE, starting permutation test...");
 		float f = Fwhm(vv, dimX, dimY, dimZ);
-		f *= 2.355;
+		//f *= 2.355;
 		sprintf(buffer, "Plugin> Estimated FWHM %f", f);
 		qxLogText(buffer);
 		
 		float vetmax[NUM_REP];
 		float vetmin[NUM_REP];
-		Param parameters[NUM_REP];
 
 		sprintf(buffer, "Plugin> Producing gaussian kernel...");
 		qxLogText(buffer);
@@ -262,38 +222,48 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh)
 
 		for (int i = 0; i < NUM_REP; i++){
 			//printf("Main: %d\n",vetThread[i]);
-			parameters[i].mat = vv;
-			parameters[i].x = dimX;
-			parameters[i].y = dimY;
-			parameters[i].z = dimZ;
-			parameters[i].Z_T = z_threshold;
-			parameters[i].E = E;
-			parameters[i].H = H;
-			parameters[i].dh = dh;
-			parameters[i].vetMax = vetmax;
-			parameters[i].vetMin = vetmin;
-			parameters[i].i = i;
-			parameters[i].kernel3d = ker;
-			run(parameters);
+			copyMatrix(matrix, vv, dim);
+			shuffle(matrix, dim);
+			//sprintf(buffer, "Plugin> Applying gaussian filter!!");
+			//qxLogText(buffer);
+			//float * smoothed_map = apply3DGaussianFilter(ker, matrix, x, y, z);
+			//sprintf(buffer, "Plugin> Done!!");
+			//qxLogText(buffer);
+			float * tfce_score_matrix = tfce_score(matrix, dimX, dimY, dimZ, z_threshold, E, H, dh);
 			//fflush(stdout);
+			findMinMax(tfce_score_matrix, dim, &min, &max, &range);
+			vetmax[i] = max;
+			vetmin[i] = min;
 			sprintf(buffer, "Plugin> Finished permutation %d", i);
 			qxLogText(buffer);
 		}
 
+		free(matrix);
 
-		
+		qsort(vetmax, NUM_REP, sizeof(float), mycompare);
+		qsort(vetmin, NUM_REP, sizeof(float), mycompare);
 
-		float maxmax;
-		findMinMax(vetmax, NUM_REP, &min, &maxmax, &range);
+		int indexPerc = (int) (NUM_REP * 95 / 100) - 1;
+		int indexNegPerc = NUM_REP - indexPerc;
 
-		float minmin;
-		findMinMax(vetmin, NUM_REP, &minmin, &max, &range);
+		sprintf(buffer, "Indice 95 percentile positivi %d\n", indexPerc);
+		qxLogText(buffer);
 
-		
-		
+		sprintf(buffer, "Indice 95 percentile negativi %d\n", indexNegPerc);
+		qxLogText(buffer);
+
+		sprintf(buffer, "Valore 95 percentile massimi %f\n", vetmax[indexPerc]);
+		qxLogText(buffer);
+
+		sprintf(buffer, "Valore 95 percentile minimi %f\n", vetmin[indexNegPerc]);
+		qxLogText(buffer);
+
+		threshold_matrix(scores, dim, vetmax[indexPerc], vetmin[indexNegPerc]);
 
 		findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
 		memcpy(vv, scores, sizeof(float)* dimX*dimY*dimZ);
+		vmp_header.ThreshMax = max;
+		vmp_header.ThreshMin = min;
 		delete[] scores;
 		//trying to refresh
 		qxUpdateActiveWindow();

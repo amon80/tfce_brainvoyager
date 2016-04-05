@@ -98,9 +98,15 @@ float elevate(float a, float b){
 
 void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument){
 	int i;
+	float value;
 	for (i = 0; i < n; ++i) {
-		if(vector[i] != 0)
-	    	vector[i] = operation(vector[i], argument);
+		if (vector[i] != 0){
+			value = operation(vector[i], argument);
+			if (value < 0 && vector[i] > 0 || value > 0 && vector[i] < 0)
+				vector[i] = 0;
+			else
+				vector[i] = value;
+		}
 	}
 }
 

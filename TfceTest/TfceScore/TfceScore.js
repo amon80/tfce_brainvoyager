@@ -18,6 +18,8 @@ scriptObj.initDlg = function()
 	dlg.h_textbox.plainText = "2.0";
 	dlg.z_textbox.plainText = "0";
 	dlg.e_textbox.plainText = "0.5";
+	dlg.rep_textbox.plainText = "200";
+	dlg.thres_textbox.plainText = "10";
 }
 
 scriptObj.onFindVoxels = function()
@@ -28,6 +30,9 @@ scriptObj.onFindVoxels = function()
 	var E = dlg.e_textbox.plainText;
 	var H = dlg.h_textbox.plainText;
 	var Z = dlg.z_textbox.plainText;
+	var rep = dlg.rep_textbox.plainText;
+	var check  = dlg.RepCheckBox.checked;
+	var thresh = dlg.thres_textbox.plainText;
 
 	bvqx.SetPluginStringParameter("Command", "Calculate");
 
@@ -35,6 +40,10 @@ scriptObj.onFindVoxels = function()
 	bvqx.SetPluginStringParameter("H", H);
 	bvqx.SetPluginStringParameter("Z", Z);
 	bvqx.SetPluginStringParameter("dh", dh);
+	bvqx.SetPluginStringParameter("rep", rep);
+	bvqx.SetPluginStringParameter("check", check);
+	bvqx.SetPluginStringParameter("thresh", thresh);
+	
 
 	bvqx.ExecutePlugin();
 }

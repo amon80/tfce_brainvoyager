@@ -68,7 +68,7 @@
   <widget class="QPushButton" name="tfce_calculate_button">
    <property name="geometry">
     <rect>
-     <x>228</x>
+     <x>230</x>
      <y>180</y>
      <width>111</width>
      <height>31</height>
@@ -136,20 +136,63 @@
     <string>TFCE</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QCheckBox" name="RepCheckBox">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>20</x>
      <y>170</y>
-     <width>141</width>
-     <height>61</height>
+     <width>111</width>
+     <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;Warngin the TFCE score will be calculated on the selected map of the loaded VMP.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>Permutation Test</string>
    </property>
-   <property name="wordWrap">
-    <bool>true</bool>
+  </widget>
+  <widget class="QLabel" name="h_label_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>200</y>
+     <width>59</width>
+     <height>14</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string># Rep</string>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="rep_textbox">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>190</y>
+     <width>61</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="thres_textbox">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>190</y>
+     <width>61</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="h_label_3">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>170</y>
+     <width>61</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>% Threshold</string>
    </property>
   </widget>
  </widget>

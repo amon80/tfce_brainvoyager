@@ -10,6 +10,11 @@
  */
 class TfceScore : public BVQXPluginInterface
 {
+
+	int rep;
+	char string_check[101];
+	float thresh;
+
 public:
 	
 	PLUGIN_ACCESS TfceScore();

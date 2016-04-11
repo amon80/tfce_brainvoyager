@@ -137,7 +137,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 	float minData = 0; float maxData = 0; float rangeData = 0;
 	float * posData; float * negData;
 	float precision, increment;
-	float pos_increment, neg_increment;
+	//float pos_increment, neg_increment;
 	float h;
 	int i,j;
 	int * indexPosData; int * indexNegData; int * indexMatchingData;
@@ -146,7 +146,8 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 	int numOfElementsMatching;
 	float * toReturn = fill0(n);
 	float minPos = 0; float maxPos = 0;
-	float minNeg = 0; float maxNeg = 0;
+	//float min, max, range;
+	//float minNeg = 0; float maxNeg = 0;
 	int steps = 0;
 
 	apply_function(map,n,subtract,Z_threshold);
@@ -167,7 +168,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 			computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1, 0);
 		}
 	}
-	else{
+	/*else{
 		indexPosData = getBinaryVector(map, n, moreThan, 0, &numOfElementsMatching);
 		//printToFile("index_pos_data.txt", indexPosData, n, 1);
 		posData = fromBinaryToRealVector(map, n, indexPosData);
@@ -203,7 +204,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 		delete[] negData;
 		delete[] indexNegData;
 	}
-	float min, max, range;
-	findMinMax(toReturn, n, &min, &max, &range);
+	*/
+	//findMinMax(toReturn, n, &min, &max, &range);
 	return toReturn;
 }

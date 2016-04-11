@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 
 void copyMatrix(float * dest, float * src, int dim){
@@ -214,6 +215,8 @@ static int rand_int(int n) {
 void * shuffle(float *array, int n) {
 	int i, j;
 	float  tmp;
+
+	srand(time(NULL));
 
 	for (i = n - 1; i > 0; i--) {
 		j = rand_int(i + 1);

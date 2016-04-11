@@ -20,6 +20,7 @@ scriptObj.initDlg = function()
 	dlg.e_textbox.plainText = "0.5";
 	dlg.rep_textbox.plainText = "200";
 	dlg.thres_textbox.plainText = "10";
+	dlg.positivesRadioButton.checked = true;
 }
 
 scriptObj.onFindVoxels = function()
@@ -43,7 +44,11 @@ scriptObj.onFindVoxels = function()
 	bvqx.SetPluginStringParameter("rep", rep);
 	bvqx.SetPluginStringParameter("check", check);
 	bvqx.SetPluginStringParameter("thresh", thresh);
-	
+	if(dlg.positivesRadioButton.checked)
+		bvqx.SetPluginStringParameter("neg", "positive");
+	else
+		bvqx.SetPluginStringParameter("neg", "negative");
+
 
 	bvqx.ExecutePlugin();
 }

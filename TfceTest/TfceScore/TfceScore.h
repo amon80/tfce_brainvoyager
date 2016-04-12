@@ -11,10 +11,6 @@
 class TfceScore : public BVQXPluginInterface
 {
 
-	int rep;
-	char string_check[101];
-	float thresh;
-
 public:
 	
 	PLUGIN_ACCESS TfceScore();
@@ -24,7 +20,7 @@ public:
 	PLUGIN_ACCESS bool execute();
 
 private:
-	int  CalculateTFCE(float z_threshold, float E, float H, float dh, int pos_or_neg);
+	int  CalculateTFCE(float z_threshold, float E, float H, float dh, int pos_or_neg, int rep, int check, float thresh);
 
 };
 

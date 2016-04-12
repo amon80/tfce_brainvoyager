@@ -42,12 +42,15 @@ scriptObj.onFindVoxels = function()
 	bvqx.SetPluginStringParameter("Z", Z);
 	bvqx.SetPluginStringParameter("dh", dh);
 	bvqx.SetPluginStringParameter("rep", rep);
-	bvqx.SetPluginStringParameter("check", check);
+	if(dlg.RepCheckBox.checked)
+		bvqx.SetPluginStringParameter("check", 1);
+	else
+		bvqx.SetPluginStringParameter("check", 0);
 	bvqx.SetPluginStringParameter("thresh", thresh);
 	if(dlg.positivesRadioButton.checked)
-		bvqx.SetPluginStringParameter("neg", "positive");
+		bvqx.SetPluginStringParameter("neg", 1);
 	else
-		bvqx.SetPluginStringParameter("neg", "negative");
+		bvqx.SetPluginStringParameter("neg", 0);
 
 
 	bvqx.ExecutePlugin();

@@ -1,0 +1,159 @@
+\documentclass{beamer}
+
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{beamerthemebjeldbak}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage[utf8]{inputenc} 
+\usepackage{epsfig}  
+\usepackage{amsmath} 
+\usepackage{multicol}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\footnotesize,
+  language=C,                % choose the language of the code
+  numbers=left,                   % where to put the line-numbers
+  stepnumber=1,                   % the step between two line-numbers.        
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=true,                 % show tabs within strings adding particular underscores
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=true,         % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                 % show the filename of files included with \lstinputlisting;
+}
+
+
+
+\setbeamertemplate{itemize/enumerate body begin}{\footnotesize}
+
+\title{Threshold-Free Cluster Enhancement}
+\author{Luigi Giugliano$^1$, Marco Mecchia$^1$}
+\institute{$^1$Università degli studi di Salerno}
+
+
+\begin{document}
+
+\begin{frame}
+   \maketitle
+\end{frame}
+
+\begin{frame}
+  \frametitle{Overview}
+  \footnotesize \tableofcontents
+\end{frame}
+
+\AtBeginSection[]
+  {
+     \begin{frame}<beamer>
+     \frametitle{Overview}
+   \footnotesize \tableofcontents[currentsection]
+     \end{frame}
+}
+
+
+\section{Codice}
+\begin{frame}
+\frametitle{Codice}
+Andremo ora a spiegare il codice prodotto  per il plugin TFCE.\\
+\medskip
+I file principali che compongono il plugin sono:
+\begin{itemize}
+\item{Tfce.cpp}
+\item{Utilities.cpp}
+\end{itemize}
+\textbf{Tfce} è il core del plugin, dove avviene il  calcolo degli score.\\
+\smallskip
+\textbf{Utilities} invece contiene tutti le funzioni di supporto per l'esecuzione del plugin stesso.
+\end{frame}
+
+\begin{frame}[fragile]
+L' unica funzione che viene esposta dal file \textbf{Tfce.h} è:
+\begin{center}
+\begin{lstlisting}
+#ifndef TFCE_H
+    #define TFCE_H
+    #include <float.h>
+    float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh);
+#endif //TFCE_H
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+Le funzioni che espone \textbf{Utilities.h} sono:
+\begin{center}
+\begin{lstlisting}
+#ifndef UTILITIES_H
+    #define UTILITIES_H
+
+    #include <float.h>
+    #include <stdio.h>
+
+    void findMinMax(float *map, int n, float *min, float *max, float * range);
+
+    int confront(float a, float b, char operation);
+
+    int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int *      numOfElementsMatching);
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{center}
+\begin{lstlisting}
+   float * fromBinaryToRealVector(float * map, int n, int * binaryVector);
+
+   float * fill0(int n);
+
+   void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument);
+
+   int linearIndexFromCoordinate(int x, int y, int z, int max_x, int max_y);
+
+   void coordinatesFromLinearIndex(int index, int max_x, int max_y, int * x, int * y, int * z);
+
+   float * copyAndConvertIntVector(int * vector, int n);
+   
+#endif //UTILITIES_H
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+\textbf{Tfce.cpp} oltre al metodo visto precedentemente fornisce i seguenti metodi:\\
+\begin{lstlisting}
+int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters)
+\end{lstlisting}
+questo metodo preso in input una \textbf{mappa binaria in 3D ma linearizzata}, le sue tre dimensioni, il numero totale voxel della mappa e il puntatore ad un intero che indica il numero attuale di cluster trovati.\\
+\smallskip
+Cercando i cluster all'interno della mappa 3D utilizzando la \textbf{26-connectivity}
+\end{frame}
+
+\begin{frame}
+Restituisce un'altra mappa in cui al posto degli uno viene sostituito l'identificativo del cluster.
+\[
+\begin{bmatrix}
+    1       & 1 & 0 & 1 & 1\\
+    1       & 1 & 0 & 0 & 0 \\
+    1       & 0 & 1 & 1 & 1 \\
+    1       & 0 & 0 & 1 & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+    1       & 1 & 0 & 3 & 3\\
+    1       & 1 & 0 & 0 & 0 \\
+    1       & 0 & 2 & 2 & 2 \\
+    1       & 0 & 0 & 2 & 2
+\end{bmatrix}
+\]
+In questo piccolo esempio in 2D viene mostrato il funzionamento della nostra funzione.
+\end{frame}
+
+\end{document}

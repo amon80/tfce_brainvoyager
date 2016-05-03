@@ -1,0 +1,7 @@
+\textbf{Tfce.cpp} oltre al metodo visto precedentemente fornisce i seguenti metodi:\\
+\begin{lstlisting}
+int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters)
+\end{lstlisting}
+questo metodo preso in input una \textbf{mappa binaria in 3D ma linearizzata}, le sue tre dimensioni, il numero totale voxel della mappa e il puntatore ad un intero che indica il numero attuale di cluster trovati.\\
+\smallskip
+Cercando i cluster all'interno della mappa 3D utilizzando la \textbf{26-connectivity}

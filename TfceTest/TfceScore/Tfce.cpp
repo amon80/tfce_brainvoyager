@@ -14,13 +14,12 @@ int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int 
 	int actual_index;
 	std::queue<int> q;
 	(*num_clusters) = 0;
-	int * toReturn = new int[n];//(int *) calloc(sizeof(int), n);
+	int * toReturn = new int[n];
 	for (i = 0; i < n; ++i) 
 		toReturn[i] = binaryVector[i];
-	//free(binaryVector); not necessary, we'll do it outside
 	for (i = 0; i < n; ++i) {
 		if (toReturn[i] == 1) {
-			q.push(i);//Enqueue(q, i);
+			q.push(i);
 			toReturn[i] = label;
 			(*num_clusters)++;
 			while(!q.empty()){
@@ -63,9 +62,7 @@ int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int 
 }
 
 
-
-
-void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int dim_z, float E, float H, float dh, float * toReturn, int isPositive, int logging){
+void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int dim_z, float E, float H, float dh, float * toReturn){
 	int i = 0, numOfElementsMatching = 0, j = 0;
 	int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
 	int num_clusters = 0;
@@ -75,21 +72,11 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 	char * concatenated_string;
 	int * clustered_map;
 	int * extent_map;
-	if(logging){
-		if(isPositive)
-			sprintf(default_path, "pos/cluster_pos_");
-		else
-			sprintf(default_path, "neg/cluster_neg_");
-		sprintf(string_h, "%lf", h);
-		concatenated_string = strcat(default_path, string_h);
-	}
 	clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
-	extent_map = new int[n];//(int *) calloc(sizeof(int), n);
+	extent_map = new int[n];
 	for (j = 0; j < n; ++j){
 		extent_map[j] = 0;
 	}
-	//every free must become a del []
-	// free(indexMatchingData);
 	delete [] indexMatchingData;
 	for (i = 1; i <= num_clusters; ++i) {
 		numOfElementsMatching = 0;	
@@ -104,25 +91,14 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 			}	
 		}
 	}
-        //printToFile(concatenated_string, clustered_map, n, 1);
 	clustered_map_float = copyAndConvertIntVector(extent_map, n);
 	apply_function(clustered_map_float, n, elevate, E);
 	apply_function(clustered_map_float, n, multiply, pow(h, H));
 	apply_function(clustered_map_float, n, multiply, dh);
 	for (i = 0; i < n; ++i) {
-		if (!isPositive){
 #pragma omp atomic
-			toReturn[i] += (-clustered_map_float[i]);
-		}
-		else{
-#pragma omp atomic
-			toReturn[i] += clustered_map_float[i];
-		}
+			toReturn[i] += (clustered_map_float[i]);
 	}
-	//every free must become a del[]
-	// free(clustered_map_float);
-	// free(clustered_map);
-	// free(extent_map);
 	delete[] clustered_map_float;
 	delete[] clustered_map;
 	delete[] extent_map;
@@ -132,12 +108,11 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 
 
 //computes the tfce score of a 3D statistic map(dim_x*dim_y*dim_z)
-float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_threshold, float E, float H, float dh){
+float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh){
 	int n = dim_x * dim_y * dim_z;
 	float minData = 0; float maxData = 0; float rangeData = 0;
 	float * posData; float * negData;
 	float precision, increment;
-	//float pos_increment, neg_increment;
 	float h;
 	int i,j;
 	int * indexPosData; int * indexNegData; int * indexMatchingData;
@@ -146,11 +121,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 	int numOfElementsMatching;
 	float * toReturn = fill0(n);
 	float minPos = 0; float maxPos = 0;
-	//float min, max, range;
-	//float minNeg = 0; float maxNeg = 0;
 	int steps = 0;
-
-	apply_function(map,n,subtract,Z_threshold);
 
 	findMinMax(map, n, &minData, &maxData, &rangeData);
 	precision = rangeData/dh;
@@ -161,50 +132,11 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float Z_thresho
 		increment = rangeData/precision;	
 	}
 
-	if(minData >= 0){
-		steps = ceil((maxData - minData) / (increment));
+	steps = ceil((maxData - minData) / (increment));
 #pragma omp parallel for
-		for (i = 0; i < steps; i++) {
-			computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1, 0);
-		}
+	for (i = 0; i < steps; i++) {
+		computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);
 	}
-	/*else{
-		indexPosData = getBinaryVector(map, n, moreThan, 0, &numOfElementsMatching);
-		//printToFile("index_pos_data.txt", indexPosData, n, 1);
-		posData = fromBinaryToRealVector(map, n, indexPosData);
-		//printToFile("pos_data.txt", posData, n, 0);
-		findMinMax(posData, n, &minPos, &maxPos, &rangeData);
-		steps = ceil((maxPos - minPos)/(increment));
-		pos_increment = (maxPos - minPos)/(steps);
-#pragma omp parallel for
-		for (i = 0; i < steps; i++) {
-			//printf("%lf\n", h);
-			computeTfceIteration(minPos + i*pos_increment, posData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 1, 0);
-		}
-		//every free must become a del[]
-		// free(posData);
-		// free(indexPosData);
-		delete[] posData;
-		delete[] indexPosData;
-		//printToFile("tfce_score_positives.txt", toReturn, n, 0);
-		indexNegData = getBinaryVector(map, n, lessThan, 0, &numOfElementsMatching);
-		//printToFile("index_neg_data.txt", indexNegData, n, 1);
-		negData = fromBinaryToRealVector(map, n, indexNegData);
-		abs_vector(negData,n);
-		//printToFile("neg_data.txt", negData, n, 0);
-		findMinMax(negData, n, &minNeg, &maxNeg, &rangeData);
-		steps = ceil((maxNeg - minNeg)/increment);
-		neg_increment = (maxNeg - minNeg)/(steps);
-#pragma omp parallel for
-		for (i = 0; i < steps; i++) {
-			computeTfceIteration(minNeg+i*neg_increment, negData, n, dim_x, dim_y, dim_z, E, H, dh, toReturn, 0, 0);
-		}
-		// free(negData);
-		// free(indexNegData);
-		delete[] negData;
-		delete[] indexNegData;
-	}
-	*/
-	//findMinMax(toReturn, n, &min, &max, &range);
+	
 	return toReturn;
 }

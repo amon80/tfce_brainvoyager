@@ -30,7 +30,6 @@ void coordinatesFromLinearIndex(int index, int max_x, int max_y, int * x, int * 
 //copies an int vector into a float vector
 float * copyAndConvertIntVector(int * vector, int n);
 
-
 int lessThan(float a, float b);
 
 int equalTo(float a, float b);
@@ -42,8 +41,6 @@ float multiply(float a, float b);
 float elevate(float a, float b);
 
 float subtract(float a, float b);
-
-void abs_vector(float * vector, int n);
 
 float * readMatFromFile(FILE * fp, int * size, int * x, int * y, int * z);
 

@@ -20,7 +20,7 @@ public:
 	PLUGIN_ACCESS bool execute();
 
 private:
-	int  CalculateTFCE(float z_threshold, float E, float H, float dh, int pos_or_neg, int rep, int check, float thresh);
+	int  CalculateTFCE(float E, float H, float dh, int pos_or_neg);
 
 };
 

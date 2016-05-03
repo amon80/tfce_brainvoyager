@@ -23,17 +23,29 @@
 #include "Fwhm.h"
 #include "GaussianKernel.h"
 #include <omp.h>
+#include <valarray>
 
-void threshold_matrix(float * vector, int dim, float value){
+int find_index(float * vetmax, int n, int start_index, int end_index, float actual_score){
+	if (start_index == end_index)
+		return n;
+	int middle = (start_index + end_index) / 2;
+	int middle_plus_one = middle + 1;
+	if (middle_plus_one == n)
+		return 0;
+	if (actual_score > vetmax[middle]){
+		if (actual_score <= vetmax[middle_plus_one])
+			return n - middle - 1;
+		return find_index(vetmax, n, middle, end_index, actual_score);
+	}
+	return find_index(vetmax, n, start_index, middle, actual_score);
+}
+
+
+void threshold_matrix(float * vector, int dim, float min, float max){
 	int i;
 
 	for (i = 0; i < dim; i++){
-		if (vector[i] > 0){
-			if (vector[i] > value)
-				vector[i] -= value;
-			else
-				vector[i] = 0;
-		}
+		vector[i] = (vector[i] - min) / (max - min);
 	}
 }
 
@@ -49,79 +61,6 @@ int mycompare(const void * v1, const void * v2){
 		return 0;
 	else
 		return 1;
-}
-
-void applicaPermutazioni(float * vv, int dimX, int dimY, int dimZ, float E, float H, float dh, int rep, float * scores){
-	int dim = dimX * dimY * dimZ;
-	float * matrix = new float[dim]; 
-	float min, max, range;
-	char buffer[100];
-
-	float *vetmax = new float[rep];
-	//float *vetmin = new float[rep];
-
-	/*
-	sprintf(buffer, "Plugin> Producing gaussian kernel...");
-	qxLogText(buffer);
-	float *** ker = produce3dGaussianKernel(3, f);
-
-	sprintf(buffer, "Plugin> Done!!");
-	qxLogText(buffer);
-	*/
-
-#pragma omp parallel for
-	for (int i = 0; i < rep; i++){
-		//printf("Main: %d\n",vetThread[i]);
-		copyMatrix(matrix, vv, dim);
-		shuffle(matrix, dim);
-		//sprintf(buffer, "Plugin> Applying gaussian filter!!");
-		//qxLogText(buffer);
-		//float * smoothed_map = apply3DGaussianFilter(ker, matrix, x, y, z);
-		//sprintf(buffer, "Plugin> Done!!");
-		//qxLogText(buffer);
-		//z threshold is 0 because vv has already been thresholded	
-		float * tfce_score_matrix = tfce_score(matrix, dimX, dimY, dimZ, 0, E, H, dh);
-		//fflush(stdout);
-		findMinMax(tfce_score_matrix, dim, &min, &max, &range);
-		vetmax[i] = max;
-		//vetmin[i] = min;
-		sprintf(buffer, "Plugin> Finished permutation %d", i);
-		qxLogText(buffer);
-		delete[] tfce_score_matrix;
-	}
-
-	int indexPerc;
-	//int indexNegPerc;
-	if (rep == 1){
-		indexPerc = 0;
-		//indexNegPerc = 0;
-	}
-	else{
-		qsort(vetmax, rep, sizeof(float), mycompare);
-		//qsort(vetmin, rep, sizeof(float), mycompare);
-		indexPerc = (int)(rep * 95 / 100) - 1;
-		//indexNegPerc = rep - indexPerc;
-		//if (indexNegPerc < 0)
-			//indexNegPerc = 0;
-	}
-
-	//sprintf(buffer, "Indice 95 percentile %d\n", indexPerc);
-	//qxLogText(buffer);
-
-	//sprintf(buffer, "Indice 95 percentile negativi %d\n", indexNegPerc);
-	//qxLogText(buffer);
-
-	//sprintf(buffer, "Valore 95 percentile %f\n", vetmax[indexPerc]);
-	//qxLogText(buffer);
-
-	//sprintf(buffer, "Valore 95 percentile minimi %f\n", vetmin[indexNegPerc]);
-	//qxLogText(buffer);
-
-	//if (vetmin[indexNegPerc]<0)
-		//threshold_matrix(scores, dim, vetmax[indexPerc], vetmin[indexNegPerc]);
-	//else
-	threshold_matrix(scores, dim, vetmax[indexPerc]);
-	delete[] matrix;
 }
 
 // constructor of your GUI plugin class
@@ -195,45 +134,28 @@ bool TfceScore::execute(){
 	char string_e[101];
 	char string_h[101];
 	char string_dh[101];
-	char string_z[101];
-	char string_rep[101]; 
-	char string_thresh[101];
-	char string_check[101];
 	char string_neg_or_pos[101];
 
 	qxGetStringParameter("Command", task_name); 
 	qxGetStringParameter("H", string_h);
 	qxGetStringParameter("E", string_e);
-	qxGetStringParameter("Z", string_z);
 	qxGetStringParameter("dh", string_dh);
-	qxGetStringParameter("check", string_check);
-	qxGetStringParameter("rep", string_rep);
-	qxGetStringParameter("thresh", string_thresh);
 	qxGetStringParameter("neg", string_neg_or_pos);
 
-	float H, E, Z, dh;
+	float H, E, dh;
 	int pos_or_neg;
-	int check;
-	int rep;
-	float thresh;
 
 	H = atof(string_h);
 	E = atof(string_e);
-	Z = atof(string_z);
 	dh = atof(string_dh);
-	rep = atoi(string_rep);
-	thresh = atof(string_thresh);
-	check = atoi(string_check);
 	pos_or_neg = atoi(string_neg_or_pos);
 
 	char InfoString[501];
-	sprintf(InfoString, "Plugin>  Command received: %s Parameters: H: %s E: %s dh: %s Z:%s Check:%s Rep:%s Thresh:%s Positives:%s", task_name, string_h, string_e, string_dh, string_z, string_check,string_rep, string_thresh, string_neg_or_pos);
-	qxLogText(InfoString);
 
 	if( !strcmp(task_name, "Calculate") ){		
 		bool b_voxels;
 		//getting the parameters.
-		b_voxels = CalculateTFCE(Z, E, H, dh, pos_or_neg, rep, check, thresh);
+		b_voxels = CalculateTFCE(E, H, dh, pos_or_neg);
 		return b_voxels;
 	}
 
@@ -243,7 +165,7 @@ bool TfceScore::execute(){
 	return true;
 }
 
-int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh, int pos_or_neg, int rep, int check, float thresh)
+int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg)
 {
 	char buffer[100];
 	float **vmp;
@@ -285,7 +207,7 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh, int 
 				}
 			}
 		}
-		else{
+		else{ // negatives only
 			for (int i = 0; i < dim; i++){
 				if (vv[i] > 0){
 					vv[i] = 0;
@@ -299,8 +221,8 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh, int 
 		//vv = qxGetNRVMPOfCurrentVMR(0, &vmp_header);
 		qxLogText("Plugin> Starting to calculate TFCE...");
 		omp_set_num_threads(omp_get_num_procs());
-		float * scores = tfce_score(vv, dimX, dimY, dimZ, z_threshold, E, H, dh);
-		findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
+		float * scores = tfce_score(vv, dimX, dimY, dimZ, E, H, dh);
+		findMinMax(scores, dim, &min, &max, &range);
 		sprintf(buffer, "Score minimo: %f Score massimo: %f\n", min, max);
 		qxLogText(buffer);
 		
@@ -311,22 +233,24 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh, int 
 		qxLogText(buffer);
 		*/
 		
-		if (check){
+		/*if (check){
 			qxLogText("Plugin> Finished TFCE, starting permutation test...");
 			applicaPermutazioni(vv, dimX, dimY, dimZ, E, H, dh, rep, scores);
-		}
+		}*/
 		
+		//threshold_matrix(scores, dim, min, max);
 		memcpy(vv, scores, sizeof(float)* dimX*dimY*dimZ);
 		findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
-		sprintf(buffer, "Score minimo sogliato: %f Score massimo sogliato: %f\n", min, max);
-		qxLogText(buffer);
+		delete[] scores;
+		//sprintf(buffer, "Score minimo sogliato: %f Score massimo sogliato: %f\n", min, max);
+		//qxLogText(buffer);
 		//Computing visualization bounds
 		
 		float max_t = max;
-		float min_t = max - (max*thresh) / 100;
+		float min_t = max - (max*50) / 100;
 
-		sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f\n", min_t, max_t);
-		qxLogText(buffer);
+		//sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f", min_t, max_t);
+		//qxLogText(buffer);
 
 		//Refreshing vmp header
 		vmp_header.ThreshMax = max_t;
@@ -334,7 +258,6 @@ int TfceScore::CalculateTFCE(float z_threshold, float E, float H, float dh, int 
 		vmp_header.UseClusterSize = 0;
 		vmp_header.ShowPosOrNegOrBoth = 1;
 		qxSetNRVMPParametersOfCurrentVMR(overlayed_vmp_index, &vmp_header);
-		delete[] scores;
 		//Refresh
 		qxUpdateActiveWindow();
 		sprintf(buffer, "Finished calculation");

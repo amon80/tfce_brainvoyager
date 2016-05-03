@@ -27,7 +27,6 @@ void findMinMax(float *map, int n, float *min, float *max, float * range) {
 	(*range) = (*max - *min);
 }
 
-//performs confrontation between and b given a single char operation
 int lessThan(float a, float b){
         return a < b;
 }
@@ -47,9 +46,9 @@ int moreThan(float a, float b){
         return a > b;
 }
 
-//Gets a binary vector in matlab style, given a certain operation
+//Gets a binary vector in matlab style, given a certain confront operation
 int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int * numOfElementsMatching){
-	int * binaryVector = new int [n];//(int *) calloc(sizeof(int), n);
+	int * binaryVector = new int [n];
 	(*numOfElementsMatching) = 0;
 	int i;
 
@@ -66,7 +65,7 @@ int * getBinaryVector(float * map, int n, int (*confront)(float, float), float v
 
 //Given a binary vector and a real vector, fills a new vector in the indices where binary == 1
 float * fromBinaryToRealVector(float * map, int n, int * binaryVector){
-	float * toReturn = new float[n];//(float *) calloc(sizeof(float), n);
+	float * toReturn = new float[n];
 	int i;
 
 	for (i = 0; i < n; ++i) {
@@ -81,7 +80,7 @@ float * fromBinaryToRealVector(float * map, int n, int * binaryVector){
 
 //creates a n-element vector of floats filled with 0
 float * fill0(int n){
-	float * toReturn = new float[n];//(float *) calloc(sizeof(float), n);
+	float * toReturn = new float[n];
 	int i;
 	for (i = 0; i < n; ++i) {
 		toReturn[i] = 0;
@@ -97,25 +96,15 @@ float elevate(float a, float b){
 	return pow(a,b);
 }
 
+//Applies function passed as argument to all elements different from 0 in vector
 void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument){
 	int i;
 	float value;
 	for (i = 0; i < n; ++i) {
 		if (vector[i] != 0){
 			value = operation(vector[i], argument);
-			if (value < 0 && vector[i] > 0 || value > 0 && vector[i] < 0)
-				vector[i] = 0;
-			else
-				vector[i] = value;
+			vector[i] = value;
 		}
-	}
-}
-
-void abs_vector(float * vector, int n){
-	int i;
-	for (i = 0; i < n; ++i) {
-		if(vector[i] < 0)
-			vector[i] = -vector[i];
 	}
 }
 
@@ -142,66 +131,6 @@ float * copyAndConvertIntVector(int * vector, int n){
 	}
 	return toReturn;
 }
-/*decomment only if using in linux 
-float * readMatFromFile(FILE *fp, int * size, int * x, int * y, int * z){
-	char * line = NULL;
-	char * oldline = NULL;
-	char *token;
-	float *mat;
-	size_t len = 0;
-	ssize_t read;
-
-	if (fp == NULL)
-		exit(EXIT_FAILURE);
-
-	int numline =0;
-
-	while ((read = getline(&line, &len, fp)) != -1) {
-
-		if (numline==0) {
-			//printf("%zd - %zu \n ", len, read);
-
-			//removing newline
-			line[strcspn(line, "\n")] = 0;
-			oldline = (char *) calloc(read + 1, sizeof(char));
-			strcpy(oldline, line);
-			int num_of_val = 0;
-			for (token = strtok(line, " "); token != NULL; token = strtok(NULL, " ")) {
-				num_of_val++;
-			}
-			//printf("Num of val %d\n", num_of_val);
-			mat  = (float *) calloc(num_of_val, sizeof(float));
-
-			num_of_val = 0;
-			
-			for (token = strtok(oldline, " "); token != NULL; token = strtok(NULL, " ")) {
-				mat[num_of_val] = (float)atof(token);
-				//printf("%f\n",mat[num_of_val]);
-				num_of_val++;
-			}
-
-			line = NULL;
-			*size = num_of_val;
-		}
-
-		if(numline==1) {
-			line[strcspn(line, "\n")] = 0;
-			 *x = atoi(line);
-		}
-		if(numline==2){
-			line[strcspn(line, "\n")] = 0;
-			*y=atoi(line);
-		}
-		if(numline==3) {
-			line[strcspn(line, "\n")] = 0;
-			*z = atoi(line);
-		}
-		numline++;
-	}
-	//printf("Read Complete\n");
-	return  mat;
-}
-*/
 
 static int rand_int(int n) {
 	int rnd;

@@ -1,4 +1,4 @@
-\textbf{Tfce.cpp} oltre al metodo visto precedentemente fornisce i seguenti metodi:\\
+Funzione \textbf{find\_cluster\_3D}:\\
 \begin{lstlisting}
 int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters)
 \end{lstlisting}

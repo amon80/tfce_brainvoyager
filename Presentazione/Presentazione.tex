@@ -127,7 +127,91 @@ Le funzioni che espone \textbf{Utilities.h} sono:
 \end{frame}
 
 \begin{frame}[fragile]
-\textbf{Tfce.cpp} oltre al metodo visto precedentemente fornisce i seguenti metodi:\\
+Andremo ora a vedere l'implementazione della funzione \textbf{tfice\_score}:
+\begin{center}
+\begin{lstlisting}
+findMinMax(map, n, &minData, &maxData, &rangeData);
+precision = rangeData/dh;
+if (precision > 200) {
+    increment = rangeData/200;
+} else{
+    increment = rangeData/precision;	
+}
+steps = ceil((maxData - minData) / (increment));
+#pragma omp parallel for
+for (i = 0; i < steps; i++) {
+     computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);
+}	
+return toReturn;
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+Funzione \textbf{computeTfceIteration}:
+\begin{center}
+\begin{lstlisting}
+int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
+clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
+extent_map = new int[n];
+for (j = 0; j < n; ++j){
+    extent_map[j] = 0;
+}
+delete [] indexMatchingData;
+for (i = 1; i <= num_clusters; ++i) {
+    numOfElementsMatching = 0;	
+    for (j = 0; j < n; ++j){
+        if(clustered_map[j] == i){
+            numOfElementsMatching++; }}
+    for (j = 0; j < n; ++j) {
+       if(clustered_map[j] == i)
+           extent_map[j] = numOfElementsMatching; }}
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{center}
+\begin{lstlisting}
+clustered_map_float = copyAndConvertIntVector(extent_map, n);
+apply_function(clustered_map_float, n, elevate, E);
+apply_function(clustered_map_float, n, multiply, pow(h, H));
+apply_function(clustered_map_float, n, multiply, dh);
+for (i = 0; i < n; ++i) {
+#pragma omp atomic
+    toReturn[i] += (clustered_map_float[i]);
+}
+delete[] clustered_map_float;
+delete[] clustered_map;
+delete[] extent_map;
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+Funzione \textbf{getBinaryVector}:
+\begin{center}
+\begin{lstlisting}
+int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int * numOfElementsMatching){
+    int * binaryVector = new int [n];
+    (*numOfElementsMatching) = 0;
+    int i;
+    for (i = 0; i < n; ++i) {
+        if(confront(map[i],value)){
+            binaryVector[i] = 1;
+            (*numOfElementsMatching)++;
+        }
+        else
+            binaryVector[i] = 0;
+        }
+    return binaryVector;
+}
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+Funzione \textbf{find\_cluster\_3D}:\\
 \begin{lstlisting}
 int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters)
 \end{lstlisting}

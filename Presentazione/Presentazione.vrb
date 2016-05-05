@@ -1,7 +1,11 @@
-Funzione \textbf{find\_cluster\_3D}:\\
-\begin{lstlisting}
-int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters)
-\end{lstlisting}
-questo metodo preso in input una \textbf{mappa binaria in 3D ma linearizzata}, le sue tre dimensioni, il numero totale voxel della mappa e il puntatore ad un intero che indica il numero attuale di cluster trovati.\\
+E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score più velocemente.\\
+\medskip
+OpenMP (Open Multiprocessing) è un API multipiattaforma per la creazione di applicazioni parallele su sistemi a memoria condivisa.\\
 \smallskip
-Cercando i cluster all'interno della mappa 3D utilizzando la \textbf{26-connectivity}
+Il comando:\\
+\textbf{\#pragma omp parallel for}\\
+viene utilizzato per rendere un for parallelo.\\
+\smallskip
+Il comando:\\
+\textbf{\#pragma omp atomic}\\
+invece viene utilizzato per rendere un istruzione atomica.\\

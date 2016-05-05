@@ -240,4 +240,24 @@ Restituisce un'altra mappa in cui al posto degli uno viene sostituito l'identifi
 In questo piccolo esempio in 2D viene mostrato il funzionamento della nostra funzione.
 \end{frame}
 
+\begin{frame}[fragile]
+E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score più velocemente.\\
+\medskip
+OpenMP (Open Multiprocessing) è un API multipiattaforma per la creazione di applicazioni parallele su sistemi a memoria condivisa.\\
+\smallskip
+Il comando:\\
+\textbf{\#pragma omp parallel for}\\
+viene utilizzato per rendere un for parallelo.\\
+\smallskip
+Il comando:\\
+\textbf{\#pragma omp atomic}\\
+invece viene utilizzato per rendere un istruzione atomica.\\
+\end{frame}
+
+\begin{frame}
+Abbiamo deciso di utilizzare, OMP perché l'effort per utilizzarlo è praticamente nullo, e le prestazioni sono ottime.\\
+\medskip
+Inoltre essendo che l'implementazione dei \textit{Thread} in \textit{C} cambia tra Windows e Linux, si sarebbe reso necessario modificare il codice per renderlo funzionante su entrambe le piattaforme.
+\end{frame}
+
 \end{document}

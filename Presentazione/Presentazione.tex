@@ -2,7 +2,7 @@
 
 \usepackage[italian]{babel}
 \usepackage[T1]{fontenc}
-\usepackage{beamerthemebjeldbak}
+\usepackage{beamerthemeAntibes}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage[utf8]{inputenc} 
@@ -15,10 +15,7 @@
 
 \lstset{
   basicstyle=\footnotesize,
-  language=C,                % choose the language of the code
-  numbers=left,                   % where to put the line-numbers
-  stepnumber=1,                   % the step between two line-numbers.        
-  numbersep=5pt,                  % how far the line-numbers are from the code
+  language=C,                % choose the language of the code                 % where to put the line-numbers
   backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
@@ -57,6 +54,15 @@
    \footnotesize \tableofcontents[currentsection]
      \end{frame}
 }
+
+\section{TFCE}
+\begin{frame}
+\frametitle{TFCE}
+\framesubtitle{Threshold-Free Cluster Enhancemen}
+Molte tecniche di image enhancing usano informazioni spaziali per aumentare l'autenticità di estese aree di segnale. La motivazione nell'utilizzo di voxel vicini spazialmente per aumentare la significatività delle regioni del segnale è da ritrovarsi nel fatto che le regioni del segnale sono più estese del rumore e quindi trovare zone aumenta la possibilità che esse siano segnale vero e proprio e non rumore.\\
+\medskip 
+
+\end{frame}
 
 
 \section{Codice}
@@ -241,7 +247,7 @@ In questo piccolo esempio in 2D viene mostrato il funzionamento della nostra fun
 \end{frame}
 
 \begin{frame}[fragile]
-E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score più velocemente.\\
+E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score più veloce.\\
 \medskip
 OpenMP (Open Multiprocessing) è un API multipiattaforma per la creazione di applicazioni parallele su sistemi a memoria condivisa.\\
 \smallskip

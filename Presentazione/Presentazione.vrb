@@ -1,4 +1,4 @@
-E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score più velocemente.\\
+E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score più veloce.\\
 \medskip
 OpenMP (Open Multiprocessing) è un API multipiattaforma per la creazione di applicazioni parallele su sistemi a memoria condivisa.\\
 \smallskip

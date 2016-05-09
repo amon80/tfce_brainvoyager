@@ -55,100 +55,148 @@
      \end{frame}
 }
 
-\section{TFCE}
+\section{Introduzione al problema}
+
+\subsection{Cluster-based thresholding}
 \begin{frame}
-\frametitle{TFCE}
-\framesubtitle{Threshold-Free Cluster Enhancemen}
-Molte tecniche di image enhancing usano informazioni spaziali per aumentare l'autenticità di estese aree di segnale. La motivazione nell'utilizzo di voxel vicini spazialmente per aumentare la significatività delle regioni del segnale è da ritrovarsi nel fatto che le regioni del segnale sono più estese del rumore e quindi trovare zone aumenta la possibilità che esse siano segnale vero e proprio e non rumore.\\
-\medskip 
+\frametitle{Spatial information enhancing}
+\begin{itemize}
+
+\item Tecnica che prevede l'utilizzo di informazioni spaziali per aumentare l'autenticità di estese aree di segnale. 
+\vfill
+\item La motivazione risiede nel fatto che le regioni del segnale sono più estese del rumore e quindi trovare zone aumenta la possibilità che esse siano segnale vero e proprio e non rumore.
+\end{itemize}
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Cluster-based Thresholding}
+\begin{itemize}
+\item L'approccio pi\'u comune in neuroimaging.
+\vfill
+\item Problemi:
+\begin{itemize}
+\item Necessit\'a di definire una soglia di clustering.
+\item Sogliatura di tipo \emph{hard}
+\item Difficolt\'a nel riconoscimento di eventuali \emph{subcluster}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{Threshold Free Cluster Enhanchment}
+
+\begin{frame}
+\frametitle{Overview dell'algoritmo}
+\begin{itemize}
+\item Procedura che tenta di superare i problemi degli approcci precedenti.
+\item Input: Un immagine statistica non processata.
+\item Output: Un immagine statistica in cui il valore di ogni voxel \'e un \alert{punteggio} che rappresenta il contributo spaziale del cluster di cui fa parte.
+\end{itemize}
+\vfill
+\begin{itemize}
+\item Clustering dell'immagine \alert{intrinseco}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Assegnazione dei punteggi(1/2)}
+Il punteggio del voxel $p$ viene stabilito dalla seguente formula:
+
+$$TFCE(p)=\int_{h=h_0}^{h_p}e(h)^E h^H dh$$
+dove:
+\begin{itemize}
+\item $h_p$ \'e il punteggio statistico del voxel $p$.
+\item $e(h)$ \'e l'area del cluster ad altezza $h$.
+\item $E$ ed $H$ sono costanti.
+\end{itemize}
+\vfill
+Questo integrale viene calcolato in pratica tramite una sommatoria ponendo $dh = 0.1$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Assegnazione dei punteggi(2/2)}
+\includegraphics[width=300px]{Images/TFCE.png}
+\end{frame}
 
 \section{Codice}
+\subsection{Suddivisione del codice}
 \begin{frame}
-\frametitle{Codice}
-Andremo ora a spiegare il codice prodotto  per il plugin TFCE.\\
-\medskip
+\frametitle{Suddivisione del codice}
 I file principali che compongono il plugin sono:
 \begin{itemize}
 \item{Tfce.cpp}
 \item{Utilities.cpp}
 \end{itemize}
-\textbf{Tfce} è il core del plugin, dove avviene il  calcolo degli score.\\
+\vfill
+\textbf{Tfce} è il core del plugin, dove avviene il  calcolo dei punteggi.\\
 \smallskip
-\textbf{Utilities} invece contiene tutti le funzioni di supporto per l'esecuzione del plugin stesso.
+\textbf{Utilities} contiene tutte le funzioni di supporto.
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Funzioni pubbliche (1/3)}
 L' unica funzione che viene esposta dal file \textbf{Tfce.h} è:
 \begin{center}
 \begin{lstlisting}
-#ifndef TFCE_H
-    #define TFCE_H
-    #include <float.h>
-    float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh);
-#endif //TFCE_H
+float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh);
 \end{lstlisting}
 \end{center}
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Funzioni pubbliche (2/3)}
 Le funzioni che espone \textbf{Utilities.h} sono:
 \begin{center}
 \begin{lstlisting}
-#ifndef UTILITIES_H
-    #define UTILITIES_H
+void findMinMax(float *map, int n, float *min, float *max, float * range);
 
-    #include <float.h>
-    #include <stdio.h>
+int confront(float a, float b, char operation);
 
-    void findMinMax(float *map, int n, float *min, float *max, float * range);
-
-    int confront(float a, float b, char operation);
-
-    int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int *      numOfElementsMatching);
+int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int *      numOfElementsMatching);
 \end{lstlisting}
 \end{center}
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Funzioni pubbliche (3/3)}
 \begin{center}
 \begin{lstlisting}
-   float * fromBinaryToRealVector(float * map, int n, int * binaryVector);
+float * fromBinaryToRealVector(float * map, int n, int * binaryVector);
 
-   float * fill0(int n);
+float * fill0(int n);
 
-   void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument);
+void apply_function(float * vector, int n, float (* operation) (float a, float b), float argument);
 
-   int linearIndexFromCoordinate(int x, int y, int z, int max_x, int max_y);
+int linearIndexFromCoordinate(int x, int y, int z, int max_x, int max_y);
 
-   void coordinatesFromLinearIndex(int index, int max_x, int max_y, int * x, int * y, int * z);
+void coordinatesFromLinearIndex(int index, int max_x, int max_y, int * x, int * y, int * z);
 
-   float * copyAndConvertIntVector(int * vector, int n);
-   
-#endif //UTILITIES_H
+float * copyAndConvertIntVector(int * vector, int n);
 \end{lstlisting}
 \end{center}
 \end{frame}
 
+\subsection{Dettagli implementativi}
 \begin{frame}[fragile]
-Andremo ora a vedere l'implementazione della funzione \textbf{tfice\_score}:
+\frametitle{Dettagli della funzione tfce score}
 \begin{center}
 \begin{lstlisting}
-findMinMax(map, n, &minData, &maxData, &rangeData);
-precision = rangeData/dh;
-if (precision > 200) {
-    increment = rangeData/200;
-} else{
-    increment = rangeData/precision;	
+float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh){
+	findMinMax(map, n, &minData, &maxData, &rangeData);
+	precision = rangeData/dh;
+	if (precision > 200) {
+		increment = rangeData/200;
+	} else{
+		increment = rangeData/precision;	
+	}
+	steps = ceil((maxData - minData) / (increment));
+	#pragma omp parallel for
+	for (i = 0; i < steps; i++) {
+		 computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);
+	}	
+	return toReturn;
 }
-steps = ceil((maxData - minData) / (increment));
-#pragma omp parallel for
-for (i = 0; i < steps; i++) {
-     computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);
-}	
-return toReturn;
 \end{lstlisting}
 \end{center}
 \end{frame}
@@ -217,17 +265,19 @@ int * getBinaryVector(float * map, int n, int (*confront)(float, float), float v
 \end{frame}
 
 \begin{frame}[fragile]
-Funzione \textbf{find\_cluster\_3D}:\\
+\frametitle{Find connected components in binary images (1/2)}
+La funzione \textbf{find\_cluster\_3D}:\\
 \begin{lstlisting}
 int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters)
 \end{lstlisting}
-questo metodo preso in input una \textbf{mappa binaria in 3D ma linearizzata}, le sue tre dimensioni, il numero totale voxel della mappa e il puntatore ad un intero che indica il numero attuale di cluster trovati.\\
-\smallskip
-Cercando i cluster all'interno della mappa 3D utilizzando la \textbf{26-connectivity}
+
+restituisce la mappa dei cluster trovati utilizzando la \textbf{26-connectivity} nell'immagine binaria fornita in input.
 \end{frame}
 
 \begin{frame}
-Restituisce un'altra mappa in cui al posto degli uno viene sostituito l'identificativo del cluster.
+\frametitle{Find connected components in binary images (2/2)}
+.
+\vfill
 \[
 \begin{bmatrix}
     1       & 1 & 0 & 1 & 1\\
@@ -243,7 +293,6 @@ Restituisce un'altra mappa in cui al posto degli uno viene sostituito l'identifi
     1       & 0 & 0 & 2 & 2
 \end{bmatrix}
 \]
-In questo piccolo esempio in 2D viene mostrato il funzionamento della nostra funzione.
 \end{frame}
 
 \begin{frame}[fragile]

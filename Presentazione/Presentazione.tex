@@ -19,7 +19,7 @@
   backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
-  showtabs=true,                 % show tabs within strings adding particular underscores
+  showtabs=false,                 % show tabs within strings adding particular underscores
   tabsize=2,                      % sets default tabsize to 2 spaces
   captionpos=b,                   % sets the caption-position to bottom
   breaklines=true,                % sets automatic line breaking
@@ -57,66 +57,182 @@
 
 \section{Introduzione al problema}
 
-\subsection{Cluster-based thresholding}
+\subsection{Sogliatura delle immagini statistiche}
+\begin{frame}
+\frametitle{Sogliatura delle immagini statistiche}
+\begin{block}{Sogliatura statistica}
+Generalmente, in statistica \alert{la sogliatura} \'e un processo che permette di visualizzare i risultati di un esperimento maggiori di una soglia scelta. 
+\end{block}
+
+\bigskip
+
+Una soglia ben scelta consente di visualizzare solo i risultati pi\'u significativi di un esperimento, eliminando in parte il rumore.
+\end{frame}
+
+\subsection{Sogliatura basata su cluster}
 \begin{frame}
 \frametitle{Spatial information enhancing}
+Lo spatial information enhancing \'e una tecnica che:
+\smallskip
 \begin{itemize}
 
-\item Tecnica che prevede l'utilizzo di informazioni spaziali per aumentare l'autenticità di estese aree di segnale. 
-\vfill
-\item La motivazione risiede nel fatto che le regioni del segnale sono più estese del rumore e quindi trovare zone aumenta la possibilità che esse siano segnale vero e proprio e non rumore.
+\item utilizza di informazioni spaziali per aumentare l'autenticità di estese aree di segnale. 
+\medskip
+\item le regioni del segnale sono infatti più estese del rumore e quindi trovare tali zone aumenta la possibilità che esse siano segnale e non artefatti.
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Cluster-based Thresholding}
+Il cluster-based thresholding \'e l'approccio pi\'u comune in neuroimaging:
+\smallskip
 \begin{itemize}
-\item L'approccio pi\'u comune in neuroimaging.
-\vfill
-\item Problemi:
+\item Consiste nel visualizzare solo i voxel che fanno parte di aree la cui estensione \'e $\geq$ di una soglia fissata. 
+\medskip
+\end{itemize}
+Problemi:
 \begin{itemize}
 \item Necessit\'a di definire una soglia di clustering.
-\item Sogliatura di tipo \emph{hard}
-\item Difficolt\'a nel riconoscimento di eventuali \emph{subcluster}
-\end{itemize}
+\item Sogliatura di tipo \emph{hard}.
+\item Difficolt\'a nel riconoscimento di eventuali \emph{subcluster}.
 \end{itemize}
 \end{frame}
 
-\subsection{Threshold Free Cluster Enhanchment}
-
+\section{L'algoritmo TFCE}
 \begin{frame}
-\frametitle{Overview dell'algoritmo}
+\frametitle{TFCE}
+TFCE tenta di superare i problemi degli approcci precedenti.
 \begin{itemize}
-\item Procedura che tenta di superare i problemi degli approcci precedenti.
 \item Input: Un immagine statistica non processata.
 \item Output: Un immagine statistica in cui il valore di ogni voxel \'e un \alert{punteggio} che rappresenta il contributo spaziale del cluster di cui fa parte.
 \end{itemize}
-\vfill
+\bigskip
 \begin{itemize}
 \item Clustering dell'immagine \alert{intrinseco}.
 \end{itemize}
 \end{frame}
 
+\subsection{Calcolo dei punteggi}
+
 \begin{frame}
-\frametitle{Assegnazione dei punteggi(1/2)}
+\frametitle{Assegnazione dei punteggi (1/2)}
 Il punteggio del voxel $p$ viene stabilito dalla seguente formula:
 
 $$TFCE(p)=\int_{h=h_0}^{h_p}e(h)^E h^H dh$$
 dove:
 \begin{itemize}
-\item $h_p$ \'e il punteggio statistico del voxel $p$.
-\item $e(h)$ \'e l'area del cluster ad altezza $h$.
+\item $h_p$ \'e il \alert{valore statistico} del voxel $p$.
+\item $e(h)$ \'e l'\alert{area del cluster} ad altezza $h$.
 \item $E$ ed $H$ sono costanti.
 \end{itemize}
 \vfill
-Questo integrale viene calcolato in pratica tramite una sommatoria ponendo $dh = 0.1$.
+Questo integrale viene calcolato approssimandolo con una sommatoria ponendo $dh = 0.1$.
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Assegnazione dei punteggi(2/2)}
+\frametitle{Assegnazione dei punteggi (2/2)}
 \includegraphics[width=300px]{Images/TFCE.png}
+\end{frame}
+
+\subsection{Calcolo dell'estensione dei cluster}
+
+\begin{frame}
+\frametitle{Calcolo estensione cluster (1/2)}
+\begin{itemize}
+\item Il calcolo dell'estensione del cluster nel caso di immagini tridimensionali risulta essere pi\'u complesso.
+\item Occorre controllare il vicinato di ogni voxel in base alla \alert{26 connectivity}.
+\end{itemize}
+\center
+\includegraphics[width=250px]{Images/connectivity.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Calcolo estensione cluster (2/2)}
+La nostra implementazione consiste in un semplice algoritmo:
+\begin{enumerate}
+\item Viene generata, a partire dall'immagine statistica, una mappa binaria in base alla soglia $h$ corrente.
+\item Una visita in ampiezza della mappa binaria etichetta tutti i cluster.
+\end{enumerate}
+\[
+\begin{bmatrix}
+    1       & 1 & 0 & 1 & 1\\
+    1       & 1 & 0 & 0 & 0 \\
+    1       & 0 & 0 & 1 & 1
+\end{bmatrix}
+\rightarrow
+\begin{bmatrix}
+    1       & 1 & 0 & 3 & 3\\
+    1       & 1 & 0 & 0 & 0 \\
+    1       & 0 & 0 & 2 & 2
+\end{bmatrix}
+\]
+\begin{enumerate}
+\setcounter{enumi}{2}
+\item Per ogni voxel della mappa, il valore $e(h)$ \'e il numero di elementi presenti nel cluster di cui fa parte.
+\end{enumerate}
+\[
+\begin{bmatrix}
+    1       & 1 & 0 & 3 & 3\\
+    1       & 1 & 0 & 0 & 0 \\
+    1       & 0 & 0 & 2 & 2
+\end{bmatrix}
+\rightarrow
+\begin{bmatrix}
+    5       & 5 & 0 & 2 & 2 \\
+    5       & 5 & 0 & 0 & 0 \\
+    5       & 0 & 0 & 2 & 2
+\end{bmatrix}
+\]
+
+\end{frame}
+
+\subsection{Stima dei parametri}
+
+\begin{frame}
+\frametitle{Scelta dei parametri E ed H (1/2)}
+Ricordando la formula di assegnazione dei punteggi:
+$$TFCE(p)=\int_{h=h_0}^{h_p}e(h)^E h^H dh$$
+\begin{itemize}
+\item La scelta dei parametri $E$ ed $H$ risulta essere cruciale per avere l'output desiderato.
+
+\item L'obiettivo \'e scegliere tali parametri in modo che si adattino ad un ampio set di segnali e rumore.
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Scelta dei parametri E ed H (2/2)}
+La scelta finale \'e stata $H = 2$ ed $E = 0.5$ poich\'e:
+\bigskip
+\begin{itemize}
+
+\item Scegliere $H > 1$ ha il risultato di far si che gli score scalino pi\'u che linearmente con l' ``altezza'' dei cluster.
+\begin{itemize}
+\item Ci\'o \'e desirabile in quanto vengono favoriti cluster di intensit\'a molto alta rispetto a quelli con intensit\'a piu' bassa.
+\end{itemize}
+\medskip
+\item Scegliere $E < 1$ fa si che il risultati scali meno che linearmente con la ``larghezza'' dei cluster.
+\begin{itemize}
+\item Ci\'o \'e desirabile specie con $h$ molto basso poich\'e \'e probabile che ci siano pochi cluster di dimensioni molto grandi, che forniscono poca informazione spaziale.
+\end{itemize}
+
+
+\end{itemize}
+\end{frame}
+
+\subsection{Sogliatura esplicita}
+\begin{frame}
+\frametitle{Sogliatura esplicita}
+L'algoritmo TFCE produce un'immagine con gli score calcolati sull'immagine originale.
+
+Tuttavia, l'immagine prodotta manca di valenza stastica.
+
+Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare i \alert{p-value} per ogni voxel.
+
+Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il test delle permutazioni sull'esperimento originale.
 \end{frame}
 
 \section{Codice}
@@ -129,14 +245,14 @@ I file principali che compongono il plugin sono:
 \item{Utilities.cpp}
 \end{itemize}
 \vfill
-\textbf{Tfce} è il core del plugin, dove avviene il  calcolo dei punteggi.\\
+\textbf{Tfce} è il core del plugin, dove avviene il calcolo dei punteggi.\\
 \smallskip
 \textbf{Utilities} contiene tutte le funzioni di supporto.
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Funzioni pubbliche (1/3)}
-L' unica funzione che viene esposta dal file \textbf{Tfce.h} è:
+L'unica funzione che viene esposta dal file \textbf{Tfce.h} è:
 \begin{center}
 \begin{lstlisting}
 float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh);
@@ -150,8 +266,6 @@ Le funzioni che espone \textbf{Utilities.h} sono:
 \begin{center}
 \begin{lstlisting}
 void findMinMax(float *map, int n, float *min, float *max, float * range);
-
-int confront(float a, float b, char operation);
 
 int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int *      numOfElementsMatching);
 \end{lstlisting}
@@ -179,7 +293,7 @@ float * copyAndConvertIntVector(int * vector, int n);
 
 \subsection{Dettagli implementativi}
 \begin{frame}[fragile]
-\frametitle{Dettagli della funzione tfce score}
+\frametitle{Funzione tfce score}
 \begin{center}
 \begin{lstlisting}
 float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh){
@@ -202,29 +316,44 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 \end{frame}
 
 \begin{frame}[fragile]
-Funzione \textbf{computeTfceIteration}:
+\frametitle{Funzione computeTfceIteration (1/3)}
 \begin{center}
 \begin{lstlisting}
-int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
-clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
-extent_map = new int[n];
-for (j = 0; j < n; ++j){
-    extent_map[j] = 0;
-}
-delete [] indexMatchingData;
-for (i = 1; i <= num_clusters; ++i) {
-    numOfElementsMatching = 0;	
-    for (j = 0; j < n; ++j){
-        if(clustered_map[j] == i){
-            numOfElementsMatching++; }}
-    for (j = 0; j < n; ++j) {
-       if(clustered_map[j] == i)
-           extent_map[j] = numOfElementsMatching; }}
+void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int dim_z, float E, float H, float dh, float * toReturn){
+	int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
+	clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
+	extent_map = new int[n];
+	for (j = 0; j < n; ++j){
+		extent_map[j] = 0;
+	}
+	delete [] indexMatchingData;
 \end{lstlisting}
 \end{center}
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Funzione computeTfceIteration (2/3)}
+\begin{center}
+\begin{lstlisting}
+
+for (i = 1; i <= num_clusters; ++i) {
+		numOfElementsMatching = 0;	
+		for (j = 0; j < n; ++j){
+		    if(clustered_map[j] == i)
+		        numOfElementsMatching++; 
+		}
+		for (j = 0; j < n; ++j) {
+		   if(clustered_map[j] == i)
+		       extent_map[j] = numOfElementsMatching; 
+		}
+}
+		      
+\end{lstlisting}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Funzione computeTfceIteration (3/3)}
 \begin{center}
 \begin{lstlisting}
 clustered_map_float = copyAndConvertIntVector(extent_map, n);
@@ -243,7 +372,8 @@ delete[] extent_map;
 \end{frame}
 
 \begin{frame}[fragile]
-Funzione \textbf{getBinaryVector}:
+\frametitle{Funzione getBinaryVector}
+Questa funzione emula il risultato del costrutto Matlab (matrice <condizione> valore).
 \begin{center}
 \begin{lstlisting}
 int * getBinaryVector(float * map, int n, int (*confront)(float, float), float value, int * numOfElementsMatching){
@@ -257,7 +387,7 @@ int * getBinaryVector(float * map, int n, int (*confront)(float, float), float v
         }
         else
             binaryVector[i] = 0;
-        }
+    }
     return binaryVector;
 }
 \end{lstlisting}
@@ -265,34 +395,13 @@ int * getBinaryVector(float * map, int n, int (*confront)(float, float), float v
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Find connected components in binary images (1/2)}
+\frametitle{Calcolo dell'estensione dei cluster}
 La funzione \textbf{find\_cluster\_3D}:\\
 \begin{lstlisting}
 int * find_clusters_3D(int * binaryVector, int dim_x, int dim_y, int dim_z, int n, int * num_clusters)
 \end{lstlisting}
 
 restituisce la mappa dei cluster trovati utilizzando la \textbf{26-connectivity} nell'immagine binaria fornita in input.
-\end{frame}
-
-\begin{frame}
-\frametitle{Find connected components in binary images (2/2)}
-.
-\vfill
-\[
-\begin{bmatrix}
-    1       & 1 & 0 & 1 & 1\\
-    1       & 1 & 0 & 0 & 0 \\
-    1       & 0 & 1 & 1 & 1 \\
-    1       & 0 & 0 & 1 & 1
-\end{bmatrix}
-=
-\begin{bmatrix}
-    1       & 1 & 0 & 3 & 3\\
-    1       & 1 & 0 & 0 & 0 \\
-    1       & 0 & 2 & 2 & 2 \\
-    1       & 0 & 0 & 2 & 2
-\end{bmatrix}
-\]
 \end{frame}
 
 \begin{frame}[fragile]

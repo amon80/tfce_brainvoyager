@@ -195,12 +195,11 @@ La nostra implementazione consiste in un semplice algoritmo:
 Ricordando la formula di assegnazione dei punteggi:
 $$TFCE(p)=\int_{h=h_0}^{h_p}e(h)^E h^H dh$$
 \begin{itemize}
-\item La scelta dei parametri $E$ ed $H$ risulta essere cruciale per avere l'output desiderato.
+\item La scelta dei parametri $E$ ed $H$ risulta essere cruciale per avere dei punteggi coerenti.
 
-\item L'obiettivo \'e scegliere tali parametri in modo che si adattino ad un ampio set di segnali e rumore.
+\item Tali parametri sono stati scelti in modo da adattarsi ad un ampio set di segnali e rumore.
 
 \end{itemize}
-
 \end{frame}
 
 \begin{frame}
@@ -211,7 +210,7 @@ La scelta finale \'e stata $H = 2$ ed $E = 0.5$ poich\'e:
 
 \item Scegliere $H > 1$ ha il risultato di far si che gli score scalino pi\'u che linearmente con l' ``altezza'' dei cluster.
 \begin{itemize}
-\item Ci\'o \'e desirabile in quanto vengono favoriti cluster di intensit\'a molto alta rispetto a quelli con intensit\'a piu' bassa.
+\item Ci\'o \'e desirabile in quanto vengono favoriti cluster di intensit\'a molto alta rispetto a quelli con intensit\'a pi\'u bassa.
 \end{itemize}
 \medskip
 \item Scegliere $E < 1$ fa si che il risultati scali meno che linearmente con la ``larghezza'' dei cluster.
@@ -233,6 +232,20 @@ Tuttavia, l'immagine prodotta manca di valenza stastica.
 Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare i \alert{p-value} per ogni voxel.
 
 Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il test delle permutazioni sull'esperimento originale.
+\end{frame}
+
+\section{Confronto risultati}
+\subsection{Montecarlo simulation - BrainVoyager}
+\begin{frame}
+\frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
+
+\end{frame}
+\subsection{TFCE - FSL}
+\begin{frame}
+\end{frame}
+
+\subsection{TFCE - Brainvoyager}
+\begin{frame}
 \end{frame}
 
 \section{Codice}
@@ -419,9 +432,14 @@ invece viene utilizzato per rendere un istruzione atomica.\\
 \end{frame}
 
 \begin{frame}
-Abbiamo deciso di utilizzare, OMP perché l'effort per utilizzarlo è praticamente nullo, e le prestazioni sono ottime.\\
+Abbiamo deciso di utilizzare, OMP perch\'e l'effort per utilizzarlo \'e praticamente nullo, e le prestazioni sono ottime.\\
 \medskip
 Inoltre essendo che l'implementazione dei \textit{Thread} in \textit{C} cambia tra Windows e Linux, si sarebbe reso necessario modificare il codice per renderlo funzionante su entrambe le piattaforme.
 \end{frame}
+
+\section{Conclusioni}
+\begin{frame}
+\end{frame}
+
 
 \end{document}

@@ -225,10 +225,10 @@ La scelta finale \'e stata $H = 2$ ed $E = 0.5$ poich\'e:
 \subsection{Sogliatura esplicita}
 \begin{frame}
 \frametitle{Sogliatura esplicita}
-L'algoritmo TFCE produce un'immagine con gli score calcolati sull'immagine originale.
-
-Tuttavia, l'immagine prodotta manca di valenza stastica.
-
+L'algoritmo TFCE produce un'immagine con gli score calcolati sull'immagine originale.\\
+\medskip
+Tuttavia, l'immagine prodotta manca di valenza stastica.\\
+\medskip
 Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare i \alert{p-value} per ogni voxel.
 
 Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il test delle permutazioni sull'esperimento originale.
@@ -238,8 +238,58 @@ Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e p
 \subsection{Montecarlo simulation - BrainVoyager}
 \begin{frame}
 \frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
-
 \end{frame}
+
+\subsection{Altri metodi di correzione - BrainVoyager}
+\begin{frame}
+\frametitle{Bonferroni}
+In statistica la \textbf{correzione di Bonferroni} viene utilizzata per contrastare il problema dei confronti multipli.\\
+\medskip
+E' basata sull'idea che se in un esperimento si stanno testando $m$ ipotesi, un modo per mantenere il \textbf{familywise error rate} (\textbf{FWER} = probabilità di effettuare errore di \textit{Tipo 1} all'inverno delle ipotesi) è quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.\\
+\medskip
+Quindi se vogliamo un \textit{p-value} totale di $\alpha$, la correzione di Bonferroni testerà ogni singolo esperimento con un \textit{p-value} di $\alpha/m$ è rifiuterà l'ipotesi nulla se il \textit{p-value} di quell'esperimento è minore di tale valore.
+\end{frame}
+
+\begin{frame}
+\frametitle{False Discovery Rate}
+Il \textbf{False Discovery Rate} come la correzione di Bonferroni si prefigge l'obiettivo di contrastare il problema dei confronti multipli.\\
+\smallskip
+La procedura per il controllo FDR è stata creata per gestire la proporzione attesa di rifiuto dell'ipotesi nulla,  che però sarebbe stato sbagliato rifiutare ("false discoveries").\\
+\smallskip
+La procedura FDR fornisce un controllo meno stringente sugli errori di \textit{Tipo 1} rispetto a Bonferroni.
+\end{frame}
+
+\begin{frame}
+Sia:
+\begin{itemize}
+\item $V$ il numero di falsi positivi (Errori di Tipo 1)
+\item $S$ il numero di veri positivi 
+\item $R =  V+S$ 
+\end{itemize}
+La FDR è definita:
+\begin{equation*}
+FDR = E\Big[\frac{V}{S+V}\Big] = E\Big[\frac{V}{S+V}\Big]
+\end{equation*}
+dove $\frac{V}{R} = 0$ quando $R = 0$.
+\end{frame}
+
+\begin{frame}
+\framesubtitle{Procedura di controllo di Benjamini–Hochberg}
+Avendo $H_1 \dots H_m$ test sull'ipotesi nulla e $p_1 \dots p_m$ \textit{p-value} corrispondenti. Ordiniamo i \textit{p-value} in ordine crescente; il \textit{p-value} più piccolo corrisponde al test con valore statistico più alto.\\
+\smallskip
+La procedura Benjamini–Hochberg controlla il false discovery rate (al livello $\alpha$) con i seguenti passi:\\
+\medskip
+\begin{enumerate}
+\item Per un dato $\alpha$, trova il più grande $k$ per cui: $p_k \leq \frac{k}{m}\alpha$
+\item Rifiuta l'ipotesi nulla (accetta come discovery vere) tutte i test $H_i \dot H_k$
+\end{enumerate}
+La procedura di Benjamini–Hochberg è valida quando i $m$ test sono indipendenti e soddisfa anche la seguente equazione:
+\begin{equation*}
+FDR \leq \frac{m_0}{m}\alpha \leq \alpha
+\end{equation*}
+\end{frame}
+
+
 \subsection{TFCE - FSL}
 \begin{frame}
 \end{frame}

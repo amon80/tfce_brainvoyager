@@ -57,6 +57,94 @@
 
 \section{Introduzione al problema}
 
+\subsection{Generazione delle mappe statistiche da FMRI}
+
+\begin{frame}
+\frametitle{Mappa statistica associata ad un esperimento FMRI}
+\begin{block}{Mappa statistica}
+Per un dato esperimento di \emph{Risonanza Magnetica Funzionale (FMRI)}, una \alert{mappa statistica} \'e un immagine in cui ad ogni voxel corrisponde un valore statistico.
+\end{block}
+\begin{itemize}
+\item Solitamente, tali valori rappresentano la \emph{significativit\'a statistica} di attivazioni neuronali avvenute durante l'esperimento.
+\item Le attivazioni vengono stimate attraverso il \alert{GLM}, su cui viene fatta \emph{inferenza} per ottenere i valori statistici.
+\end{itemize}
+\end{frame}
+\begin{frame}{GLM - Aspetti teorici (1/3)}
+
+Il \alert{Generelized Linear Model (GLM)} descrive il comportamento di ogni voxel con la seguente equazione:
+
+$$y = X\beta + \epsilon$$ 
+
+\begin{block}{Genaralized Linear Model}
+Descrive la risposta $y$ in termini della combinazione lineare di tutti i fattori in gioco ($X\beta$), includendo l'errore $\epsilon$.
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{GLM - Aspetti teorici (2/3)}
+Osservando i voxel pi\'u  volte, si ottiene la \alert{matrice caratterizzante} del GLM.
+
+\includegraphics[keepaspectratio, width = 300px	]{Images/glm_matrix.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{GLM - Aspetti teorici (3/3)}
+I predittori hanno una certa durata temporale, che influenzano il valore dei voxel.
+
+\includegraphics[keepaspectratio, width = 300px	]{Images/glm_visual.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{GLM - Problemi}
+Problemi del GLM:
+\begin{enumerate}
+\item Il segnale BOLD non \'e un interruttore ON/OFF.
+\item Disturbi dovute alle basse frequenze.
+\item Assunzioni sulla natura dell'errore (distribuzione normale, correlazione temporale).
+\item Disturbi di natura fisiologica (movimenti della testa, respiro, battito di ciglia... etc)
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{GLM - Stima dei $\beta$}
+Il numero dei parametri spesso \'e $<<$ del numero di data point, per cui tra le infinite soluzioni del sistema si sceglie quella che minimizza l'errore residuale, cio\'e la \alert{stima dei minimi quadrati}:
+
+$$ 	\hat{\beta} = (X^TX)^{-1} X^TY$$
+
+Nei casi in cui $(X^TX)$ risulti non invertibile, si utilizza la \emph{Pseudoinversa di Monroe}.
+\end{frame}
+
+\begin{frame}
+\frametitle{GLM - Inferenza statistica(1/2)}
+
+\begin{itemize}
+\item Per poter effettuare inferenza statistica sui valori restituiti dal GLM, occorre stimare la \alert{varianza del residuale}.
+\item Si suppone che il rumore abbia una distribuzione \emph{gaussiana}, per cui \'e possibile stimare la varianza tramite la \emph{distribuzione chi quadrato}:
+\end{itemize}
+ 
+$$\hat{\sigma}^2 = \frac{\epsilon^T\epsilon}{J - p} \sim \sigma^2 \frac{\chi^2_{J-p}}{J-p}$$
+
+dove: 
+\begin{itemize}
+\item $\epsilon$ \'e il rumore.
+\item $J$ \'e il numero di data points.
+\item $p = rank(X) $ \'e il numero di parametri indipendenti introdotto.
+\item $J-p$ rappresenta il numero di \alert{gradi di libert\'a} del GLM.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{GLM - Inferenza statistica(2/2)}
+Se la matrice $X$ \'e a rango pieno allora:
+$$\hat{\beta} \sim \mathcal{N}(\beta, \sigma^2(X^TX)^{-1})$$
+Segue che qualunque combinazione lineare dei $\beta$, cio\'e un \alert{contrasto statistico} segue la stessa distribuzione:
+$$c^T\hat{\beta} \sim \mathcal{N}(c^T\beta, c^T\sigma^2(X^TX)^{-1}c)$$
+Pertanto, dopo la stima, si calcola direttamente il parametro T:
+$$T = \frac{c^T\hat{\beta} - d}{\sqrt{\hat{\sigma}^2c^T(X^TX)^{-1}c}}$$
+\end{frame}
+
+
 \subsection{Sogliatura delle immagini statistiche}
 \begin{frame}
 \frametitle{Sogliatura delle immagini statistiche}
@@ -72,11 +160,11 @@ Una soglia ben scelta consente di visualizzare solo i risultati pi\'u significat
 \subsection{Sogliatura basata su cluster}
 \begin{frame}
 \frametitle{Spatial information enhancing}
-Lo spatial information enhancing \'e una tecnica che:
+Lo spatial information enhancing \'e una tecnica particolarmente utile per la sogliatura di mappe statistiche derivate da FMRI:
 \smallskip
 \begin{itemize}
 
-\item utilizza di informazioni spaziali per aumentare l'autenticità di estese aree di segnale. 
+\item le informazioni spaziali vengono usate per aumentare l'autenticità di estese aree di segnale. 
 \medskip
 \item le regioni del segnale sono infatti più estese del rumore e quindi trovare tali zone aumenta la possibilità che esse siano segnale e non artefatti.
 \end{itemize}
@@ -104,8 +192,8 @@ Problemi:
 \frametitle{TFCE}
 TFCE tenta di superare i problemi degli approcci precedenti.
 \begin{itemize}
-\item Input: Un immagine statistica non processata.
-\item Output: Un immagine statistica in cui il valore di ogni voxel \'e un \alert{punteggio} che rappresenta il contributo spaziale del cluster di cui fa parte.
+\item Input: Una mappa statistica di qualsiasi tipo(T, Z, F).
+\item Output: Una mappa statistica in cui il valore di ogni voxel \'e un \alert{punteggio} che rappresenta il contributo spaziale del cluster di cui fa parte.
 \end{itemize}
 \bigskip
 \begin{itemize}

@@ -238,6 +238,13 @@ Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e p
 \subsection{Montecarlo simulation - BrainVoyager}
 \begin{frame}
 \frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
+Il metodo prende in input una soglia di significatività $\alpha$ e restituisce la taglia del cluster a cui sogliare.
+\begin{itemize}
+\item Vengono generate $n$ mappe statistiche random con il metodo di Montecarlo
+\item Od ogni mappa viene applicato uno smoothing spaziale calcolato sulla mappa di input
+\item Si sceglie la taglia $t$ tale che la probabilità di osservare cluster generati casualmente di taglia maggiore di $t$ sia uguale ad $\alpha$
+\end{itemize}
+Il valore così ottenuto viene utilizzato per la sogliatura basata su cluster. 
 \end{frame}
 
 \subsection{Altri metodi di correzione - BrainVoyager}

@@ -322,7 +322,7 @@ Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare
 Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il test delle permutazioni sull'esperimento originale.
 \end{frame}
 
-\section{Confronto risultati}
+\section{Metodi di correzzione}
 \subsection{Montecarlo simulation - BrainVoyager}
 \begin{frame}
 \frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
@@ -335,16 +335,23 @@ Il metodo prende in input una soglia di significatività $\alpha$ e restituisce 
 Il valore così ottenuto viene utilizzato per la sogliatura basata su cluster. 
 \end{frame}
 
-\subsection{Altri metodi di correzione - BrainVoyager}
+\subsection{Bonferroni - BrainVoyager}
 \begin{frame}
 \frametitle{Bonferroni}
 In statistica la \textbf{correzione di Bonferroni} viene utilizzata per contrastare il problema dei confronti multipli.\\
 \medskip
-E' basata sull'idea che se in un esperimento si stanno testando $m$ ipotesi, un modo per mantenere il \textbf{familywise error rate} (\textbf{FWER} = probabilità di effettuare errore di \textit{Tipo 1} all'inverno delle ipotesi) è quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.\\
+Cercando di mantenere il \textbf{familywise error rate} (FWER) all'interno di una determinata soglia.\\
+\smallskip
+L'FWER è la probabilità di effettuare errori di Tipo 1  ``falsi positivi'' su tutte le ipotesi, quando si effettuano test multipli.
+\end{frame}
+
+\begin{frame}
+Se si sta svolgendo un esperimento con $m$ ipotesi, un modo per mantenere l'FWER  è quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.\\
 \medskip
 Quindi se vogliamo un \textit{p-value} totale di $\alpha$, la correzione di Bonferroni testerà ogni singolo esperimento con un \textit{p-value} di $\alpha/m$ è rifiuterà l'ipotesi nulla se il \textit{p-value} di quell'esperimento è minore di tale valore.
 \end{frame}
 
+\subsection{False Discovery Rate}
 \begin{frame}
 \frametitle{False Discovery Rate}
 Il \textbf{False Discovery Rate} come la correzione di Bonferroni si prefigge l'obiettivo di contrastare il problema dei confronti multipli.\\
@@ -384,13 +391,9 @@ FDR \leq \frac{m_0}{m}\alpha \leq \alpha
 \end{equation*}
 \end{frame}
 
-
-\subsection{TFCE - FSL}
+\section{Confronto risultati}
 \begin{frame}
-\end{frame}
 
-\subsection{TFCE - Brainvoyager}
-\begin{frame}
 \end{frame}
 
 \section{Codice}

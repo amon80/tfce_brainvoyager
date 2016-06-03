@@ -69,7 +69,7 @@ Per un dato esperimento di \emph{Risonanza Magnetica Funzionale (FMRI)}, una \al
 \item Le attivazioni vengono stimate attraverso il \alert{GLM}, su cui viene fatta \emph{inferenza} per ottenere i valori statistici.
 \end{itemize}
 \end{frame}
-\begin{frame}{GLM - Aspetti teorici (1/3)}
+\begin{frame}{GLM - Aspetti teorici (1/4)}
 
 Il \alert{Generelized Linear Model (GLM)} descrive il comportamento di ogni voxel con la seguente equazione:
 
@@ -82,17 +82,32 @@ Descrive la risposta $y$ in termini della combinazione lineare di tutti i fattor
 \end{frame}
 
 \begin{frame}
-\frametitle{GLM - Aspetti teorici (2/3)}
+\frametitle{GLM - Aspetti teorici (2/4)}
 Osservando i voxel pi\'u  volte, si ottiene la \alert{matrice caratterizzante} del GLM.
 
 \includegraphics[keepaspectratio, width = 300px	]{Images/glm_matrix.png}
 \end{frame}
 
 \begin{frame}
-\frametitle{GLM - Aspetti teorici (3/3)}
+\frametitle{GLM - Aspetti teorici (3/4)}
 I predittori hanno una certa durata temporale, che influenzano il valore dei voxel.
 
-\includegraphics[keepaspectratio, width = 300px	]{Images/glm_visual.png}
+\includegraphics[keepaspectratio, width = 300px]{Images/glm_visual.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{GLM - Aspetti teorici (4/4)}
+Tenendo conto degli aspetti appena visti, il modello completo del GLM diventa:
+
+$$Y = \beta X + \epsilon$$
+
+dove:
+\begin{itemize}
+\item $Y$ \'e il vettore $N \times 1 $ dei dati osservati.
+\item $X$ \'e la matrice $N \times r$ a rango pieno dei predittori.
+\item $\beta$ \'e il vettore $r \times 1$ dei coefficienti di regressione.
+\item $\epsilon$ \'e il vettore $N \times 1$ degli errori casuali.
+\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -310,16 +325,28 @@ La scelta finale \'e stata $H = 2$ ed $E = 0.5$ poich\'e:
 \end{itemize}
 \end{frame}
 
-\subsection{Sogliatura esplicita}
+\subsection{Test delle permutazioni}
 \begin{frame}
 \frametitle{Sogliatura esplicita}
-L'algoritmo TFCE produce un'immagine con gli score calcolati sull'immagine originale.\\
-\medskip
-Tuttavia, l'immagine prodotta manca di valenza stastica.\\
-\medskip
-Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare i \alert{p-value} per ogni voxel.
+\begin{itemize}
+\item L'algoritmo TFCE produce un'immagine con gli score calcolati sull'immagine originale.
 
-Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il test delle permutazioni sull'esperimento originale.
+\item Tuttavia, l'immagine prodotta manca di \emph{valenza statistica}.
+
+\item Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare i \alert{p-value} per ogni voxel.
+
+\item Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il \alert{test delle permutazioni} sull'esperimento originale.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Test delle permutazioni}
+\begin{itemize}
+\item Il GLM asserisce che il comportamento di ogni voxel pu\'o essere descritto dalla legge $Y = \beta X + \epsilon$.
+\item Il calcolo della statistica dipende ovviamente dall'ordine dei predittori.
+\item Sotto l'ipotesi nulla $\mathcal{H}_0 : \beta = 0 \implies Y = \epsilon$, cio\'e i dati sono puro rumore. I dati quindi, sarebbero stati gli stessi in qualunque condizione sperimentale. 
+\item Sotto questa ipotesi, i predittori possono essere permutati, dando
+\end{itemize}
 \end{frame}
 
 \section{Confronto risultati}

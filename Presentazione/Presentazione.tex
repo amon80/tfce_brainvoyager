@@ -148,6 +148,12 @@ Pertanto, dopo la stima, si calcola direttamente il parametro T:
 $$T = \frac{c^T\hat{\beta} - d}{\sqrt{\hat{\sigma}^2c^T(X^TX)^{-1}c}}$$
 \end{frame}
 
+\begin{frame}
+\frametitle{BOH}
+$$p = \int_{T_{TH}}^{\infty} t(T,v)dT$$
+\includegraphics[keepaspectratio, width=300px]{Images/stats.png}
+\end{frame}
+
 
 \subsection{Sogliatura delle immagini statistiche}
 \begin{frame}
@@ -244,8 +250,8 @@ Questo integrale viene calcolato approssimandolo con una sommatoria ponendo $dh 
 \frametitle{Calcolo estensione cluster (2/2)}
 La nostra implementazione consiste in un semplice algoritmo:
 \begin{enumerate}
-\item Viene generata, a partire dall'immagine statistica, una mappa binaria in base alla soglia $h$ corrente.
-\item Una visita in ampiezza della mappa binaria etichetta tutti i cluster.
+\item \onslide<1->Viene generata, a partire dall'immagine statistica, una mappa binaria in base alla soglia $h$ corrente.
+\item \onslide<2->Una visita in ampiezza della mappa binaria etichetta tutti i cluster.
 \end{enumerate}
 \[
 \begin{bmatrix}
@@ -262,7 +268,7 @@ La nostra implementazione consiste in un semplice algoritmo:
 \]
 \begin{enumerate}
 \setcounter{enumi}{2}
-\item Per ogni voxel della mappa, il valore $e(h)$ \'e il numero di elementi presenti nel cluster di cui fa parte.
+\item \onslide<3->Per ogni voxel della mappa, il valore $e(h)$ \'e il numero di elementi presenti nel cluster di cui fa parte.
 \end{enumerate}
 \[
 \begin{bmatrix}
@@ -356,7 +362,7 @@ Il P-value \'e la proporzione dei valori statistici nella distribuzione delle pe
 \frametitle{Test delle permutazioni - Casi particolari}
 Il semplice modello appena visto pu\'o essere esteso a diversi casi:
 \begin{itemize}
-\item Il modello di Freedman-Lane tiene conto di variabili di disturbo, ed \'e quello utilizzato dall'algoritmo \emph{Randomise}
+\item Il modello di Freedman-Lane tiene conto di variabili di disturbo, ed \'e quello utilizzato dall'algoritmo \emph{Randomise}.
 \item Negli studi di gruppo, il caso \'e ancora pi\'u semplice: i blocchi di permutazione sono definiti dai pazienti.
 \end{itemize}
 Per ulteriori approfondimenti consultare:
@@ -364,7 +370,8 @@ Per ulteriori approfondimenti consultare:
 \center\href{http://www.sciencedirect.com/science/article/pii/S1053811914000913}{Permutation inference for the general linear model}
 \end{frame}
 
-\section{Confronto risultati}
+
+\section{Metodi di correzione}
 \subsection{Montecarlo simulation - BrainVoyager}
 \begin{frame}
 \frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
@@ -379,16 +386,23 @@ Il valore così ottenuto viene utilizzato per la sogliatura basata su cluster.
 
 \subsection{Altri metodi di correzione - BrainVoyager}
 \begin{frame}
-\frametitle{Bonferroni}
+\frametitle{Bonferroni(1/2)}
 In statistica la \textbf{correzione di Bonferroni} viene utilizzata per contrastare il problema dei confronti multipli.\\
 \medskip
-E' basata sull'idea che se in un esperimento si stanno testando $m$ ipotesi, un modo per mantenere il \textbf{familywise error rate} (\textbf{FWER} = probabilità di effettuare errore di \textit{Tipo 1} all'inverno delle ipotesi) è quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.\\
+Cercando di mantenere il \textbf{familywise error rate}(FWER) all'interno di una determinata soglia.
 \medskip
-Quindi se vogliamo un \textit{p-value} totale di $\alpha$, la correzione di Bonferroni testerà ogni singolo esperimento con un \textit{p-value} di $\alpha/m$ è rifiuterà l'ipotesi nulla se il \textit{p-value} di quell'esperimento è minore di tale valore.
+L'FWER \'e la probabilit\'a di effettuare errori di Tipo 1 ``falsi positivi'' su tutte le ipotesi quando si effettuano test multipli.
 \end{frame}
 
 \begin{frame}
-\frametitle{False Discovery Rate}
+\frametitle{Bonferroni(2/2)}
+Se si sta svolgendo l'esperimento con $m$ ipotesi, un modo per mantenere l'FWER \'e quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.
+\\ \medskip
+Quindi, se vogliamo un \emph{p-value} totale di $\alpha$, la correzione di Bonferroni tester\'a ogni singolo esperimento con un valore di $\alpha/m$ e rifiuter\'a l'ipotesi nulla se il p-value di quell'esperimento \'e minore di tale valore.
+\end{frame}
+
+\begin{frame}
+\frametitle{False Discovery Rate (1/2)}
 Il \textbf{False Discovery Rate} come la correzione di Bonferroni si prefigge l'obiettivo di contrastare il problema dei confronti multipli.\\
 \smallskip
 La procedura per il controllo FDR è stata creata per gestire la proporzione attesa di rifiuto dell'ipotesi nulla,  che però sarebbe stato sbagliato rifiutare ("false discoveries").\\
@@ -397,6 +411,7 @@ La procedura FDR fornisce un controllo meno stringente sugli errori di \textit{T
 \end{frame}
 
 \begin{frame}
+\frametitle{False Discovery Rate (2/2)}
 Sia:
 \begin{itemize}
 \item $V$ il numero di falsi positivi (Errori di Tipo 1)
@@ -426,14 +441,6 @@ FDR \leq \frac{m_0}{m}\alpha \leq \alpha
 \end{equation*}
 \end{frame}
 
-
-\subsection{TFCE - FSL}
-\begin{frame}
-\end{frame}
-
-\subsection{TFCE - Brainvoyager}
-\begin{frame}
-\end{frame}
 
 \section{Codice}
 \subsection{Suddivisione del codice}
@@ -622,6 +629,16 @@ invece viene utilizzato per rendere un istruzione atomica.\\
 Abbiamo deciso di utilizzare, OMP perch\'e l'effort per utilizzarlo \'e praticamente nullo, e le prestazioni sono ottime.\\
 \medskip
 Inoltre essendo che l'implementazione dei \textit{Thread} in \textit{C} cambia tra Windows e Linux, si sarebbe reso necessario modificare il codice per renderlo funzionante su entrambe le piattaforme.
+\end{frame}
+
+\section{Confronto risultati}
+
+\subsection{TFCE - FSL}
+\begin{frame}
+\end{frame}
+
+\subsection{TFCE - Brainvoyager}
+\begin{frame}
 \end{frame}
 
 \section{Conclusioni}

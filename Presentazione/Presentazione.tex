@@ -69,11 +69,11 @@ Per un dato esperimento di \emph{Risonanza Magnetica Funzionale (FMRI)}, una \al
 \item Le attivazioni vengono stimate attraverso il \alert{GLM}, su cui viene fatta \emph{inferenza} per ottenere i valori statistici.
 \end{itemize}
 \end{frame}
-\begin{frame}{GLM - Aspetti teorici (1/4)}
+\begin{frame}{GLM - Aspetti teorici (1/3)}
 
 Il \alert{Generelized Linear Model (GLM)} descrive il comportamento di ogni voxel con la seguente equazione:
 
-$$y = X\beta + \epsilon$$ 
+$$Y = X\beta + \epsilon$$ 
 
 \begin{block}{Genaralized Linear Model}
 Descrive la risposta $y$ in termini della combinazione lineare di tutti i fattori in gioco ($X\beta$), includendo l'errore $\epsilon$.
@@ -82,21 +82,21 @@ Descrive la risposta $y$ in termini della combinazione lineare di tutti i fattor
 \end{frame}
 
 \begin{frame}
-\frametitle{GLM - Aspetti teorici (2/4)}
-Osservando i voxel pi\'u  volte, si ottiene la \alert{matrice caratterizzante} del GLM.
+\frametitle{GLM - Aspetti teorici (2/3)}
+Osservando l'intensit\'a dei voxel nel tempo, si ottiene il \alert{vettore delle osservazioni}.
 
 \includegraphics[keepaspectratio, width = 300px	]{Images/glm_matrix.png}
 \end{frame}
 
 \begin{frame}
-\frametitle{GLM - Aspetti teorici (3/4)}
-I predittori hanno una certa durata temporale, che influenzano il valore dei voxel.
+\frametitle{GLM - Aspetti teorici (3/3)}
+Come per i voxel, anche i predittori hanno una certa durata temporale.
 
 \includegraphics[keepaspectratio, width = 300px]{Images/glm_visual.png}
 \end{frame}
 
 \begin{frame}
-\frametitle{GLM - Aspetti teorici (4/4)}
+\frametitle{GLM - Riepilogo}
 Tenendo conto degli aspetti appena visti, il modello completo del GLM diventa:
 
 $$Y = \beta X + \epsilon$$
@@ -108,17 +108,6 @@ dove:
 \item $\beta$ \'e il vettore $r \times 1$ dei coefficienti di regressione.
 \item $\epsilon$ \'e il vettore $N \times 1$ degli errori casuali.
 \end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{GLM - Problemi}
-Problemi del GLM:
-\begin{enumerate}
-\item Il segnale BOLD non \'e un interruttore ON/OFF.
-\item Disturbi dovute alle basse frequenze.
-\item Assunzioni sulla natura dell'errore (distribuzione normale, correlazione temporale).
-\item Disturbi di natura fisiologica (movimenti della testa, respiro, battito di ciglia... etc)
-\end{enumerate}
 \end{frame}
 
 \begin{frame}
@@ -329,27 +318,53 @@ La scelta finale \'e stata $H = 2$ ed $E = 0.5$ poich\'e:
 \begin{frame}
 \frametitle{Sogliatura esplicita}
 \begin{itemize}
-\item L'algoritmo TFCE produce un'immagine con gli score calcolati sull'immagine originale.
+\item \onslide<1->L'algoritmo TFCE produce un'immagine con gli score calcolati sull'immagine originale.
 
-\item Tuttavia, l'immagine prodotta manca di \emph{valenza statistica}.
+\item \onslide<2->Tuttavia, l'immagine prodotta manca di \emph{valenza statistica}.
 
-\item Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare i \alert{p-value} per ogni voxel.
+\item \onslide<3->Per calcolare la valenza statistica dell'immagine degli score, occorre calcolare i \alert{p-value} per ogni voxel.
 
-\item Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il \alert{test delle permutazioni} sull'esperimento originale.
+\item \onslide<4->Essendo TFCE una particolare statistica che sfrutta informazioni spaziali, \'e possibile calcolare i p-value effettuando il \alert{test delle permutazioni} sull'esperimento originale.
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Test delle permutazioni}
+\frametitle{Test delle permutazioni applicato al GLM single study(1/2)}
 \begin{itemize}
-\item Il GLM asserisce che il comportamento di ogni voxel pu\'o essere descritto dalla legge $Y = \beta X + \epsilon$.
-\item Il calcolo della statistica dipende ovviamente dall'ordine dei predittori.
-\item Sotto l'ipotesi nulla $\mathcal{H}_0 : \beta = 0 \implies Y = \epsilon$, cio\'e i dati sono puro rumore. I dati quindi, sarebbero stati gli stessi in qualunque condizione sperimentale. 
-\item Sotto questa ipotesi, i predittori possono essere permutati, dando
+\item \onslide<1-> Il GLM asserisce che il comportamento di ogni voxel pu\'o essere descritto dalla legge $Y = \beta X + \epsilon$.
+\item \onslide<2->Sotto l'ipotesi nulla $\mathcal{H}_0 : \beta = 0 \implies Y = \epsilon$, cio\'e i dati sono puro rumore.
+\item \onslide<3->Sotto questa ipotesi, i voxel osservati $Y$ possono essere quindi \alert{permutati}.
+\item \onslide<4-> In caso di assenza di variabili di disturbo, permutare i predittori e' equivalente:
 \end{itemize}
+$$PY = X\beta + \epsilon \iff Y = P'X\beta + P'\epsilon$$
 \end{frame}
 
-\section{Metodi di correzzione}
+\begin{frame}
+\frametitle{Test delle permutazioni applicato al GLM single study(2/2)}
+\begin{itemize}
+\item \onslide<1->Data la \emph{permutabilit\'a} garantita dall'ipotesi nulla, i dati osservati possono derivare in maniera equiprobabile da qualsiasi condizione sperimentale.
+\item \onslide<2->Ci\'o vale anche per la statistica calcolata a partire dai dati.
+\item \onslide<3->La \alert{distribuzione delle permutazioni} \'e quindi l'insieme delle statistiche calcolate dalle possibili permutazioni dei dati di partenza.
+\item \onslide<4->Tale distribuzione ci consente di formalizzare la probabilit\'a di un certo risultato.
+\end{itemize}
+\begin{block}{P-value}
+Il P-value \'e la proporzione dei valori statistici nella distribuzione delle permutazioni che sono maggiori o uguali del valore osservato nell'esperimento.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Test delle permutazioni - Casi particolari}
+Il semplice modello appena visto pu\'o essere esteso a diversi casi:
+\begin{itemize}
+\item Il modello di Freedman-Lane tiene conto di variabili di disturbo, ed \'e quello utilizzato dall'algoritmo \emph{Randomise}
+\item Negli studi di gruppo, il caso \'e ancora pi\'u semplice: i blocchi di permutazione sono definiti dai pazienti.
+\end{itemize}
+Per ulteriori approfondimenti consultare:
+
+\center\href{http://www.sciencedirect.com/science/article/pii/S1053811914000913}{Permutation inference for the general linear model}
+\end{frame}
+
+\section{Confronto risultati}
 \subsection{Montecarlo simulation - BrainVoyager}
 \begin{frame}
 \frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
@@ -362,23 +377,16 @@ Il metodo prende in input una soglia di significatività $\alpha$ e restituisce 
 Il valore così ottenuto viene utilizzato per la sogliatura basata su cluster. 
 \end{frame}
 
-\subsection{Bonferroni - BrainVoyager}
+\subsection{Altri metodi di correzione - BrainVoyager}
 \begin{frame}
 \frametitle{Bonferroni}
 In statistica la \textbf{correzione di Bonferroni} viene utilizzata per contrastare il problema dei confronti multipli.\\
 \medskip
-Cercando di mantenere il \textbf{familywise error rate} (FWER) all'interno di una determinata soglia.\\
-\smallskip
-L'FWER è la probabilità di effettuare errori di Tipo 1  ``falsi positivi'' su tutte le ipotesi, quando si effettuano test multipli.
-\end{frame}
-
-\begin{frame}
-Se si sta svolgendo un esperimento con $m$ ipotesi, un modo per mantenere l'FWER  è quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.\\
+E' basata sull'idea che se in un esperimento si stanno testando $m$ ipotesi, un modo per mantenere il \textbf{familywise error rate} (\textbf{FWER} = probabilità di effettuare errore di \textit{Tipo 1} all'inverno delle ipotesi) è quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.\\
 \medskip
 Quindi se vogliamo un \textit{p-value} totale di $\alpha$, la correzione di Bonferroni testerà ogni singolo esperimento con un \textit{p-value} di $\alpha/m$ è rifiuterà l'ipotesi nulla se il \textit{p-value} di quell'esperimento è minore di tale valore.
 \end{frame}
 
-\subsection{False Discovery Rate}
 \begin{frame}
 \frametitle{False Discovery Rate}
 Il \textbf{False Discovery Rate} come la correzione di Bonferroni si prefigge l'obiettivo di contrastare il problema dei confronti multipli.\\
@@ -418,9 +426,13 @@ FDR \leq \frac{m_0}{m}\alpha \leq \alpha
 \end{equation*}
 \end{frame}
 
-\section{Confronto risultati}
-\begin{frame}
 
+\subsection{TFCE - FSL}
+\begin{frame}
+\end{frame}
+
+\subsection{TFCE - Brainvoyager}
+\begin{frame}
 \end{frame}
 
 \section{Codice}

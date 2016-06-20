@@ -384,6 +384,15 @@ Il metodo prende in input una soglia di significativit√† $\alpha$ e restituisce 
 Il valore cos√¨ ottenuto viene utilizzato per la sogliatura basata su cluster. 
 \end{frame}
 
+\begin{frame}
+	\frametitle{Montecarlo simulation - Brainvoyager}
+	The "ClusterThresh" plugin provides a method for the correction of multiple comparisons using cluster-size thresholding. It complements the existing methods in BrainVoyager QX for the correction of multiple comparions (Bonferroni, FDR) using voxel-based thresholding. This method exploits the fundamental assumption that areas of activity tend to stimulate signal changes over spatially contiguous groups of voxels rather than over sparsely isolated voxels. The implemented solution for cluster-level thresholding is based on the approach described by Forman and colleagues (1995) but has been extended and generalized from 2D to 3D statistical maps (Goebel et al., 2006).
+
+In BrainVoyager QX, all 3D statistical maps are arranged in so-called VMP (Volume MaPs) files. A single VMP is created after running any voxel-level statistical test in the 3D space of VMRs and VTCs, e.g. when computing GLM or ANOVA contrasts and overlaying the results on an anatomical data set (VMRs).
+
+The principal motivation for running the ClusterThresh plugin is the calculation of a specific cluster size threshold, which is then applied to the current VMP (the calculation is restricted to the first VMP of the list in case of multiple overlaid VMPs). By applying the cluster size threshold, the resulting map becomes ìcorrected for multiple comparisonsî at a desired confidence level (e.g. alpha = 0.05). Since the calculation does not change the current single-voxel threshold, you might not notice any change in the overlayed VMP display - the only visible change is the removal of small clusters from the map due to the applied cluster-size threshold. The computation of the minimum cluster threshold is accomplished via MonteCarlo simulation of the random process of image generation, followed by the injection of spatial correlations between neighboring voxels, voxel intensity thresholding, masking (optional) and cluster identification. Starting from a manually adjusted voxel-level probability threshold, a minimum cluster size threshold is automatically set for the VMP which yields 5\% (or less) protection against false positive detection at the cluster level.
+\end{frame}
+
 \subsection{Altri metodi di correzione - BrainVoyager}
 \begin{frame}
 \frametitle{Bonferroni(1/2)}

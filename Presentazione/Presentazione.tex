@@ -12,6 +12,8 @@
 \usepackage{amsfonts}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \lstset{
   basicstyle=\footnotesize,
@@ -33,7 +35,7 @@
 
 \title{Threshold-Free Cluster Enhancement}
 \author{Luigi Giugliano$^1$, Marco Mecchia$^1$}
-\institute{$^1$Università degli studi di Salerno}
+\institute{$^1$Universit\'a  degli studi di Salerno}
 
 
 \begin{document}
@@ -174,9 +176,9 @@ Lo spatial information enhancing \'e una tecnica particolarmente utile per la so
 \smallskip
 \begin{itemize}
 
-\item le informazioni spaziali vengono usate per aumentare l'autenticità di estese aree di segnale. 
+\item le informazioni spaziali vengono usate per aumentare l'autenticitÃ  di estese aree di segnale. 
 \medskip
-\item le regioni del segnale sono infatti più estese del rumore e quindi trovare tali zone aumenta la possibilità che esse siano segnale e non artefatti.
+\item le regioni del segnale sono infatti pi\'u estese del rumore e quindi trovare tali zone aumenta la possibilit\'a che esse siano segnale e non artefatti.
 \end{itemize}
 
 \end{frame}
@@ -375,22 +377,13 @@ Per ulteriori approfondimenti consultare:
 \subsection{Montecarlo simulation - BrainVoyager}
 \begin{frame}
 \frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
-Il metodo prende in input una soglia di significatività $\alpha$ e restituisce la taglia del cluster a cui sogliare.
+Il metodo prende in input una soglia di significativit\'a $\alpha$ ed una mappa da sogliare e restituisce tale mappa sogliata.
 \begin{itemize}
 \item Vengono generate $n$ mappe statistiche random con il metodo di Montecarlo
 \item Od ogni mappa viene applicato uno smoothing spaziale calcolato sulla mappa di input
-\item Si sceglie la taglia $t$ tale che la probabilità di osservare cluster generati casualmente di taglia maggiore di $t$ sia uguale ad $\alpha$
+\item Si sceglie la taglia $t$ tale che la probabilit\'a  di osservare cluster generati casualmente di taglia maggiore di $t$ sia uguale ad $\alpha$
 \end{itemize}
-Il valore così ottenuto viene utilizzato per la sogliatura basata su cluster. 
-\end{frame}
-
-\begin{frame}
-	\frametitle{Montecarlo simulation - Brainvoyager}
-	The "ClusterThresh" plugin provides a method for the correction of multiple comparisons using cluster-size thresholding. It complements the existing methods in BrainVoyager QX for the correction of multiple comparions (Bonferroni, FDR) using voxel-based thresholding. This method exploits the fundamental assumption that areas of activity tend to stimulate signal changes over spatially contiguous groups of voxels rather than over sparsely isolated voxels. The implemented solution for cluster-level thresholding is based on the approach described by Forman and colleagues (1995) but has been extended and generalized from 2D to 3D statistical maps (Goebel et al., 2006).
-
-In BrainVoyager QX, all 3D statistical maps are arranged in so-called VMP (Volume MaPs) files. A single VMP is created after running any voxel-level statistical test in the 3D space of VMRs and VTCs, e.g. when computing GLM or ANOVA contrasts and overlaying the results on an anatomical data set (VMRs).
-
-The principal motivation for running the ClusterThresh plugin is the calculation of a specific cluster size threshold, which is then applied to the current VMP (the calculation is restricted to the first VMP of the list in case of multiple overlaid VMPs). By applying the cluster size threshold, the resulting map becomes �corrected for multiple comparisons� at a desired confidence level (e.g. alpha = 0.05). Since the calculation does not change the current single-voxel threshold, you might not notice any change in the overlayed VMP display - the only visible change is the removal of small clusters from the map due to the applied cluster-size threshold. The computation of the minimum cluster threshold is accomplished via MonteCarlo simulation of the random process of image generation, followed by the injection of spatial correlations between neighboring voxels, voxel intensity thresholding, masking (optional) and cluster identification. Starting from a manually adjusted voxel-level probability threshold, a minimum cluster size threshold is automatically set for the VMP which yields 5\% (or less) protection against false positive detection at the cluster level.
+Il valore cos\'i ottenuto viene utilizzato per la sogliatura basata su cluster. 
 \end{frame}
 
 \subsection{Altri metodi di correzione - BrainVoyager}
@@ -414,7 +407,7 @@ Quindi, se vogliamo un \emph{p-value} totale di $\alpha$, la correzione di Bonfe
 \frametitle{False Discovery Rate (1/2)}
 Il \textbf{False Discovery Rate} come la correzione di Bonferroni si prefigge l'obiettivo di contrastare il problema dei confronti multipli.\\
 \smallskip
-La procedura per il controllo FDR è stata creata per gestire la proporzione attesa di rifiuto dell'ipotesi nulla,  che però sarebbe stato sbagliato rifiutare ("false discoveries").\\
+La procedura per il controllo FDR \'e stata creata per gestire la proporzione attesa di rifiuto dell'ipotesi nulla,  che per\'o sarebbe stato sbagliato rifiutare ("false discoveries").\\
 \smallskip
 La procedura FDR fornisce un controllo meno stringente sugli errori di \textit{Tipo 1} rispetto a Bonferroni.
 \end{frame}
@@ -427,7 +420,7 @@ Sia:
 \item $S$ il numero di veri positivi 
 \item $R =  V+S$ 
 \end{itemize}
-La FDR è definita:
+La FDR \'e definita:
 \begin{equation*}
 FDR = E\Big[\frac{V}{S+V}\Big] = E\Big[\frac{V}{S+V}\Big]
 \end{equation*}
@@ -435,16 +428,16 @@ dove $\frac{V}{R} = 0$ quando $R = 0$.
 \end{frame}
 
 \begin{frame}
-\framesubtitle{Procedura di controllo di Benjamini–Hochberg}
-Avendo $H_1 \dots H_m$ test sull'ipotesi nulla e $p_1 \dots p_m$ \textit{p-value} corrispondenti. Ordiniamo i \textit{p-value} in ordine crescente; il \textit{p-value} più piccolo corrisponde al test con valore statistico più alto.\\
+\framesubtitle{Procedura di controllo di Benjamini-Hochberg}
+Avendo $H_1 \dots H_m$ test sull'ipotesi nulla e $p_1 \dots p_m$ \textit{p-value} corrispondenti. Ordiniamo i \textit{p-value} in ordine crescente; il \textit{p-value} pi\'u piccolo corrisponde al test con valore statistico pi\'u alto.\\
 \smallskip
-La procedura Benjamini–Hochberg controlla il false discovery rate (al livello $\alpha$) con i seguenti passi:\\
+La procedura Benjamini-Hochberg controlla il false discovery rate (al livello $\alpha$) con i seguenti passi:\\
 \medskip
 \begin{enumerate}
-\item Per un dato $\alpha$, trova il più grande $k$ per cui: $p_k \leq \frac{k}{m}\alpha$
+\item Per un dato $\alpha$, trova il pi\'u grande $k$ per cui: $p_k \leq \frac{k}{m}\alpha$
 \item Rifiuta l'ipotesi nulla (accetta come discovery vere) tutte i test $H_i \dot H_k$
 \end{enumerate}
-La procedura di Benjamini–Hochberg è valida quando i $m$ test sono indipendenti e soddisfa anche la seguente equazione:
+La procedura di Benjamini-Hochberg \'e valida quando i $m$ test sono indipendenti e soddisfa anche la seguente equazione:
 \begin{equation*}
 FDR \leq \frac{m_0}{m}\alpha \leq \alpha
 \end{equation*}
@@ -461,14 +454,14 @@ I file principali che compongono il plugin sono:
 \item{Utilities.cpp}
 \end{itemize}
 \vfill
-\textbf{Tfce} è il core del plugin, dove avviene il calcolo dei punteggi.\\
+\textbf{Tfce} \'E il core del plugin, dove avviene il calcolo dei punteggi.\\
 \smallskip
 \textbf{Utilities} contiene tutte le funzioni di supporto.
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Funzioni pubbliche (1/3)}
-L'unica funzione che viene esposta dal file \textbf{Tfce.h} è:
+L'unica funzione che viene esposta dal file \textbf{Tfce.h} \'e:
 \begin{center}
 \begin{lstlisting}
 float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh);
@@ -621,9 +614,9 @@ restituisce la mappa dei cluster trovati utilizzando la \textbf{26-connectivity}
 \end{frame}
 
 \begin{frame}[fragile]
-E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score più veloce.\\
+E' stato utilizzata la specifica OpenMP per rendere il calcolo degli score pi\'u veloce.\\
 \medskip
-OpenMP (Open Multiprocessing) è un API multipiattaforma per la creazione di applicazioni parallele su sistemi a memoria condivisa.\\
+OpenMP (Open Multiprocessing) \'e un API multipiattaforma per la creazione di applicazioni parallele su sistemi a memoria condivisa.\\
 \smallskip
 Il comando:\\
 \textbf{\#pragma omp parallel for}\\
@@ -642,16 +635,160 @@ Inoltre essendo che l'implementazione dei \textit{Thread} in \textit{C} cambia t
 
 \section{Confronto risultati}
 
-\subsection{TFCE - FSL}
 \begin{frame}
+\frametitle{Presentazione dei risultati}
+I risultati che seguono enfatizzano i due principali obiettivi preposti:
+\begin{enumerate}
+\item Il plugin sviluppato produce risultati confrontabili con l'implementazione in FSL.
+\item La tecnica TFCE produce risultati confrontabili con altri metodi di correzione presenti in Brainvoyager (introdotti precedentemente).
+\end{enumerate}
 \end{frame}
 
-\subsection{TFCE - Brainvoyager}
+\subsection{Brainvoyager TFCE vs FSL TFCE}
 \begin{frame}
+\frametitle{Our TFCE vs FSL TFCE}
+\begin{figure}
+    \centering
+        \includegraphics[width=\textwidth]{Images/FSLcorrected.png}
+\end{figure}
 \end{frame}
+
+\begin{frame}
+\frametitle{Our TFCE vs FSL TFCE}
+\begin{figure}
+	\centering
+        \includegraphics[width=0.63\textwidth]{Images/Brainvoyager-TFCE83187129.png}
+\end{figure}
+\end{frame}
+
+\subsection{TFCE vs Rest of the world}
+\begin{frame}
+\frametitle{Original vs TFCE}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+	    \includegraphics[width=\textwidth]{Images/Brainvoyager83187129.png}
+	    \caption{Original}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+	    \includegraphics[width=\textwidth]{Images/Brainvoyager-TFCE83187129.png}
+	    \caption{TFCE}
+    \end{subfigure}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Original vs Bonferroni}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager83187129.png}
+	\caption{Original}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager-Bonferroni83187129.png}
+	\caption{Bonferroni}
+    \end{subfigure}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{TFCE vs Bonferroni}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager-TFCE83187129.png}
+	\caption{TFCE}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager-Bonferroni83187129.png}
+	\caption{Bonferroni}
+    \end{subfigure}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Original vs FDR}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager83187129.png}
+	\caption{Original}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager-FDR83187129.png}
+	\caption{FDR}
+    \end{subfigure}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{TFCE vs FDR}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager-TFCE83187129.png}
+	\caption{TFCE}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager-FDR83187129.png}
+	\caption{FDR}
+    \end{subfigure}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Original vs Montecarlo Simulations}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+	    \includegraphics[width=\textwidth]{Images/Brainvoyager83187129.png}
+	    \caption{Original}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+	    \includegraphics[width=\textwidth]{Images/Brainvoyager83187129-PluginEsposito.png}
+	    \caption{Montecarlo}
+    \end{subfigure}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{TFCE vs Montecarlo Simulations}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager-TFCE83187129.png}
+	\caption{TFCE}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{Images/Brainvoyager83187129-PluginEsposito.png}
+	\caption{Montecarlo}
+    \end{subfigure}
+\end{figure}
+\end{frame}
+
 
 \section{Conclusioni}
 \begin{frame}
+\frametitle{Conclusioni}
+Il plugin sviluppato risulta essere efficace nella correzione delle mappe generate tramite contrasti statistici sui risultati di un GLM.\\
+
+\bigskip
+Tuttavia, l'implementazione corrente produce mappe prive di valore statistico, in quanto la parte relativa al test delle permutazioni non \'e stata sviluppata.
+\end{frame}
+
+\begin{frame}
+\frametitle{Sviluppi futuri}
+A partire dal lavoro svolto, futuri sviluppi prevedono:
+\begin{itemize}
+\item Sviluppo del framework randomise ed inclusione del plugin in esso.
+\item Estendere i risultati ad altre mappe statistiche.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\huge{Grazie per l'attenzione}
 \end{frame}
 
 

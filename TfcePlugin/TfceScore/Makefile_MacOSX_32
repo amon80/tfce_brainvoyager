@@ -1,0 +1,124 @@
+#############################################################################
+# Makefile for building: libexampleguiplugin.dylib
+#############################################################################
+
+####### Compiler, tools and options
+
+CC       = cc
+CXX      = c++
+LEX      = flex
+YACC     = yacc
+CFLAGS   = -pipe -Wall -W -Os -fPIC -arch i386 -DMAKE_PLUGIN
+CXXFLAGS = -pipe -Wall -W -Os -fPIC -arch i386 -DMAKE_PLUGIN
+LEXFLAGS = 
+YACCFLAGS= -d
+INCPATH  = -I.
+LINK     = c++
+LFLAGS   = -headerpad_max_install_names -bundle -arch i386
+LIBS     =
+AR       = ar cq
+RANLIB   = ranlib -s
+TAR      = tar -cf
+GZIP     = gzip -9f
+COPY     = cp -f
+COPY_FILE= cp -f
+COPY_DIR = cp -f -r
+INSTALL_FILE= $(COPY_FILE)
+INSTALL_DIR = $(COPY_DIR)
+DEL_FILE = rm -f
+SYMLINK  = ln -sf
+DEL_DIR  = rmdir
+MOVE     = mv -f
+CHK_DIR_EXISTS= test -d
+MKDIR    = mkdir -p
+
+####### Output directory
+
+OBJECTS_DIR = obj/
+
+####### Files
+
+HEADERS = ExampleGUIPlugin.h \
+		BVQXPluginInterface.h \
+		global.h \
+		Plugin_NR_VMP_Header.h \
+		Plugin_VTC_Header.h \
+		Plugin_VOI_Header.h \
+		Plugin_PRT_Header.h \
+		stat.h \
+		nrutil.h
+SOURCES = ExampleGUIPlugin.cpp \
+		BVQXPluginInterface.cpp \
+		stat.cpp \
+		nrutil.cpp
+OBJECTS = obj/ExampleGUIPlugin.o \
+		obj/BVQXPluginInterface.o \
+		obj/stat.o \
+		obj/nrutil.o
+
+DESTDIR  = 
+TARGET   = libExampleGUIPlugin.dylib
+TARGETD   = libExampleGUIPlugin.dylib
+
+first: all
+####### Implicit rules
+
+.SUFFIXES: .c .o .cpp .cc .cxx .C
+
+.cpp.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.C.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
+
+####### Build rules
+
+all: Makefile_MacOSX_32 $(TARGET)
+
+$(TARGET): $(OBJECTS)  
+	-$(DEL_FILE) $(TARGET)
+	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
+
+clean:
+	-$(DEL_FILE) $(OBJECTS)
+
+
+####### Sub-libraries
+
+distclean: clean
+	-$(DEL_FILE) $(TARGET) $(TARGET)
+
+
+FORCE:
+
+####### Compile
+
+obj/ExampleGUIPlugin.o: ExampleGUIPlugin.cpp ExampleGUIPlugin.h \
+		BVQXPluginInterface.h \
+		global.h \
+		Plugin_NR_VMP_Header.h \
+		Plugin_VTC_Header.h \
+		Plugin_VOI_Header.h \
+		Plugin_PRT_Header.h \
+		stat.h \
+		nrutil.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/ExampleGUIPlugin.o ExampleGUIPlugin.cpp
+
+obj/BVQXPluginInterface.o: BVQXPluginInterface.cpp BVQXPluginInterface.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/BVQXPluginInterface.o BVQXPluginInterface.cpp
+
+obj/stat.o: stat.cpp stat.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/stat.o stat.cpp
+
+obj/nrutil.o: nrutil.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/nrutil.o nrutil.cpp
+

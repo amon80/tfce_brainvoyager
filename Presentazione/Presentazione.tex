@@ -32,6 +32,7 @@
 
 
 \setbeamertemplate{itemize/enumerate body begin}{\footnotesize}
+\beamertemplatenavigationsymbolsempty
 
 \title{Threshold-Free Cluster Enhancement}
 \author{Luigi Giugliano$^1$, Marco Mecchia$^1$}
@@ -176,7 +177,7 @@ Lo spatial information enhancing \'e una tecnica particolarmente utile per la so
 \smallskip
 \begin{itemize}
 
-\item le informazioni spaziali vengono usate per aumentare l'autenticitÃ  di estese aree di segnale. 
+\item le informazioni spaziali vengono usate per aumentare l'autenticit\'a  di estese aree di segnale. 
 \medskip
 \item le regioni del segnale sono infatti pi\'u estese del rumore e quindi trovare tali zone aumenta la possibilit\'a che esse siano segnale e non artefatti.
 \end{itemize}
@@ -644,20 +645,22 @@ I risultati che seguono enfatizzano i due principali obiettivi preposti:
 \end{enumerate}
 \end{frame}
 
-\subsection{Brainvoyager TFCE vs FSL TFCE}
+\subsection{FSL TFCE vs Brainvoyager TFCE}
 \begin{frame}
-\frametitle{Our TFCE vs FSL TFCE}
+\frametitle{FSL TFCE}
 \begin{figure}
     \centering
         \includegraphics[width=\textwidth]{Images/FSLcorrected.png}
+	\caption{Tfce calcolato su FSL.}
 \end{figure}
 \end{frame}
 
 \begin{frame}
-\frametitle{Our TFCE vs FSL TFCE}
+\frametitle{Brainvoyager TFCE}
 \begin{figure}
 	\centering
-        \includegraphics[width=0.63\textwidth]{Images/Brainvoyager-TFCE83187129.png}
+        \includegraphics[width=0.60\textwidth]{Images/Brainvoyager-TFCE83187129.png}
+	\caption{Tfce calcolato su Brainvoyager tramite il plugin.}
 \end{figure}
 \end{frame}
 
@@ -784,10 +787,12 @@ A partire dal lavoro svolto, futuri sviluppi prevedono:
 \begin{itemize}
 \item Sviluppo del framework randomise ed inclusione del plugin in esso.
 \item Estendere i risultati ad altre mappe statistiche.
+\item Confrontare la tecnica TFCE con Gaussian Field mapping implementato in SPM.
 \end{itemize}
 \end{frame}
 
 \begin{frame}
+\centering
 \huge{Grazie per l'attenzione}
 \end{frame}
 

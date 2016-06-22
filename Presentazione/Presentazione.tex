@@ -35,7 +35,7 @@
 
 \title{Threshold-Free Cluster Enhancement}
 \author{Luigi Giugliano$^1$, Marco Mecchia$^1$}
-\institute{$^1$Universit\'a  degli studi di Salerno}
+\institute{$^1$Universit\'a  degli studi di Salerno}
 
 
 \begin{document}
@@ -176,7 +176,7 @@ Lo spatial information enhancing \'e una tecnica particolarmente utile per la so
 \smallskip
 \begin{itemize}
 
-\item le informazioni spaziali vengono usate per aumentare l'autenticitÃ  di estese aree di segnale. 
+\item le informazioni spaziali vengono usate per aumentare l'autenticita\'a  di estese aree di segnale. 
 \medskip
 \item le regioni del segnale sono infatti pi\'u estese del rumore e quindi trovare tali zone aumenta la possibilit\'a che esse siano segnale e non artefatti.
 \end{itemize}
@@ -317,8 +317,6 @@ La scelta finale \'e stata $H = 2$ ed $E = 0.5$ poich\'e:
 \begin{itemize}
 \item Ci\'o \'e desirabile specie con $h$ molto basso poich\'e \'e probabile che ci siano pochi cluster di dimensioni molto grandi, che forniscono poca informazione spaziale.
 \end{itemize}
-
-
 \end{itemize}
 \end{frame}
 
@@ -371,78 +369,6 @@ Per ulteriori approfondimenti consultare:
 
 \center\href{http://www.sciencedirect.com/science/article/pii/S1053811914000913}{Permutation inference for the general linear model}
 \end{frame}
-
-
-\section{Metodi di correzione}
-\subsection{Montecarlo simulation - BrainVoyager}
-\begin{frame}
-\frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
-Il metodo prende in input una soglia di significativit\'a $\alpha$ ed una mappa da sogliare e restituisce tale mappa sogliata.
-\begin{itemize}
-\item Vengono generate $n$ mappe statistiche random con il metodo di Montecarlo
-\item Od ogni mappa viene applicato uno smoothing spaziale calcolato sulla mappa di input
-\item Si sceglie la taglia $t$ tale che la probabilit\'a  di osservare cluster generati casualmente di taglia maggiore di $t$ sia uguale ad $\alpha$
-\end{itemize}
-Il valore cos\'i ottenuto viene utilizzato per la sogliatura basata su cluster. 
-\end{frame}
-
-\subsection{Altri metodi di correzione - BrainVoyager}
-\begin{frame}
-\frametitle{Bonferroni(1/2)}
-In statistica la \textbf{correzione di Bonferroni} viene utilizzata per contrastare il problema dei confronti multipli.\\
-\medskip
-Cercando di mantenere il \textbf{familywise error rate}(FWER) all'interno di una determinata soglia.
-\medskip
-L'FWER \'e la probabilit\'a di effettuare errori di Tipo 1 ``falsi positivi'' su tutte le ipotesi quando si effettuano test multipli.
-\end{frame}
-
-\begin{frame}
-\frametitle{Bonferroni(2/2)}
-Se si sta svolgendo l'esperimento con $m$ ipotesi, un modo per mantenere l'FWER \'e quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.
-\\ \medskip
-Quindi, se vogliamo un \emph{p-value} totale di $\alpha$, la correzione di Bonferroni tester\'a ogni singolo esperimento con un valore di $\alpha/m$ e rifiuter\'a l'ipotesi nulla se il p-value di quell'esperimento \'e minore di tale valore.
-\end{frame}
-
-\begin{frame}
-\frametitle{False Discovery Rate (1/2)}
-Il \textbf{False Discovery Rate} come la correzione di Bonferroni si prefigge l'obiettivo di contrastare il problema dei confronti multipli.\\
-\smallskip
-La procedura per il controllo FDR \'e stata creata per gestire la proporzione attesa di rifiuto dell'ipotesi nulla,  che per\'o sarebbe stato sbagliato rifiutare ("false discoveries").\\
-\smallskip
-La procedura FDR fornisce un controllo meno stringente sugli errori di \textit{Tipo 1} rispetto a Bonferroni.
-\end{frame}
-
-\begin{frame}
-\frametitle{False Discovery Rate (2/2)}
-Sia:
-\begin{itemize}
-\item $V$ il numero di falsi positivi (Errori di Tipo 1)
-\item $S$ il numero di veri positivi 
-\item $R =  V+S$ 
-\end{itemize}
-La FDR \'e definita:
-\begin{equation*}
-FDR = E\Big[\frac{V}{S+V}\Big] = E\Big[\frac{V}{S+V}\Big]
-\end{equation*}
-dove $\frac{V}{R} = 0$ quando $R = 0$.
-\end{frame}
-
-\begin{frame}
-\framesubtitle{Procedura di controllo di Benjamini-Hochberg}
-Avendo $H_1 \dots H_m$ test sull'ipotesi nulla e $p_1 \dots p_m$ \textit{p-value} corrispondenti. Ordiniamo i \textit{p-value} in ordine crescente; il \textit{p-value} pi\'u piccolo corrisponde al test con valore statistico pi\'u alto.\\
-\smallskip
-La procedura Benjamini-Hochberg controlla il false discovery rate (al livello $\alpha$) con i seguenti passi:\\
-\medskip
-\begin{enumerate}
-\item Per un dato $\alpha$, trova il pi\'u grande $k$ per cui: $p_k \leq \frac{k}{m}\alpha$
-\item Rifiuta l'ipotesi nulla (accetta come discovery vere) tutte i test $H_i \dot H_k$
-\end{enumerate}
-La procedura di Benjamini-Hochberg \'e valida quando i $m$ test sono indipendenti e soddisfa anche la seguente equazione:
-\begin{equation*}
-FDR \leq \frac{m_0}{m}\alpha \leq \alpha
-\end{equation*}
-\end{frame}
-
 
 \section{Codice}
 \subsection{Suddivisione del codice}
@@ -513,10 +439,10 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 	} else{
 		increment = rangeData/precision;	
 	}
-	steps = ceil((maxData - minData) / (increment));
+	steps = ceil(rangeData / (increment));
 	#pragma omp parallel for
 	for (i = 0; i < steps; i++) {
-		 computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);
+		 computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, increment, toReturn);
 	}	
 	return toReturn;
 }
@@ -631,6 +557,76 @@ invece viene utilizzato per rendere un istruzione atomica.\\
 Abbiamo deciso di utilizzare, OMP perch\'e l'effort per utilizzarlo \'e praticamente nullo, e le prestazioni sono ottime.\\
 \medskip
 Inoltre essendo che l'implementazione dei \textit{Thread} in \textit{C} cambia tra Windows e Linux, si sarebbe reso necessario modificare il codice per renderlo funzionante su entrambe le piattaforme.
+\end{frame}
+
+\section{Metodi di correzione}
+\subsection{Montecarlo simulation - BrainVoyager}
+\begin{frame}
+\frametitle{Metodo di montecarlo per la sogliatura basata su cluster}
+Il metodo prende in input una soglia di significativit\'a $\alpha$ ed una mappa da sogliare e restituisce tale mappa sogliata.
+\begin{itemize}
+\item Vengono generate $n$ mappe statistiche random con il metodo di Montecarlo
+\item Od ogni mappa viene applicato uno smoothing spaziale calcolato sulla mappa di input
+\item Si sceglie la taglia $t$ tale che la probabilit\'a  di osservare cluster generati casualmente di taglia maggiore di $t$ sia uguale ad $\alpha$
+\end{itemize}
+Il valore cos\'i ottenuto viene utilizzato per la sogliatura basata su cluster. 
+\end{frame}
+
+\subsection{Altri metodi di correzione - BrainVoyager}
+\begin{frame}
+\frametitle{Bonferroni(1/2)}
+In statistica la \textbf{correzione di Bonferroni} viene utilizzata per contrastare il problema dei confronti multipli.\\
+\medskip
+Cercando di mantenere il \textbf{familywise error rate}(FWER) all'interno di una determinata soglia.
+\medskip
+L'FWER \'e la probabilit\'a di effettuare errori di Tipo 1 ``falsi positivi'' su tutte le ipotesi quando si effettuano test multipli.
+\end{frame}
+
+\begin{frame}
+\frametitle{Bonferroni(2/2)}
+Se si sta svolgendo l'esperimento con $m$ ipotesi, un modo per mantenere l'FWER \'e quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.
+\\ \medskip
+Quindi, se vogliamo un \emph{p-value} totale di $\alpha$, la correzione di Bonferroni tester\'a ogni singolo esperimento con un valore di $\alpha/m$ e rifiuter\'a l'ipotesi nulla se il p-value di quell'esperimento \'e minore di tale valore.
+\end{frame}
+
+\begin{frame}
+\frametitle{False Discovery Rate (1/2)}
+Il \textbf{False Discovery Rate} come la correzione di Bonferroni si prefigge l'obiettivo di contrastare il problema dei confronti multipli.\\
+\smallskip
+La procedura per il controllo FDR \'e stata creata per gestire la proporzione attesa di rifiuto dell'ipotesi nulla,  che per\'o sarebbe stato sbagliato rifiutare ("false discoveries").\\
+\smallskip
+La procedura FDR fornisce un controllo meno stringente sugli errori di \textit{Tipo 1} rispetto a Bonferroni.
+\end{frame}
+
+\begin{frame}
+\frametitle{False Discovery Rate (2/2)}
+Sia:
+\begin{itemize}
+\item $V$ il numero di falsi positivi (Errori di Tipo 1)
+\item $S$ il numero di veri positivi 
+\item $R =  V+S$ 
+\end{itemize}
+La FDR \'e definita:
+\begin{equation*}
+FDR = E\Big[\frac{V}{S+V}\Big] = E\Big[\frac{V}{S+V}\Big]
+\end{equation*}
+dove $\frac{V}{R} = 0$ quando $R = 0$.
+\end{frame}
+
+\begin{frame}
+\framesubtitle{Procedura di controllo di Benjamini-Hochberg}
+Avendo $H_1 \dots H_m$ test sull'ipotesi nulla e $p_1 \dots p_m$ \textit{p-value} corrispondenti. Ordiniamo i \textit{p-value} in ordine crescente; il \textit{p-value} pi\'u piccolo corrisponde al test con valore statistico pi\'u alto.\\
+\smallskip
+La procedura Benjamini-Hochberg controlla il false discovery rate (al livello $\alpha$) con i seguenti passi:\\
+\medskip
+\begin{enumerate}
+\item Per un dato $\alpha$, trova il pi\'u grande $k$ per cui: $p_k \leq \frac{k}{m}\alpha$
+\item Rifiuta l'ipotesi nulla (accetta come discovery vere) tutte i test $H_i \dot H_k$
+\end{enumerate}
+La procedura di Benjamini-Hochberg \'e valida quando i $m$ test sono indipendenti e soddisfa anche la seguente equazione:
+\begin{equation*}
+FDR \leq \frac{m_0}{m}\alpha \leq \alpha
+\end{equation*}
 \end{frame}
 
 \section{Confronto risultati}

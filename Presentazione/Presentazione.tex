@@ -577,14 +577,14 @@ Il valore cos\'i ottenuto viene utilizzato per la sogliatura basata su cluster.
 \frametitle{Bonferroni(1/2)}
 In statistica la \textbf{correzione di Bonferroni} viene utilizzata per contrastare il problema dei confronti multipli.\\
 \medskip
-Cercando di mantenere il \textbf{familywise error rate}(FWER) all'interno di una determinata soglia.
+Cercando di mantenere il \textbf{familywise error rate}(FWER) all'interno di una determinata soglia.\\
 \medskip
 L'FWER \'e la probabilit\'a di effettuare errori di Tipo 1 ``falsi positivi'' su tutte le ipotesi quando si effettuano test multipli.
 \end{frame}
 
 \begin{frame}
 \frametitle{Bonferroni(2/2)}
-Se si sta svolgendo l'esperimento con $m$ ipotesi, un modo per mantenere l'FWER \'e quello di testare ogni ipotesi individualmente con una significanza statistica di $1/m$ moltiplicato per il livello massimo desiderato.
+Se si sta svolgendo l'esperimento con $m$ ipotesi, un modo per mantenere l'FWER \'e quello di testare ogni ipotesi individualmente con una significatività statistica di $1/m$ moltiplicato per il livello massimo desiderato.
 \\ \medskip
 Quindi, se vogliamo un \emph{p-value} totale di $\alpha$, la correzione di Bonferroni tester\'a ogni singolo esperimento con un valore di $\alpha/m$ e rifiuter\'a l'ipotesi nulla se il p-value di quell'esperimento \'e minore di tale valore.
 \end{frame}
@@ -621,7 +621,7 @@ La procedura Benjamini-Hochberg controlla il false discovery rate (al livello $\
 \medskip
 \begin{enumerate}
 \item Per un dato $\alpha$, trova il pi\'u grande $k$ per cui: $p_k \leq \frac{k}{m}\alpha$
-\item Rifiuta l'ipotesi nulla (accetta come discovery vere) tutte i test $H_i \dot H_k$
+\item Rifiuta l'ipotesi nulla (accetta come discovery vere) tutti i test $H_1 \dots H_k$
 \end{enumerate}
 La procedura di Benjamini-Hochberg \'e valida quando i $m$ test sono indipendenti e soddisfa anche la seguente equazione:
 \begin{equation*}
@@ -781,6 +781,7 @@ Tuttavia, l'implementazione corrente produce mappe prive di valore statistico, i
 A partire dal lavoro svolto, futuri sviluppi prevedono:
 \begin{itemize}
 \item Sviluppo del framework randomise ed inclusione del plugin in esso.
+\item Calcolo congiunto degli score positivi e negativi.
 \item Estendere i risultati ad altre mappe statistiche.
 \item Confrontare la tecnica TFCE con Gaussian Field mapping implementato in SPM.
 \end{itemize}

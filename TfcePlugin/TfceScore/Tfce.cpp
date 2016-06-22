@@ -132,10 +132,10 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		increment = rangeData/precision;	
 	}
 
-	steps = ceil((maxData - minData) / (increment));
+	steps = ceil(rangeData / increment);
 #pragma omp parallel for
 	for (i = 0; i < steps; i++) {
-		computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, dh, toReturn);
+		computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, increment, toReturn);
 	}
 	
 	return toReturn;

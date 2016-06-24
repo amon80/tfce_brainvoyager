@@ -348,10 +348,39 @@ Il P-value \'e la proporzione dei valori statistici nella distribuzione delle pe
 \end{frame}
 
 \begin{frame}
+\frametitle{Test delle permutazioni applicato a TFCE(1/2)}
+La procedura per applicare il test delle permutazioni all'algoritmo TFCE, tenendo conto di quanto visto, \'e la seguente:
+\begin{enumerate}
+\item Calcolare gli score sull'immagine originale.
+\item Trovare lo score massimo.
+\item Permutare i predittori e ricalcolare i $\beta$ e la statistica desiderata.
+\item Trovare lo score massimo ottenuto nella permutazione e memorizzarlo.
+\item Ripetere dal punto 3 fino a raggiungere il numero di permutazioni desiderato.
+\end{enumerate}
+
+Ci\'o ci restituisce la distribuzione $T_{max}$.
+
+\end{frame}
+\begin{frame}
+\frametitle{Test delle permutazioni applicato a TFCE(2/2)}
+Data la distribuzione $T_{max}$:
+\begin{itemize}
+\item La soglia critica \'e pari all'elemento $c+1$ pi\'u grande della distribuzione, con $c = \lfloor \alpha N \rfloor$, dove $\alpha$ \'e il livello di significativit\'a desiderato e $N$ \'e il numero delle permutazioni.
+\item I voxel con statistiche che superano tale soglia sono quelli che hanno evidenza statistica al pi\'u pari ad $\alpha$.
+\end{itemize}
+
+Il p-value di ogni voxel  $v$ \'e dato da:
+$$\text{p-value}(v) = \frac{\text{\#Elementi di} T_{max} > T(v)}{T(v)}$$
+
+Dove $T(v)$ \'e il valore della statistica nell'immagine originale.
+
+\end{frame}
+
+\begin{frame}
 \frametitle{Test delle permutazioni - Casi particolari}
 Il semplice modello appena visto pu\'o essere esteso a diversi casi:
 \begin{itemize}
-\item Il modello di Freedman-Lane tiene conto di variabili di disturbo, ed \'e quello utilizzato dall'algoritmo \emph{Randomise}.
+\item Il modello di Freedman-Lane tiene conto delle variabili di disturbo, ed \'e quello utilizzato dall'algoritmo \emph{Randomise}.
 \item Negli studi di gruppo, il caso \'e ancora pi\'u semplice: i blocchi di permutazione sono definiti dai pazienti.
 \end{itemize}
 Per ulteriori approfondimenti consultare:

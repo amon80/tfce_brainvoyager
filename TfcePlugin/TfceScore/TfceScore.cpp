@@ -20,8 +20,6 @@
 #include <exception>
 #include "Tfce.h"
 #include "Utilities.h"
-#include "Fwhm.h"
-#include "GaussianKernel.h"
 #include <omp.h>
 #include <valarray>
 

@@ -34,7 +34,7 @@ inline int qxRound( double d )
  Uncomment the following to suppress relatively useless Microsoft compiler warnings
 */
 
-/*#if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #    pragma warning(disable: 4244) // 'conversion' conversion from 'type1' to 'type2', possible loss of data
 #    pragma warning(disable: 4275) // non - DLL-interface classkey 'identifier' used as base for DLL-interface classkey 'identifier'
 #    pragma warning(disable: 4514) // unreferenced inline/local function has been removed
@@ -46,6 +46,6 @@ inline int qxRound( double d )
 #    pragma warning(disable: 4355) // 'this' : used in base member initializer list
 #    pragma warning(disable: 4231) // nonstandard extension used : 'extern' before template explicit instantiation
 #    pragma warning(disable: 4710) // function not inlined
-#endif */
+#endif
 
 #endif  // GLOBAL_H

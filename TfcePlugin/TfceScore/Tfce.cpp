@@ -66,10 +66,7 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 	int i = 0, numOfElementsMatching = 0, j = 0;
 	int * indexMatchingData = getBinaryVector(map, n, moreThan, h, &numOfElementsMatching);
 	int num_clusters = 0;
-	char string_h[10]; 
-	char default_path [50];
 	float * clustered_map_float;
-	char * concatenated_string;
 	int * clustered_map;
 	int * extent_map;
 	clustered_map = find_clusters_3D(indexMatchingData, dim_x, dim_y, dim_z, n, &num_clusters);
@@ -111,16 +108,9 @@ void computeTfceIteration(float h, float * map, int n, int dim_x, int dim_y, int
 float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float H, float dh){
 	int n = dim_x * dim_y * dim_z;
 	float minData = 0; float maxData = 0; float rangeData = 0;
-	float * posData; float * negData;
 	float precision, increment;
-	float h;
-	int i,j;
-	int * indexPosData; int * indexNegData; int * indexMatchingData;
-	float * clustered_map;
-	int num_clusters;
-	int numOfElementsMatching;
+    int i;
 	float * toReturn = fill0(n);
-	float minPos = 0; float maxPos = 0;
 	int steps = 0;
 
 	findMinMax(map, n, &minData, &maxData, &rangeData);
@@ -132,7 +122,7 @@ float * tfce_score(float * map, int dim_x, int dim_y, int dim_z, float E, float 
 		increment = rangeData/precision;	
 	}
 
-	steps = ceil(rangeData / increment);
+    steps = (int) ceil(rangeData / increment);
 #pragma omp parallel for
 	for (i = 0; i < steps; i++) {
 		computeTfceIteration(minData + i*increment, map, n, dim_x, dim_y, dim_z, E, H, increment, toReturn);

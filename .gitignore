@@ -30,3 +30,5 @@
 *.tox
 *.toc
 *.vrb
+*.user
+build-*

@@ -13,9 +13,10 @@ SOURCES += \
     BVQXPluginInterface.cpp \
     nrutil.cpp \
     stat.cpp \
-    Tfce.cpp \
     TfceScore.cpp \
-    Utilities.cpp 
+    BinaryString.cpp \
+    FindClusters3D.cpp \
+    StatisticalMap3D.cpp
 
 HEADERS += \
     BVQXPluginInterface.h \
@@ -37,13 +38,18 @@ HEADERS += \
     Plugin_VOI_Header.h \
     Plugin_VTC_Header.h \
     stat.h \
-    Tfce.h \
     TfceScore.h \
-    Utilities.h 
+    BinaryString.h \
+    FindClusters3D.h \
+    StatisticalMap3D.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
 
-DISTFILES +=
+DISTFILES += \
+    TfceScore.js
+
+FORMS += \
+    TfceScore.ui

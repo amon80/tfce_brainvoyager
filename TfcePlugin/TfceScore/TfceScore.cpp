@@ -4,7 +4,6 @@
 
 
 #if defined(OS_WIN32)
-
 #include <windows.h>
 #include <malloc.h>
 #include <io.h>
@@ -18,48 +17,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <exception>
-#include "Tfce.h"
-#include "Utilities.h"
 #include <omp.h>
 #include <valarray>
-
-int find_index(float * vetmax, int n, int start_index, int end_index, float actual_score){
-	if (start_index == end_index)
-		return n;
-	int middle = (start_index + end_index) / 2;
-	int middle_plus_one = middle + 1;
-	if (middle_plus_one == n)
-		return 0;
-	if (actual_score > vetmax[middle]){
-		if (actual_score <= vetmax[middle_plus_one])
-			return n - middle - 1;
-		return find_index(vetmax, n, middle, end_index, actual_score);
-	}
-	return find_index(vetmax, n, start_index, middle, actual_score);
-}
-
-
-void threshold_matrix(float * vector, int dim, float min, float max){
-	int i;
-
-	for (i = 0; i < dim; i++){
-		vector[i] = (vector[i] - min) / (max - min);
-	}
-}
-
-int mycompare(const void * v1, const void * v2){
-	float real_value1, real_value2;
-
-	real_value1 = *((float *)v1);
-	real_value2 = *((float *)v2);
-
-	if (real_value1 < real_value2)
-		return -1;
-	else if (real_value1 == real_value2)
-		return 0;
-	else
-		return 1;
-}
+#include "StatisticalMap3D.h"
 
 // constructor of your GUI plugin class
 //
@@ -104,8 +64,8 @@ bool TfceScore::initPlugin(){
 	qxLogText("Plugin>  Running Tfce Score...");
 	qxLogText("Plugin>");
 
-	// perform here allocation of any "state" memory, which you want to use during repeated calls to "execute()" function
-	//
+    // perform here allocation of any "state" memory,
+    //which you want to use during repeated calls to "execute()" function
 	int current_doc_index = qxGetIDOfCurrentDocument(); // check for return value < 0
 	if(current_doc_index < 0)
 	{
@@ -133,27 +93,31 @@ bool TfceScore::execute(){
 	char string_h[101];
 	char string_dh[101];
 	char string_neg_or_pos[101];
+    char string_single_or_multy[101];
+
 
 	qxGetStringParameter("Command", task_name); 
 	qxGetStringParameter("H", string_h);
 	qxGetStringParameter("E", string_e);
 	qxGetStringParameter("dh", string_dh);
 	qxGetStringParameter("neg", string_neg_or_pos);
+    qxGetStringParameter("single", string_single_or_multy);
 
 	float H, E, dh;
-	int pos_or_neg;
+    int pos_or_neg, single_or_multy;
 
 	H = atof(string_h);
 	E = atof(string_e);
 	dh = atof(string_dh);
 	pos_or_neg = atoi(string_neg_or_pos);
+    single_or_multy = atoi(string_single_or_multy);
 
 	char InfoString[501];
 
 	if( !strcmp(task_name, "Calculate") ){		
 		bool b_voxels;
 		//getting the parameters.
-		b_voxels = CalculateTFCE(E, H, dh, pos_or_neg);
+        b_voxels = CalculateTFCE(E, H, dh, pos_or_neg,single_or_multy);
 		return b_voxels;
 	}
 
@@ -163,12 +127,10 @@ bool TfceScore::execute(){
 	return true;
 }
 
-int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg)
+int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int single_or_multy)
 {
 	char buffer[100];
-	float **vmp;
 	float * vv = NULL;
-	bool log = 1;
 	int overlayed_vmp_index = 0;
 	float min, max, range;
 	struct VMR_Header vmr_header;
@@ -181,7 +143,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg)
 		return false;
 	}
 
-	if ((vmp = qxGetNRVMPsOfCurrentVMR(&vmps_header)) != NULL) {
+    if (qxGetNRVMPsOfCurrentVMR(&vmps_header) != NULL) {
 		int dimX = (vmps_header.XEnd - vmps_header.XStart) / vmps_header.Resolution;
 		int dimY = (vmps_header.YEnd - vmps_header.YStart) / vmps_header.Resolution;
 		int dimZ = (vmps_header.ZEnd - vmps_header.ZStart) / vmps_header.Resolution;
@@ -190,76 +152,72 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg)
 
 		//this for loop should select currently overlayed vmp sub map
 		int num_of_maps = vmps_header.NrOfMaps;
-		
-		for (overlayed_vmp_index = 0; overlayed_vmp_index < num_of_maps; overlayed_vmp_index++){
-			vv = qxGetNRVMPOfCurrentVMR(overlayed_vmp_index, &vmp_header);
-			if (vmp_header.OverlayMap)
-				break;
-		}
 
-		//pos_or_neg check and action here
-		if (pos_or_neg){//positives only
-			for (int i = 0; i < dim; i++){
-				if (vv[i] < 0){
-					vv[i] = 0;
-				}
-			}
-		}
-		else{ // negatives only
-			for (int i = 0; i < dim; i++){
-				if (vv[i] > 0){
-					vv[i] = 0;
-				}
-				if (vv[i] < 0){
-					vv[i] = -vv[i];
-				}
-			}
-		}
-		
-		//vv = qxGetNRVMPOfCurrentVMR(0, &vmp_header);
-		qxLogText("Plugin> Starting to calculate TFCE...");
-		omp_set_num_threads(omp_get_num_procs());
-		float * scores = tfce_score(vv, dimX, dimY, dimZ, E, H, dh);
-		findMinMax(scores, dim, &min, &max, &range);
-		sprintf(buffer, "Score minimo: %f Score massimo: %f\n", min, max);
-		qxLogText(buffer);
-		
-		/*
-		float f = Fwhm(vv, dimX, dimY, dimZ);
-		//f *= 2.355;
-		sprintf(buffer, "Plugin> Estimated FWHM %f", f);
-		qxLogText(buffer);
-		*/
-		
-		/*if (check){
-			qxLogText("Plugin> Finished TFCE, starting permutation test...");
-			applicaPermutazioni(vv, dimX, dimY, dimZ, E, H, dh, rep, scores);
-		}*/
-		
-		//threshold_matrix(scores, dim, min, max);
-		memcpy(vv, scores, sizeof(float)* dimX*dimY*dimZ);
-		findMinMax(scores, dimX*dimY*dimZ, &min, &max, &range);
-		delete[] scores;
-		//sprintf(buffer, "Score minimo sogliato: %f Score massimo sogliato: %f\n", min, max);
-		//qxLogText(buffer);
-		//Computing visualization bounds
-		
-		float max_t = max;
-		float min_t = max - (max*50) / 100;
+        if(single_or_multy == 1){
+            sprintf(buffer, "Single study for T map");
+            qxLogText(buffer);
+            for (overlayed_vmp_index = 0; overlayed_vmp_index < num_of_maps; overlayed_vmp_index++){
+                vv = qxGetNRVMPOfCurrentVMR(overlayed_vmp_index, &vmp_header);
+                if (vmp_header.OverlayMap)
+                    break;
+            }
 
-		//sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f", min_t, max_t);
-		//qxLogText(buffer);
+            //Remember: Negative maps receive positive scores
 
-		//Refreshing vmp header
-		vmp_header.ThreshMax = max_t;
-		vmp_header.ThreshMin = min_t;
-		vmp_header.UseClusterSize = 0;
-		vmp_header.ShowPosOrNegOrBoth = 1;
-		qxSetNRVMPParametersOfCurrentVMR(overlayed_vmp_index, &vmp_header);
-		//Refresh
-		qxUpdateActiveWindow();
-		sprintf(buffer, "Finished calculation");
-		qxLogText(buffer);
+            //copying vmp in a object
+            StatisticalMap3D tfceMap(vv, dimX, dimY, dimZ);
+
+            //eliminating positives or negatives
+            tfceMap.zeroMap(pos_or_neg);
+
+            //flipping if negatives
+            if (pos_or_neg == -1){
+                tfceMap.flipMap();
+            }
+
+            qxLogText("Plugin> Starting to calculate TFCE...");
+            //omp_set_num_threads(omp_get_num_procs());
+            tfceMap.tfce(E, H, dh);
+            tfceMap.findMinMax(min, max, range);
+            sprintf(buffer, "Score minimo: %f Score massimo: %f\n", min, max);
+            qxLogText(buffer);
+
+            //copying tfce map in visualized map
+            for (int i = 0; i < dim; ++i) {
+                vv[i] = tfceMap[i];
+            }
+
+            //Computing visualization bounds
+            float max_t = max;
+            float min_t = max - (max*50) / 100;
+
+            sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f", min_t, max_t);
+            qxLogText(buffer);
+
+            //Refreshing vmp header
+            //Setting up thresholds
+            vmp_header.ThreshMax = max_t;
+            vmp_header.ThreshMin = min_t;
+            //No cluster based threshold
+            vmp_header.UseClusterSize = 0;
+            //Show only positive scores
+            vmp_header.ShowPosOrNegOrBoth = 1;
+
+            //Change visualized map parameters with refreshed vmp header
+            qxSetNRVMPParametersOfCurrentVMR(overlayed_vmp_index, &vmp_header);
+            //Refresh
+            qxUpdateActiveWindow();
+            sprintf(buffer, "Finished calculation");
+            qxLogText(buffer);
+        }else{
+            sprintf(buffer, "Multy study for beta maps");
+            qxLogText(buffer);
+            if(num_of_maps == 1){
+                sprintf(buffer, "For multy study you need more than one vmp");
+                qxLogText(buffer);
+                return false;
+            }
+        }
 		return true;
 	}
 	else{

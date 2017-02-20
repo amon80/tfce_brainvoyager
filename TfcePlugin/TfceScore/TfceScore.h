@@ -20,7 +20,7 @@ public:
 	PLUGIN_ACCESS bool execute();
 
 private:
-	int  CalculateTFCE(float E, float H, float dh, int pos_or_neg);
+    int  CalculateTFCE(float E, float H, float dh, int pos_or_neg, int single_or_multy);
 
 };
 

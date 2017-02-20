@@ -17,7 +17,8 @@ scriptObj.initDlg = function()
 	dlg.dh_textbox.plainText = "0.1";
 	dlg.h_textbox.plainText = "2.0";
 	dlg.e_textbox.plainText = "0.5";
-	dlg.positivesRadioButton.checked = true;
+    dlg.signGroupBox.positivesRadioButton.checked = true;
+    dlg.studyGroupBox.singleRadioButton.checked = true;
 }
 
 scriptObj.onFindVoxels = function()
@@ -33,10 +34,14 @@ scriptObj.onFindVoxels = function()
 	bvqx.SetPluginStringParameter("E", E);
 	bvqx.SetPluginStringParameter("H", H);
 	bvqx.SetPluginStringParameter("dh", dh);
-	if(dlg.positivesRadioButton.checked)
+    if(dlg.signGroupBox.positivesRadioButton.checked)
 		bvqx.SetPluginStringParameter("neg", 1);
 	else
-		bvqx.SetPluginStringParameter("neg", 0);
+        bvqx.SetPluginStringParameter("neg", -1);
+    if(dlg.studyGroupBox.singleRadioButton.checked)
+        bvqx.SetPluginStringParameter("single", 1);
+    else
+        bvqx.SetPluginStringParameter("single", -1);
 	bvqx.ExecutePlugin();
 }
 

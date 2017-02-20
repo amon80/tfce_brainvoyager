@@ -55,8 +55,8 @@
   <widget class="QPushButton" name="tfce_calculate_button">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>210</y>
+     <x>280</x>
+     <y>230</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -113,31 +113,83 @@
     <string>TFCE</string>
    </property>
   </widget>
-  <widget class="QRadioButton" name="positivesRadioButton">
+  <widget class="QGroupBox" name="signGroupBox">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>200</y>
-     <width>101</width>
-     <height>17</height>
+     <x>30</x>
+     <y>180</y>
+     <width>120</width>
+     <height>80</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Positive values</string>
+   <property name="title">
+    <string>Compute TFCE for:</string>
    </property>
+   <widget class="QRadioButton" name="positivesRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>101</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Positive values</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="negativesRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>101</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Negative values</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QRadioButton" name="negativesRadioButton">
+  <widget class="QGroupBox" name="studyGroupBox">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>230</y>
-     <width>101</width>
-     <height>17</height>
+     <x>230</x>
+     <y>120</y>
+     <width>120</width>
+     <height>80</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Negative values</string>
+   <property name="title">
+    <string>Type of study:</string>
    </property>
+   <widget class="QRadioButton" name="singleRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>82</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Single</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="multyRadioButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>82</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Multy</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

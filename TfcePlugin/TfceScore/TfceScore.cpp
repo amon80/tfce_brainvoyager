@@ -19,7 +19,14 @@
 #include <exception>
 #include <omp.h>
 #include <valarray>
+#include <set>
+#include <utility>
+#include <vector>
+#include "BinaryString.h"
 #include "StatisticalMap3D.h"
+#include "mystat.h"
+
+#define MAX_PERMUTATIONS_ALLOWED 1024
 
 // constructor of your GUI plugin class
 //
@@ -217,6 +224,54 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                 qxLogText(buffer);
                 return false;
             }
+            int total_num_of_permutations = 1 << num_of_maps;
+            int permutations_used;
+            std::set<BinaryString> permutations;
+            if(total_num_of_permutations <= MAX_PERMUTATIONS_ALLOWED){
+                permutations_used = total_num_of_permutations;
+                for (int i = 0; i < permutations_used; ++i) {
+                    permutations.insert(BinaryString(num_of_maps, i));
+                }
+            }else{
+                permutations_used = MAX_PERMUTATIONS_ALLOWED;
+                permutations.insert(BinaryString(num_of_maps));
+                for (int i = 1; i < permutations_used; ++i) {
+                    while(true){
+                        auto x = permutations.insert(BinaryString(num_of_maps, true));
+                        if(x.second == false)
+                            break;
+                    }
+                }
+            }
+            std::vector<StatisticalMap3D> maps(permutations_used);
+            float * voxels = new float[num_of_maps];
+            float * map = new float[dim];
+            int j = 0;
+            for(auto& perm: permutations){
+                /*
+                for (int k = 0; k < dim; ++k) {
+                    map[k] = 0;
+                }*/
+                for (int current_voxel = 0; current_voxel < dim; current_voxel++){
+                    float value = 0;
+                    for (int i = 0; i < num_of_maps; ++i) {
+                        vv = qxGetNRVMPOfCurrentVMR(i, &vmp_header);
+                        if(perm[i] == 1)
+                            voxels[i] = -vv[current_voxel];
+                        else
+                            voxels[i] = vv[current_voxel];
+                    }
+                    ttest1sample(voxels, num_of_maps, 0, value);
+                    map[current_voxel] = value;
+                }
+                maps[j++] = StatisticalMap3D(map, dimX, dimY, dimZ);
+            }
+            delete [] map;
+            delete [] voxels;
+            for(auto& map: maps){
+                map.tfce();
+            }
+            //TODO
         }
 		return true;
 	}

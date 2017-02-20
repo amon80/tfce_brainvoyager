@@ -16,7 +16,8 @@ SOURCES += \
     TfceScore.cpp \
     BinaryString.cpp \
     FindClusters3D.cpp \
-    StatisticalMap3D.cpp
+    StatisticalMap3D.cpp \
+    mystat.cpp
 
 HEADERS += \
     BVQXPluginInterface.h \
@@ -41,7 +42,8 @@ HEADERS += \
     TfceScore.h \
     BinaryString.h \
     FindClusters3D.h \
-    StatisticalMap3D.h
+    StatisticalMap3D.h \
+    mystat.h
 
 unix {
     target.path = /usr/lib

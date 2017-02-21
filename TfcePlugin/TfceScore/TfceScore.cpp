@@ -2,7 +2,6 @@
 
 #include "TfceScore.h"
 
-
 #if defined(OS_WIN32)
 #include <windows.h>
 #include <malloc.h>
@@ -217,10 +216,10 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             sprintf(buffer, "Finished calculation");
             qxLogText(buffer);
         }else{
-            sprintf(buffer, "Multy study for beta maps");
+            sprintf(buffer, "Multy study on beta maps");
             qxLogText(buffer);
             if(num_of_maps == 1){
-                sprintf(buffer, "For multy study you need more than one vmp");
+                sprintf(buffer, "For multy study on beta maps you need more than one vmp");
                 qxLogText(buffer);
                 return false;
             }
@@ -234,7 +233,8 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                 }
             }else{
                 permutations_used = MAX_PERMUTATIONS_ALLOWED;
-                permutations.insert(BinaryString(num_of_maps));
+                //explicit insertion of original permutation
+                permutations.insert(BinaryString(num_of_maps, 0));
                 for (int i = 1; i < permutations_used; ++i) {
                     while(true){
                         auto x = permutations.insert(BinaryString(num_of_maps, true));
@@ -252,8 +252,10 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                 for (int k = 0; k < dim; ++k) {
                     map[k] = 0;
                 }*/
+                //for each permutation, we create a map voxel by voxel...
                 for (int current_voxel = 0; current_voxel < dim; current_voxel++){
-                    float value = 0;
+                    //float value = 0;
+                    //...using ttest on the beta maps
                     for (int i = 0; i < num_of_maps; ++i) {
                         vv = qxGetNRVMPOfCurrentVMR(i, &vmp_header);
                         if(perm[i] == 1)
@@ -261,16 +263,25 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                         else
                             voxels[i] = vv[current_voxel];
                     }
-                    ttest1sample(voxels, num_of_maps, 0, value);
-                    map[current_voxel] = value;
+                    //ttest1sample(voxels, num_of_maps, 0, &value);
+                    ttest1sample(voxels, num_of_maps, 0, &map[current_voxel]);
+                    //map[current_voxel] = value;
                 }
                 maps[j++] = StatisticalMap3D(map, dimX, dimY, dimZ);
             }
             delete [] map;
             delete [] voxels;
             for(auto& map: maps){
-                map.tfce();
+                map.tfce(E, H, dh);
             }
+            //Due strade possibili:
+            //Prima strada:
+            //Calcolare la distribuzione dei massimi. Andare a vedere, per ogni permutazione, il massimo. (approccio conservativo)
+            //Calcolare i quantili, ordinando i valori. (95 percentile). Sogliare la mappa tramite soglia globale.
+
+            //La permutazione originale va conservata. (E' quella che bisogna sogliare e poi far visualizzare).
+
+            //float *
             //TODO
         }
 		return true;

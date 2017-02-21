@@ -157,8 +157,8 @@
     <rect>
      <x>230</x>
      <y>120</y>
-     <width>120</width>
-     <height>80</height>
+     <width>171</width>
+     <height>81</height>
     </rect>
    </property>
    <property name="title">
@@ -182,12 +182,12 @@
      <rect>
       <x>10</x>
       <y>40</y>
-      <width>82</width>
-      <height>17</height>
+      <width>151</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Multy</string>
+     <string> Multy (using beta maps)</string>
     </property>
    </widget>
   </widget>

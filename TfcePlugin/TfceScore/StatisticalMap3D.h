@@ -31,6 +31,7 @@ public:
     void tfce(float E = 0.5, float H = 2.0, float dh = 0.1);
     StatisticalMap3D& operator+=(const StatisticalMap3D& rhs);
     float& operator[](const std::size_t idx);
+    void thresholdMap(float threshold);
 
     //access methods
     const int size() const;

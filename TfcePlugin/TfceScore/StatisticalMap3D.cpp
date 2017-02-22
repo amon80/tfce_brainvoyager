@@ -238,6 +238,10 @@ float& StatisticalMap3D::operator[](const std::size_t idx){
     return map[idx];
 }
 
+void StatisticalMap3D::thresholdMap(float threshold){
+    //TODO
+}
+
 //------------- ACCESS METHODS
 const float StatisticalMap3D::operator[](const std::size_t idx) const{
     return map[idx];

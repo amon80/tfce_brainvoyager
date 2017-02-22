@@ -107,7 +107,8 @@ StatisticalMap3D::StatisticalMap3D(int dimX, int dimY, int dimZ)
     }
 }
 
-StatisticalMap3D::StatisticalMap3D(float* map, int dimX, int dimY, int dimZ)
+template <typename T>
+StatisticalMap3D::StatisticalMap3D(const T& map, int dimX, int dimY, int dimZ)
     :map(new float[dimX*dimY*dimZ]),
      dimX(dimX),
      dimY(dimY),
@@ -115,12 +116,13 @@ StatisticalMap3D::StatisticalMap3D(float* map, int dimX, int dimY, int dimZ)
      dim(dimX*dimY*dimZ)
 {
     for (int i = 0; i < dim; ++i) {
-        this->map[i] = map[i];
+        this->map[i] = (float) map[i];
     }
 }
 
 //mask must have length dim
-StatisticalMap3D::StatisticalMap3D(const StatisticalMap3D& map, BinaryString& mask)
+template <typename T, typename Y>
+StatisticalMap3D::StatisticalMap3D(const T& map, const Y& mask)
     :map(new float[dimX*dimY*dimZ]),
      dimX(map.dimX),
      dimY(map.dimY),
@@ -132,20 +134,6 @@ StatisticalMap3D::StatisticalMap3D(const StatisticalMap3D& map, BinaryString& ma
             this->map[i] = map[i];
         else
             this->map[i] = 0;
-    }
-}
-
-StatisticalMap3D::StatisticalMap3D(const BinaryString &toConvert, int dimX, int dimY, int dimZ)
-    :map(new float[dimX*dimY*dimZ]),
-     dimX(dimX),
-     dimY(dimY),
-     dimZ(dimZ),
-     dim(dimX*dimY*dimZ)
-{
-    float value;
-    for (int i = 0; i < dim; ++i) {
-        value = (float) toConvert[i];
-        map[i] = value;
     }
 }
 
@@ -286,8 +274,7 @@ void StatisticalMap3D::computeTfceIteration(StatisticalMap3D& tfce_map, float h,
     clustered_map_float.applyOperation(multiply, pow(h,H));
     clustered_map_float.applyOperation(multiply, increment);
 	for (i = 0; i < dim; ++i) {
-//#pragma omp atomic
-			tfce_map[i] += (clustered_map_float[i]);
+        tfce_map[i] += (clustered_map_float[i]);
 	}
 }
 
@@ -311,9 +298,8 @@ void StatisticalMap3D::tfce(float E, float H, float dh){
         }
 
         steps = (int) ceil(rangeData / increment);
-        //#pragma omp parallel for
         for (i = 0; i < steps; i++) {
-            (*this).computeTfceIteration(tfce_map, minData + i*increment, increment, E, H);
+            this->computeTfceIteration(tfce_map, minData + i*increment, increment, E, H);
         }
     }else{
         BinaryString indexPosData(*this, lessThan, 0);

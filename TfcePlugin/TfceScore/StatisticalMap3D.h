@@ -10,10 +10,11 @@ public:
     //rule of five
     //constructors
     StatisticalMap3D();
-    StatisticalMap3D(float * map, int dimX, int dimY, int dimZ);
+    template <typename T>
+    StatisticalMap3D(const T& map, int dimX, int dimY, int dimZ);
     StatisticalMap3D(int dimX, int dimY, int dimZ);
-    StatisticalMap3D(const StatisticalMap3D& map, BinaryString& mask);
-    StatisticalMap3D(const BinaryString& toConvert, int dimX, int dimY, int dimZ);
+    template <typename T, typename Y>
+    StatisticalMap3D(const T& map, const Y& mask);
     //destructor
     ~StatisticalMap3D();
     //copy semantics

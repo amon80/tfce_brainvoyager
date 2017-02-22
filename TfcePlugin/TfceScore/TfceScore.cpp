@@ -228,7 +228,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             int permutations_used;
             std::set<BinaryString> permutations;
             //explicit insertion of original permutation in each case
-            permutations.insert(BinaryString(num_of_maps, 0);
+            permutations.insert(BinaryString(num_of_maps, 0));
             if(total_num_of_permutations <= MAX_PERMUTATIONS_ALLOWED){
                 permutations_used = total_num_of_permutations;
                 for (int i = 1; i < permutations_used; ++i) {
@@ -279,7 +279,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             std::sort(maps_maxinum.begin(), maps_maxinum.end());
             int percentile_index = 0.95 * permutations_used;
             float percentile_threshold = maps_maxinum[percentile_index];
-            originalPermutationMap.thresholdMap(percentile_threshold);
+            //originalPermutationMap.thresholdMap(percentile_threshold);
             //Due strade possibili:
             //Prima strada:
             //Calcolare la distribuzione dei massimi. Andare a vedere, per ogni permutazione, il massimo. (approccio conservativo)
@@ -300,25 +300,26 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             }
 
             //Computing visualization bounds
-            //float max_t = max;
-            //float min_t = max - (max*50) / 100;
+            originalPermutationMap.findMinMax(min, max, range);
+            float max_t = max;
+            float min_t = percentile_threshold;
 
-            //sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f", min_t, max_t);
-            //qxLogText(buffer);
+            sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f", min_t, max_t);
+            qxLogText(buffer);
 
             //Refreshing vmp header
             //Setting up thresholds
-            //vmp_header.ThreshMax = max_t;
-            //vmp_header.ThreshMin = min_t;
+            vmp_header.ThreshMax = max_t;
+            vmp_header.ThreshMin = min_t;
             //No cluster based threshold
-            //vmp_header.UseClusterSize = 0;
+            vmp_header.UseClusterSize = 0;
             //Show only positive scores
             //vmp_header.ShowPosOrNegOrBoth = 1;
 
             //Change visualized map parameters with refreshed vmp header
-            //qxSetNRVMPParametersOfCurrentVMR(overlayed_vmp_index, &vmp_header);
+            qxSetNRVMPParametersOfCurrentVMR(overlayed_vmp_index, &vmp_header);
             //Refresh
-            //qxUpdateActiveWindow();
+            qxUpdateActiveWindow();
             sprintf(buffer, "Finished calculation");
             qxLogText(buffer);
         }

@@ -228,8 +228,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             int permutations_used;
             std::set<BinaryString> permutations;
             //explicit insertion of original permutation in each case
-            BinaryString original_permutation(num_of_maps, 0);
-            permutations.insert(original_permutation);
+            permutations.insert(BinaryString(num_of_maps, 0);
             if(total_num_of_permutations <= MAX_PERMUTATIONS_ALLOWED){
                 permutations_used = total_num_of_permutations;
                 for (int i = 1; i < permutations_used; ++i) {

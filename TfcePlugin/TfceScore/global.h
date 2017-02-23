@@ -46,6 +46,7 @@ inline int qxRound( double d )
 #    pragma warning(disable: 4355) // 'this' : used in base member initializer list
 #    pragma warning(disable: 4231) // nonstandard extension used : 'extern' before template explicit instantiation
 #    pragma warning(disable: 4710) // function not inlined
+#    pragma warning(disable: 4996) // CRT_SECURE_NO_WARNINGS
 #endif
 
 #endif  // GLOBAL_H

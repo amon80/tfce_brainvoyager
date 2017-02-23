@@ -32,3 +32,5 @@
 *.vrb
 *.user
 build-*
+TfceScore.VC.VC.opendb
+TfceScore.VC.db

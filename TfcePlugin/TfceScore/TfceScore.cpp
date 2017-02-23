@@ -101,7 +101,7 @@ bool TfceScore::execute(){
 	char string_dh[101];
 	char string_neg_or_pos[101];
     char string_single_or_multy[101];
-
+    char InfoString[501];
 
 	qxGetStringParameter("Command", task_name); 
 	qxGetStringParameter("H", string_h);
@@ -109,6 +109,9 @@ bool TfceScore::execute(){
 	qxGetStringParameter("dh", string_dh);
 	qxGetStringParameter("neg", string_neg_or_pos);
     qxGetStringParameter("single", string_single_or_multy);
+
+    sprintf(InfoString, "Plugin>  Single or multi = %s", string_single_or_multy);
+    qxLogText(InfoString);
 
 	float H, E, dh;
     int pos_or_neg, single_or_multy;
@@ -119,7 +122,9 @@ bool TfceScore::execute(){
 	pos_or_neg = atoi(string_neg_or_pos);
     single_or_multy = atoi(string_single_or_multy);
 
-	char InfoString[501];
+    sprintf(InfoString, "Plugin>  Single or multi = %d", single_or_multy);
+    qxLogText(InfoString);
+
 
 	if( !strcmp(task_name, "Calculate") ){		
 		bool b_voxels;
@@ -161,8 +166,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
 		int num_of_maps = vmps_header.NrOfMaps;
 
         if(single_or_multy == 1){
-            sprintf(buffer, "Single study for T map");
-            qxLogText(buffer);
+            qxLogText("Single study for T map");
             for (overlayed_vmp_index = 0; overlayed_vmp_index < num_of_maps; overlayed_vmp_index++){
                 vv = qxGetNRVMPOfCurrentVMR(overlayed_vmp_index, &vmp_header);
                 if (vmp_header.OverlayMap)
@@ -217,8 +221,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             sprintf(buffer, "Finished calculation");
             qxLogText(buffer);
         }else{
-            sprintf(buffer, "Multy study on beta maps");
-            qxLogText(buffer);
+            qxLogText("Multy study for beta maps");
             if(num_of_maps == 1){
                 sprintf(buffer, "For multy study on beta maps you need more than one vmp");
                 qxLogText(buffer);

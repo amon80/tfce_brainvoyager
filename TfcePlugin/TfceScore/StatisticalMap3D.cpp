@@ -121,7 +121,7 @@ StatisticalMap3D::StatisticalMap3D(float* map, int dimX, int dimY, int dimZ)
 
 //mask must have length dim
 StatisticalMap3D::StatisticalMap3D(const StatisticalMap3D& map, BinaryString& mask)
-    :map(new float[dimX*dimY*dimZ]),
+    :map(new float[(map.dimX)*(map.dimY)*(map.dimZ)]),
      dimX(map.dimX),
      dimY(map.dimY),
      dimZ(map.dimZ),
@@ -316,7 +316,7 @@ void StatisticalMap3D::tfce(float E, float H, float dh){
             (*this).computeTfceIteration(tfce_map, minData + i*increment, increment, E, H);
         }
     }else{
-        BinaryString indexPosData(*this, lessThan, 0);
+        BinaryString indexPosData(*this, moreThan, 0);
         BinaryString indexNegData(*this, lessThan, 0);
         StatisticalMap3D posData(*this, indexPosData);
         StatisticalMap3D negData(*this, indexNegData);

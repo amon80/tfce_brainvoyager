@@ -16,12 +16,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <exception>
-#include <omp.h>
 #include <valarray>
 #include <set>
 #include <utility>
 #include <vector>
 #include <algorithm>
+#include <omp.h>
 #include "BinaryString.h"
 #include "StatisticalMap3D.h"
 #include "mystat.h"
@@ -110,8 +110,8 @@ bool TfceScore::execute(){
 	qxGetStringParameter("neg", string_neg_or_pos);
     qxGetStringParameter("single", string_single_or_multy);
 
-    sprintf(InfoString, "Plugin>  Single or multi = %s", string_single_or_multy);
-    qxLogText(InfoString);
+    //sprintf(InfoString, "Plugin>  Single or multi = %s", string_single_or_multy);
+    //qxLogText(InfoString);
 
 	float H, E, dh;
     int pos_or_neg, single_or_multy;
@@ -122,8 +122,8 @@ bool TfceScore::execute(){
 	pos_or_neg = atoi(string_neg_or_pos);
     single_or_multy = atoi(string_single_or_multy);
 
-    sprintf(InfoString, "Plugin>  Single or multi = %d", single_or_multy);
-    qxLogText(InfoString);
+    //sprintf(InfoString, "Plugin>  Single or multi = %d", single_or_multy);
+    //qxLogText(InfoString);
 
 
 	if( !strcmp(task_name, "Calculate") ){		
@@ -187,10 +187,10 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             }
 
             qxLogText("Plugin> Starting to calculate TFCE...");
-            //omp_set_num_threads(omp_get_num_procs());
+            omp_set_num_threads(omp_get_num_procs());
             tfceMap.tfce(E, H, dh);
             tfceMap.findMinMax(min, max, range);
-            sprintf(buffer, "Score minimo: %f Score massimo: %f\n", min, max);
+            sprintf(buffer, "Minimum score: %f Maximum score: %f\n", min, max);
             qxLogText(buffer);
 
             //copying tfce map in visualized map
@@ -200,10 +200,10 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
 
             //Computing visualization bounds
             float max_t = max;
-            float min_t = max - (max*50) / 100;
+            float min_t = max - (max*50) / 100;	//euristic value
 
-            sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f", min_t, max_t);
-            qxLogText(buffer);
+			sprintf(buffer, "Minimum score visualized: %f Maximum score visualized: %f\n", min_t, max_t);
+			qxLogText(buffer);
 
             //Refreshing vmp header
             //Setting up thresholds
@@ -266,7 +266,12 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                         else
                             voxels[i] = vv[current_voxel];
                     }
-                    ttest1sample(voxels, num_of_maps, 0, &map[current_voxel]);
+					//Since stat function are 1 based, we pass pointer decremented by one
+					float value = 0;
+                    ttest1sample(voxels-1, num_of_maps, 0, &value);
+					//if(value != 0)
+						//qxLogText("Value");
+					map[current_voxel] = value;
                 }
                 StatisticalMap3D currentPermutationMap(map, dimX, dimY, dimZ);
                 currentPermutationMap.tfce();
@@ -280,9 +285,9 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             delete [] map;
             delete [] voxels;
             std::sort(maps_maxinum.begin(), maps_maxinum.end());
-            int percentile_index = 0.95 * permutations_used;
+            int percentile_index = 0.95 * permutations_used;	//p-value 0.05
             float percentile_threshold = maps_maxinum[percentile_index];
-            originalPermutationMap.thresholdMap(percentile_threshold);
+            //originalPermutationMap.thresholdMap(percentile_threshold);
             //Due strade possibili:
             //Prima strada:
             //Calcolare la distribuzione dei massimi. Andare a vedere, per ogni permutazione, il massimo. (approccio conservativo)
@@ -306,8 +311,8 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             float max_t = max;
             float min_t = percentile_threshold;
 
-            sprintf(buffer, "Score minimo visualizzato: %f Score massimo visualizzato: %f", min_t, max_t);
-            qxLogText(buffer);
+			sprintf(buffer, "Minimum score visualized: %f Maximum score: %f\n", min_t, max_t);
+			qxLogText(buffer);
 
             //Refreshing vmp header
             //Setting up thresholds

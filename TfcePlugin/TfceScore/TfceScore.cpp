@@ -26,7 +26,7 @@
 #include "StatisticalMap3D.h"
 #include "mystat.h"
 
-const int MAX_PERMUTATIONS_ALLOWED = 1024;
+const int MAX_PERMUTATIONS_ALLOWED = 32;
 
 // constructor of your GUI plugin class
 //
@@ -256,6 +256,8 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             //thanks to < operator, we are sure that the original permutation is the first
             //in any ordering
             for(auto& perm: permutations){
+				sprintf(buffer, "Building map %d", j);
+				qxLogText(buffer);
                 //for each permutation, we create a map voxel by voxel...
                 for (int current_voxel = 0; current_voxel < dim; current_voxel++){
                     //...using ttest on the beta maps
@@ -266,16 +268,19 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                         else
                             voxels[i] = vv[current_voxel];
                     }
-					//Since stat function are 1 based, we pass pointer decremented by one
 					float value = 0;
+					//Since statistical functions are 1-array based, we pass the pointer decremented by one
                     ttest1sample(voxels-1, num_of_maps, 0, &value);
-					//if(value != 0)
-						//qxLogText("Value");
 					map[current_voxel] = value;
                 }
+				sprintf(buffer, "Built map %d, computing Tfce...", j);
+				qxLogText(buffer);
                 StatisticalMap3D currentPermutationMap(map, dimX, dimY, dimZ);
                 currentPermutationMap.tfce();
+				sprintf(buffer, "Tfce for map %d finished", j);
+				qxLogText(buffer);
                 if(first_permutation){
+					qxLogText("Storing original map");
                     first_permutation = false;
                     originalPermutationMap = currentPermutationMap;
                 }

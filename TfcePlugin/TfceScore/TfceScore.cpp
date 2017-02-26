@@ -243,7 +243,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                 for (int i = 1; i < permutations_used; ++i) {
                     while(true){
                         auto x = permutations.insert(BinaryString(num_of_maps, true));
-                        if(x.second == false)
+                        if(x.second)
                             break;
                     }
                 }

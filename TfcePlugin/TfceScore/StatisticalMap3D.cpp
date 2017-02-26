@@ -3,6 +3,7 @@
 #include "FindClusters3D.h"
 #include <cfloat>
 #include <cmath>
+#include <omp.h>
 
 //utility functions
 int lessThan(const float a, const float b){
@@ -286,7 +287,7 @@ void StatisticalMap3D::computeTfceIteration(StatisticalMap3D& tfce_map, float h,
     clustered_map_float.applyOperation(multiply, pow(h,H));
     clustered_map_float.applyOperation(multiply, increment);
 	for (i = 0; i < dim; ++i) {
-//#pragma omp atomic
+#pragma omp atomic
 			tfce_map[i] += (clustered_map_float[i]);
 	}
 }
@@ -311,7 +312,7 @@ void StatisticalMap3D::tfce(float E, float H, float dh){
         }
 
         steps = (int) ceil(rangeData / increment);
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for (i = 0; i < steps; i++) {
             (*this).computeTfceIteration(tfce_map, minData + i*increment, increment, E, H);
         }

@@ -6,6 +6,9 @@
 
 QT       -= core gui
 
+QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_LFLAGS +=  -fopenmp
+
 TARGET = TfceScore
 TEMPLATE = lib
 

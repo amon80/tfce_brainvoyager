@@ -178,25 +178,26 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             //copying vmp in a object
             StatisticalMap3D tfceMap(vv, dimX, dimY, dimZ);
 
-            //eliminating positives or negatives
-            tfceMap.zeroMap(pos_or_neg);
-
-            //flipping if negatives
-            if (pos_or_neg == -1){
-                tfceMap.flipMap();
-            }
-
             qxLogText("Plugin> Starting to calculate TFCE...");
             omp_set_num_threads(omp_get_num_procs());
             tfceMap.tfce(E, H, dh);
-            tfceMap.findMinMax(min, max, range);
-            sprintf(buffer, "Minimum score: %f Maximum score: %f\n", min, max);
+
             qxLogText(buffer);
+
+			//eliminating positives or negatives
+			tfceMap.zeroMap(pos_or_neg);
+
+			//flipping if negatives
+			if (pos_or_neg == -1)
+				tfceMap.flipMap();
 
             //copying tfce map in visualized map
             for (int i = 0; i < dim; ++i) {
                 vv[i] = tfceMap[i];
             }
+
+			tfceMap.findMinMax(min, max, range);
+			sprintf(buffer, "Minimum score: %f Maximum score: %f\n", min, max);
 
             //Computing visualization bounds
             float max_t = max;

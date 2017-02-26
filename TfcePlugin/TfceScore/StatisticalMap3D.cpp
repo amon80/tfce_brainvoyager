@@ -308,7 +308,7 @@ void StatisticalMap3D::tfce(float E, float H, float dh){
         if (precision > 200) {
             increment = rangeData/200;
         } else{
-            increment = rangeData/precision;
+			increment = dh;
         }
 
         steps = (int) ceil(rangeData / increment);

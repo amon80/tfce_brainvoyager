@@ -34,3 +34,5 @@
 build-*
 TfceScore.VC.VC.opendb
 TfceScore.VC.db
+/TfcePlugin/TfceScore/Release
+/TfcePlugin/TfceScore/x64/Release

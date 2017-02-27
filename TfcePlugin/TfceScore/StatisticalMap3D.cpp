@@ -38,6 +38,24 @@ float subtract(float a, float b) {
 		return a + b;
 }
 
+float zeroPositives(float a) {
+	if (a > 0)
+		return 0;
+	else
+		return a;
+}
+
+float zeroNegatives(float a) {
+	if (a < 0)
+		return 0;
+	else
+		return a;
+}
+
+float zeroAll(float a) {
+	return 0;
+}
+
 
 // ---------- FRIEND METHODS ---------------
 std::ostream & operator<<(std::ostream &os, const StatisticalMap3D& p){
@@ -190,27 +208,10 @@ StatisticalMap3D& StatisticalMap3D::operator=(StatisticalMap3D&& rhs){
 
 
 //------------- MODIFIERS -----------------
-void StatisticalMap3D::zeroMap(int pos_or_neg){
-    //all zeros
-    if(pos_or_neg == 0){
-        for(int i = 0; i < dim; i++){
-            map[i] = 0;
-        }
-    }
-    //keep the negatives
-    else if(pos_or_neg == -1){
-        for(int i = 0; i < dim; i++){
-            if(map[i] > 0)
-                map[i] = 0;
-        }
-    }
-    //keep the negatives
-    else if(pos_or_neg == 1){
-        for(int i = 0; i < dim; i++){
-            if(map[i] < 0)
-                map[i] = 0;
-        } 
-    }
+void StatisticalMap3D::zeroMap(float (*confront)(const float)){
+	for (int i = 0; i < dim; i++) {
+		map[i] = confront(map[i]);
+	}
 }
 
 void StatisticalMap3D::flipMap(){

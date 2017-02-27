@@ -24,8 +24,8 @@ public:
     StatisticalMap3D& operator=(StatisticalMap3D&& rhs);
 
     //modifiers methods
-    void zeroMap(int pos_or_neg);
-    void flipMap();
+	void zeroMap(float(*confront)(const float));
+	void flipMap();
     void applyOperation(float (* operation) (const float a, const float b), const float argument);
     void findMinMax(float& min, float& max, float& range);
     void tfce(float E = 0.5, float H = 2.0, float dh = 0.1);
@@ -51,5 +51,9 @@ private:
     int dimZ;
     int dim;
 };
+
+float zeroPositives(float a);
+float zeroNegatives(float a);
+float zeroAll(float a);
 
 #endif // STATISTICALMAP3D_H

@@ -185,7 +185,10 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             qxLogText(buffer);
 
 			//eliminating positives or negatives
-			tfceMap.zeroMap(pos_or_neg);
+			if (pos_or_neg == -1)
+				tfceMap.zeroMap(zeroPositives);
+			else
+				tfceMap.zeroMap(zeroNegatives);
 
 			//flipping if negatives
 			if (pos_or_neg == -1)

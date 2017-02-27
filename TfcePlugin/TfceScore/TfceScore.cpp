@@ -173,8 +173,6 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                     break;
             }
 
-            //Remember: Negative maps receive positive scores
-
             //copying vmp in a object
             StatisticalMap3D tfceMap(vv, dimX, dimY, dimZ);
 
@@ -190,6 +188,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
 			else
 				tfceMap.zeroMap(zeroNegatives);
 
+			//Remember: Negative maps receive positive scores
 			//flipping if negatives
 			if (pos_or_neg == -1)
 				tfceMap.flipMap();
@@ -199,10 +198,10 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                 vv[i] = tfceMap[i];
             }
 
+			//Computing visualization bounds
 			tfceMap.findMinMax(min, max, range);
 			sprintf(buffer, "Minimum score: %f Maximum score: %f\n", min, max);
 
-            //Computing visualization bounds
             float max_t = max;
             float min_t = max - (max*50) / 100;	//euristic value
 

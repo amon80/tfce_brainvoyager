@@ -21,8 +21,6 @@ void swap(BinaryString& first, BinaryString& second){
 }
 
 bool operator<(const BinaryString& first, const BinaryString& second){
-    if(first == second)
-        return false;
     if(first.n_bits < second.n_bits)
         return true;
     for (int i = 0; i < first.n_bits; i++) {
@@ -31,11 +29,10 @@ bool operator<(const BinaryString& first, const BinaryString& second){
         else if(first.string[i] > second.string[i])
             return false;
     }
+	return false;
 }
 
 bool operator>(const BinaryString& first, const BinaryString& second){
-    if(first == second)
-        return false;
     if(first.n_bits < second.n_bits)
         return false;
     for (int i = 0; i < first.n_bits; i++) {
@@ -44,6 +41,7 @@ bool operator>(const BinaryString& first, const BinaryString& second){
         else if(first.string[i] > second.string[i])
             return true;
     }
+	return false;
 }
 
 bool operator==(const BinaryString& first, const BinaryString& second){

@@ -230,77 +230,32 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                 qxLogText(buffer);
                 return false;
             }
-            int total_num_of_permutations = 1 << num_of_maps;
-            int permutations_used;
-            std::set<BinaryString> permutations;
-            //explicit insertion of original permutation in each case
-            permutations.insert(BinaryString(num_of_maps, 0));
-            if(total_num_of_permutations <= MAX_PERMUTATIONS_ALLOWED){
-                permutations_used = total_num_of_permutations;
-                for (int i = 1; i < permutations_used; ++i) {
-                    permutations.insert(BinaryString(num_of_maps, i));
-                }
-            }else{
-                permutations_used = MAX_PERMUTATIONS_ALLOWED;
-                for (int i = 1; i < permutations_used; ++i) {
-                    while(true){
-                        auto x = permutations.insert(BinaryString(num_of_maps, true));
-                        if(x.second)
-                            break;
-                    }
-                }
-            }
-            std::vector<float> maps_maxinum(permutations_used);
+			BinaryString perm(num_of_maps, 0);
             float * voxels = new float[num_of_maps];
             float * map = new float[dim];
-            int j = 0;
-            bool first_permutation = true;
-            StatisticalMap3D originalPermutationMap;
-            //thanks to < operator, we are sure that the original permutation is the first
-            //in any ordering
-            for(auto& perm: permutations){
-				sprintf(buffer, "Building map %d", j);
-				qxLogText(buffer);
-                //for each permutation, we create a map voxel by voxel...
-                for (int current_voxel = 0; current_voxel < dim; current_voxel++){
-                    //...using ttest on the beta maps
-                    for (int i = 0; i < num_of_maps; ++i) {
-                        vv = qxGetNRVMPOfCurrentVMR(i, &vmp_header);
-                        if(perm[i] == 1)
-                            voxels[i] = -vv[current_voxel];
-                        else
-                            voxels[i] = vv[current_voxel];
-                    }
-					float value = 0;
-					//Since statistical functions are 1-array based, we pass the pointer decremented by one
-                    ttest1sample(voxels-1, num_of_maps, 0, &value);
-					map[current_voxel] = value;
+  
+            //for each permutation, we create a map voxel by voxel...
+            for (int current_voxel = 0; current_voxel < dim; current_voxel++){
+                //...using ttest on the beta maps
+                for (int i = 0; i < num_of_maps; ++i) {
+                    vv = qxGetNRVMPOfCurrentVMR(i, &vmp_header);
+                    if(perm[i] == 1)
+                        voxels[i] = -vv[current_voxel];
+                    else
+                        voxels[i] = vv[current_voxel];
                 }
-				sprintf(buffer, "Built map %d, computing Tfce...", j);
-				qxLogText(buffer);
-                StatisticalMap3D currentPermutationMap(map, dimX, dimY, dimZ);
-                currentPermutationMap.tfce();
-				sprintf(buffer, "Tfce for map %d finished", j);
-				qxLogText(buffer);
-                if(first_permutation){
-					qxLogText("Storing original map");
-                    first_permutation = false;
-                    originalPermutationMap = currentPermutationMap;
-                }
-                currentPermutationMap.findMinMax(min, max, range);
-                maps_maxinum[j++] = max;
+				float value = 0;
+				//Since statistical functions are 1-array based, we pass the pointer decremented by one
+                ttest1sample(voxels-1, num_of_maps, 0, &value);
+				map[current_voxel] = value;
             }
+            StatisticalMap3D currentPermutationMap(map, dimX, dimY, dimZ);
+            //currentPermutationMap.tfce();
             delete [] map;
             delete [] voxels;
-            std::sort(maps_maxinum.begin(), maps_maxinum.end());
-            int percentile_index = 0.95 * permutations_used;	//p-value 0.05
-            float percentile_threshold = maps_maxinum[percentile_index];
-            //originalPermutationMap.thresholdMap(percentile_threshold);
-            //Due strade possibili:
-            //Prima strada:
-            //Calcolare la distribuzione dei massimi. Andare a vedere, per ogni permutazione, il massimo. (approccio conservativo)
-            //Calcolare i quantili, ordinando i valori. (95 percentile). Sogliare la mappa tramite soglia globale.
-
+            
+            //int percentile_index = 0.95 * permutations_used;	//p-value 0.05
+            //float percentile_threshold = maps_maxinum[percentile_index];
 
             //Finished calculations, showing results
             //Finding actual vmp visualized
@@ -312,24 +267,8 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
 
             //copying tfce map in visualized map
             for (int i = 0; i < dim; ++i) {
-                vv[i] = originalPermutationMap[i];
+                vv[i] = currentPermutationMap[i];
             }
-
-            //Computing visualization bounds
-            float max_t = max;
-            float min_t = percentile_threshold;
-
-			sprintf(buffer, "Minimum score visualized: %f Maximum score: %f\n", min_t, max_t);
-			qxLogText(buffer);
-
-            //Refreshing vmp header
-            //Setting up thresholds
-            vmp_header.ThreshMax = max_t;
-            vmp_header.ThreshMin = min_t;
-            //No cluster based threshold
-            vmp_header.UseClusterSize = 0;
-            //Show only positive scores
-            vmp_header.ShowPosOrNegOrBoth = 1;
 
             //Change visualized map parameters with refreshed vmp header
             qxSetNRVMPParametersOfCurrentVMR(overlayed_vmp_index, &vmp_header);

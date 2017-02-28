@@ -224,6 +224,7 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
             sprintf(buffer, "Finished calculation");
             qxLogText(buffer);
         }else{
+			//Generating tmap as brainvoyager would for testing purpose in this branch.
             qxLogText("Multy study for beta maps");
             if(num_of_maps == 1){
                 sprintf(buffer, "For multy study on beta maps you need more than one vmp");
@@ -249,29 +250,28 @@ int TfceScore::CalculateTFCE(float E, float H, float dh, int pos_or_neg, int sin
                 ttest1sample(voxels-1, num_of_maps, 0, &value);
 				map[current_voxel] = value;
             }
+			//once map as been built, we get rid of all the existing submaps in current vmp
+			qxDeleteNRVMPsOfCurrentVMR();
+			qxCreateNRVMPsForCurrentVMR(1, 0, 0, &vmps_header);
+
             StatisticalMap3D currentPermutationMap(map, dimX, dimY, dimZ);
             //currentPermutationMap.tfce();
             delete [] map;
             delete [] voxels;
-            
-            //int percentile_index = 0.95 * permutations_used;	//p-value 0.05
-            //float percentile_threshold = maps_maxinum[percentile_index];
 
-            //Finished calculations, showing results
-            //Finding actual vmp visualized
-            for (overlayed_vmp_index = 0; overlayed_vmp_index < num_of_maps; overlayed_vmp_index++){
-                vv = qxGetNRVMPOfCurrentVMR(overlayed_vmp_index, &vmp_header);
-                if (vmp_header.OverlayMap)
-                    break;
-            }
-
+			//Change visualized map parameters with refreshed vmp header
+			vv = qxGetNRVMPOfCurrentVMR(0, &vmp_header);
+			vmp_header.df1 = num_of_maps - 1;
+			vmp_header.MapType = 1;
+			vmp_header.OverlayMap = 1;
+               
             //copying tfce map in visualized map
             for (int i = 0; i < dim; ++i) {
                 vv[i] = currentPermutationMap[i];
             }
 
-            //Change visualized map parameters with refreshed vmp header
-            qxSetNRVMPParametersOfCurrentVMR(overlayed_vmp_index, &vmp_header);
+			qxSetNRVMPParametersOfCurrentVMR(0, &vmp_header);
+
             //Refresh
             qxUpdateActiveWindow();
             sprintf(buffer, "Finished calculation");

@@ -31,80 +31,35 @@ data = varargin{1};
 
 clear varargin;
 
+data = (data > 0).*data;
+
+min_value = min(data(:));
+max_value = max(data(:));
+
 % define increment size forced by dh
 data_range  = range(data(:));
-precision = round(data_range / dh);
-if precision > 200 % arbitrary decision to limit precision to 200th of the data range - needed as sometime under H0 one value can be very wrong
-	increment = data_range / 200;
+precision = data_range / dh;
+if precision > 100 % arbitrary decision to limit precision to 200th of the data range - needed as sometime under H0 one value can be very wrong
+	increment = data_range / 100;
 else
 	increment = data_range / precision;
 end
 
-% check negative values if so do negate and add scores
-if min(data(:)) > 0
-	% select a height, obtain cluster map, obtain extent map (=cluster
-	% map but with extent of cluster rather than number of the cluster)
-	% then tfce score for that height
-	index = 1;
-	tfce = NaN(x,y,z,length(min(data(:)):increment:max(data(:))));
-	for h=min(data(:)):increment:max(data(:))
-		[clustered_map, num] = find_clusters_3D((data > h));
-		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
-		for i=1:num
-			idx = clustered_map(:) == i;
-			extent_map(idx) = extent_map(idx) + sum(idx); 
-		end
-		tfce(:,:,:,index) = (extent_map.^E).*h^H.*dh;
-		index = index +1;
-	end
-	% compute final score
-	tfce_score = nansum(tfce,4);   
-else
-	pos_data = (data > 0).*data;
-	neg_data = abs((data < 0).*data);
-
-	clear data;
-
-	% select a height, obtain cluster map, obtain extent map
-	% then tfce score for that height
-	l = length(min(pos_data(:)):increment:max(pos_data(:)));
-	pos_increment = (max(pos_data(:)) - min(pos_data(:))) / l;
-	pos_tfce = NaN(x,y,z,l); 
-    index = 1;
-	for h=min(pos_data(:)):pos_increment:max(pos_data(:))
-        clu= bwconncomp((pos_data > h),26);
-		[clustered_map, num] = find_clusters_3D((pos_data > h));
-        if clu.NumObjects ~= num
-            disp('DIOOO');
-        end
-		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
-		for i=1:num
-			idx = clustered_map(:) == i;
-			extent_map(idx) = extent_map(idx) + sum(idx); 
-		end
-		pos_tfce(:,:,:,index) = (extent_map.^E).*h^H.*dh;
-		index = index +1;
-	end
-
-	l = length(min(neg_data(:)):increment:max(neg_data(:)));
-	neg_increment = (max(neg_data(:)) - min(neg_data(:))) / l;
-	neg_tfce = NaN(x,y,z,l);
-    index = 1; 
-	for h=min(neg_data(:)):neg_increment:max(neg_data(:))
-        clu= bwconncomp((neg_data > h),26);
-		[clustered_map, num] = find_clusters_3D((neg_data > h));
-        if clu.NumObjects ~= num 
-            disp('DIOOO');
-        end
-		extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
-		for i=1:num
-			idx = clustered_map(:) == i;
-			extent_map(idx) = extent_map(idx) + sum(idx); 
-		end
-		neg_tfce(:,:,:,index) = (extent_map.^E).*h^H.*dh;
-		index = index +1;
-	end
-
-	% compute final score
-	tfce_score = nansum(pos_tfce,4)-nansum(neg_tfce,4);    
+% select a height, obtain cluster map, obtain extent map (=cluster
+% map but with extent of cluster rather than number of the cluster)
+% then tfce score for that height
+num_steps = floor(data_range / increment);
+tfce_score = zeros(x,y,z);
+for k=0:num_steps-1
+    h = min_value + (k*increment);
+    binary_map = (data > h);
+    CC = bwconncomp(binary_map, 6);
+    num_clusters = CC.NumObjects;
+    extent_map = zeros(x,y,z); % same as cluster map but contains extent value instead
+    for i=1:num_clusters
+        indices = CC.PixelIdxList{1,i};
+        extent_map(indices) = length(indices);
+    end
+    tfce_score = tfce_score +((extent_map.^E).*h^H.*increment);
 end
+
